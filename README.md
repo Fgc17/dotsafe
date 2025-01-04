@@ -13,6 +13,14 @@
 npm install @ferstack/ts-env
 ```
 
+```bash
+pnpm install @ferstack/ts-env
+```
+
+```bash
+yarn add @ferstack/ts-env
+```
+
 ### Quickstart
 
 #### Create configuration file
