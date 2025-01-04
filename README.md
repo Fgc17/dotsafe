@@ -52,16 +52,15 @@ export async function GET() {
 
 #### Package.json script
 
-```json
-// package.json
+```jsonc
 {
   "scripts": {
     "dev": "ts-env run -g -- npm start -w",
     // The `-g` flag updates the client each time
-    "postinstall": "ts-env generate"
+    "postinstall": "ts-env generate",
     // or 'prebuild'
     // the app won't build if the client is not generated
-  }
+  },
 }
 ```
 
