@@ -54,6 +54,7 @@ export async function GET() {
 
 ```jsonc
 {
+  // package.json
   "scripts": {
     "dev": "ts-env run -g -- npm start -w",
     // The `-g` flag updates the client each time
