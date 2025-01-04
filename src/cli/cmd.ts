@@ -5,7 +5,7 @@ import { getActionArgs } from "./utils/get-action-args";
 
 program
   .name("ts-env")
-  .description("Typesafe environment variables")
+  .description("Typesafe environment variables for TypeScript")
   .version("0.0.0");
 
 program
