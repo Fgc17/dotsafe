@@ -1,0 +1,41 @@
+{
+  "name": "ts-env",
+  "description": "",
+  "publishConfig": {
+    "access": "public"
+  },
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.cjs"
+    }
+  },
+  "bin": {
+    "ts-env": "dist/cmd.cjs"
+  },
+  "scripts": {
+    "dev:index": "tsup src/index.ts --dts --watch",
+    "dev:cli": "tsup src/cli/cmd.ts --watch --silent",
+    "dev": "concurrently --raw --kill-others pnpm:dev:*",
+    "playground:generate": "pnpm tsx src/cli generate --config='./playground/env.config.ts'",
+    "playground:run": "pnpm tsx src/cli run --config='./playgroundenv.ts' -- pnpm tsx ./playground/src/index.ts",
+    "build": "tsup src/index.ts --dts --shims && tsup src/cli/cmd.ts --shims",
+    "bump": "changeset",
+    "release": "changeset version && changeset publish"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.11",
+    "@types/node": "^22.9.1",
+    "prettier": "3.3.3",
+    "tsup": "^8.3.5",
+    "tsx": "4.19.2",
+    "concurrently": "9.1.2",
+    "typescript": "5.6.3"
+  },
+  "dependencies": {
+    "chalk": "^4",
+    "jiti": "2.4.2",
+    "commander": "13.0.0"
+  }
+}
