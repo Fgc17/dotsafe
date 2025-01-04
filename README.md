@@ -10,7 +10,7 @@
 ### Installation
 
 ```bash
-npm install ts-env
+npm install @ferstack/ts-env
 ```
 
 ### Quickstart
@@ -20,7 +20,7 @@ npm install ts-env
 ```typescript
 // env.config.ts
 
-import { tsenv } from "ts-env";
+import { tsenv } from "@ferstack/ts-env";
 import "dotenv/config";
 
 export default tsenv.config({
