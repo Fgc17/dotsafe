@@ -1,5 +1,11 @@
 # ts-env
 
+## 0.0.3
+
+### Patch Changes
+
+- docs
+
 ## 0.0.2
 
 ### Patch Changes
