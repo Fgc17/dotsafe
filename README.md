@@ -75,21 +75,31 @@ export async function GET() {
 
 ### Advance usage
 
-#### Custom loaders
+Anything you return from the loader will be injected into the environment variables, so the loader is fully customizable.
 
-Anything you return from the loader will be injected into the environment variables.
+You can also use the default built-in adapters or create your own.
+
+#### Infisical adapter
 
 ```typescript
-{
+import { InfisicalSDK } from "@infisical/sdk";
+import { tsenv, EnvironmentVariables } from "@ferstack/ts-env";
+import { config } from "dotenv";
+
+export default tsenv.config({
   loader: async () => {
-    const nodeEnv = process.env.NODE_ENV as
+    const dotenv = config();
+
+    const processEnv = dotenv.parsed as EnvironmentVariables;
+
+    const nodeEnv = processEnv.NODE_ENV as
       | "development"
       | "preview"
       | "production";
 
-    const processEnv = process.env as EnvironmentVariables;
-
     if (nodeEnv === "development") {
+      const loader = tsenv.adapters.infisical.loader;
+
       const config = {
         clientId: processEnv.INFISICAL_CLIENT_ID!,
         clientSecret: processEnv.INFISICAL_CLIENT_SECRET!,
@@ -97,7 +107,11 @@ Anything you return from the loader will be injected into the environment variab
         environment: "dev",
       };
 
-      return loader(infisicalEnv, config);
+      const infisicalEnv = loader(InfisicalSDK, config);
+
+      Object.assign(infisicalEnv, processEnv);
+
+      return infisicalEnv;
     }
 
     if (nodeEnv === "preview") {
@@ -108,5 +122,70 @@ Anything you return from the loader will be injected into the environment variab
       return processEnv;
     }
   },
-}
+});
+```
+
+#### Trigger adapter
+
+##### Extension
+
+When deploying to trigger you may not always deploy from your machine, where `env.ts` is already generated. In this case, to avoid build errors, you can use the provided extension:
+
+```typescript
+// trigger.config.ts
+import { defineConfig } from "@trigger.dev/sdk/v3";
+import { tsenv } from "@ferstack/ts-env";
+
+export default defineConfig({
+  project: "my-project",
+  build: {
+    extensions: [tsenv.adapters.triggerDev.extension()],
+  },
+});
+```
+
+##### Loader
+
+```typescript
+// env.config.ts
+import { tsenv, EnvironmentVariables } from "@ferstack/ts-env";
+import { envvars, configure } from "@trigger.dev/sdk/v3";
+import { config } from "dotenv";
+
+export default tsenv.config({
+  loader: async () => {
+    const dotenv = config();
+
+    const processEnv = dotenv.parsed as EnvironmentVariables;
+
+    const nodeEnv = processEnv.NODE_ENV;
+
+    if (nodeEnv === "development") {
+      configure({
+        accessToken: processEnv.TRIGGER_ACCESS_TOKEN!,
+      });
+
+      const loader = tsenv.adapters.triggerDev.loader;
+
+      const config = {
+        projectId: processEnv.TRIGGER_PROJECT_ID!,
+        environment: "dev",
+      };
+
+      const infisicalEnv = loader(envvars, config);
+
+      Object.assign(infisicalEnv, processEnv);
+
+      return infisicalEnv;
+    }
+
+    if (nodeEnv === "preview" || nodeEnv === "staging") {
+      return processEnv;
+    }
+
+    if (nodeEnv === "production") {
+      return processEnv;
+    }
+  },
+});
 ```
