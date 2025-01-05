@@ -1,6 +1,6 @@
 import { EnvironmentVariables } from "src/types";
 
-export type TriggerDevClientMock = {
+type TriggerDevClientMock = {
   list: (
     projectId: string,
     environment: string
@@ -12,7 +12,7 @@ export type TriggerDevClientMock = {
   >;
 };
 
-export const triggerDev = async (
+const loader = async (
   envvars: TriggerDevClientMock,
   env: {
     projectId: string;
@@ -25,4 +25,18 @@ export const triggerDev = async (
     acc[name] = value;
     return acc;
   }, {} as EnvironmentVariables);
+};
+
+export const extension = {
+  name: "tsenv-trigger-dev",
+  onBuildStart: async (context: any) => {
+    context.addLayer({
+      id: "tsenv-generate",
+      commands: [`pnpm tsenv generate`],
+    });
+  },
+};
+
+export const triggerDev = {
+  loader,
 };

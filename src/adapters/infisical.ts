@@ -16,7 +16,7 @@ type InfisicalClientMock = GenericClass<{
   };
 }>;
 
-export const infisical = async (
+const loader = async (
   infisicalClient: InfisicalClientMock,
   env: {
     clientId: string;
@@ -41,4 +41,8 @@ export const infisical = async (
     acc[secretKey] = secretValue;
     return acc;
   }, {} as EnvironmentVariables);
+};
+
+export const infisical = {
+  loader,
 };

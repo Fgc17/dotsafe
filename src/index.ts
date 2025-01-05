@@ -1,10 +1,10 @@
 import { config } from "./config";
-import { loaders } from "./loaders";
+import { adapters } from "./adapters";
 export * from "./types";
 
 const tsenv = {
   config,
-  loaders,
+  adapters,
 };
 
 export { tsenv };
