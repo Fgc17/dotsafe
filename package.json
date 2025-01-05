@@ -30,8 +30,8 @@
     "ts-env": "dist/cmd.cjs"
   },
   "scripts": {
-    "dev:index": "tsup src/index.ts --dts --watch",
-    "dev:cli": "tsup src/cli/cmd.ts --watch --silent",
+    "dev:index": "tsup src/index.ts --dts --shims --watch",
+    "dev:cli": "tsup src/cli/cmd.ts --shims --watch --silent",
     "dev": "concurrently --raw --kill-others pnpm:dev:*",
     "playground:generate": "pnpm tsx src/cli generate --config='./playground/env.config.ts'",
     "playground:run": "pnpm tsx src/cli run --config='./playgroundenv.ts' -- pnpm tsx ./playground/src/index.ts",
