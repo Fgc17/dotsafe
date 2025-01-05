@@ -172,11 +172,11 @@ export default tsenv.config({
         environment: "dev",
       };
 
-      const infisicalEnv = loader(envvars, config);
+      const triggerEnv = loader(envvars, config);
 
-      Object.assign(infisicalEnv, processEnv);
+      Object.assign(triggerEnv, processEnv);
 
-      return infisicalEnv;
+      return triggerEnv;
     }
 
     if (nodeEnv === "preview" || nodeEnv === "staging") {
