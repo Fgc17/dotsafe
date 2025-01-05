@@ -13,13 +13,13 @@ export type TriggerDevClientMock = {
 };
 
 export const triggerDev = async (
-  triggerDevClient: TriggerDevClientMock,
+  envvars: TriggerDevClientMock,
   env: {
     projectId: string;
     environment: string;
   }
 ) => {
-  const secrets = await triggerDevClient.list(env.projectId, env.environment);
+  const secrets = await envvars.list(env.projectId, env.environment);
 
   return secrets.reduce((acc, { name, value }) => {
     acc[name] = value;
