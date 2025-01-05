@@ -32,7 +32,7 @@ import { tsenv } from "@ferstack/ts-env";
 import "dotenv/config";
 
 export default tsenv.config({
-  // For further customization see the advance usage section
+  // For further customization see the advanced usage section
   loader: async () => process.env,
 });
 ```
@@ -73,7 +73,21 @@ export async function GET() {
 }
 ```
 
-### Advance usage
+#### .gitignore
+
+I highly recommend adding the generated client to your `.gitignore` file.
+
+Always generate the client on the CI/CD pipeline.
+
+```.gitignore
+# .gitignore
+
+env.ts
+```
+
+Always generate the client on the CI/CD pipeline.
+
+### Advanced usage
 
 Anything you return from the loader will be injected into the environment variables, so the loader is fully customizable.
 
