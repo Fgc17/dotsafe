@@ -1,5 +1,11 @@
 # ts-env
 
+## 0.3.0
+
+### Minor Changes
+
+- adapters
+
 ## 0.2.0
 
 ### Minor Changes
