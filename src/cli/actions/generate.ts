@@ -3,6 +3,7 @@ import { createClient } from "src/cli/utils/create-client";
 import { createDeclaration } from "src/cli/utils/create-declaration";
 import path from "path";
 import { ActionArgs } from "../utils/get-action-args";
+import { logger } from "../utils/logger";
 
 export async function generateAction({ config, configFolder }: ActionArgs) {
   const generate =
@@ -25,16 +26,22 @@ export async function generateAction({ config, configFolder }: ActionArgs) {
 
     let environmentVariablesType: string;
 
+    let environmentVariablesNames = Object.keys(env);
+
     if (generate.includes("declaration")) {
       environmentVariablesType =
         "type EnvironmentVariables = keyof typeof process.env";
     } else {
-      environmentVariablesType = `type EnvironmentVariables = "${Object.keys(env).join('" ' + "|" + ' "')}"`;
+      environmentVariablesType = `type EnvironmentVariables = "${environmentVariablesNames.join('" ' + "|" + ' "')}"`;
     }
 
     client = client.replace(
       /type EnvironmentVariables = '';/,
       environmentVariablesType
+    );
+
+    logger.success(
+      `Successfully generated env.ts with ${environmentVariablesNames.length} environment variables`
     );
 
     writeFileSync(clientPath, client);
