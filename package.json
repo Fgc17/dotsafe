@@ -47,6 +47,7 @@
     "typescript": "5.6.3"
   },
   "dependencies": {
+    "dotenv": "16.4.7",
     "chalk": "^4",
     "commander": "13.0.0",
     "jiti": "2.4.2"
