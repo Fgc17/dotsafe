@@ -1,11 +1,31 @@
 ![Alt text](./assets/banner.png "Optional title")
 
+### Works with
+
+<p align="center">
+  <a href="https://nestjs.com/" target="blank">
+    <img src="https://nestjs.com/img/logo-small.svg" width="64" height="64" alt="Nest Logo" style="margin-right: 20px;" />
+  </a>
+  <a href="https://nextjs.org" target="blank">
+    <img src="https://assets.vercel.com/image/upload/v1662130559/nextjs/Icon_light_background.png" width="64" height="64" alt="Next.js Logo" style="margin-right: 20px;" />
+  </a>
+  <a href="https://https://trpc.io/" target="blank">
+    <img src="https://avatars.githubusercontent.com/u/78011399?s=200&v=4" width="64" height="64" alt="Trpc Logo" style="margin-right: 20px;" />
+  </a>
+  <a href="https://trigger.dev/" target="blank">
+    <img src="https://avatars.githubusercontent.com/u/95297378?s=200&v=4" width="64" height="64" alt="Trigger.dev Logo" style="margin-right: 20px;" />
+  </a>
+</p>
+
+And (probably) everything that uses environment variables.
+
 ### Features
 
 - Full typesafe environment variables
-- Built in environment loaders (infisical only, by now)
+- Built in adapters (infisical and trigger)
 - Environment variable in-memory injection
 - Typescript configuration file
+- Functional or class based client (or injectable).
 
 ### Installation
 
@@ -32,10 +52,12 @@ import { tsenv } from "@ferstack/ts-env";
 import "dotenv/config";
 
 export default tsenv.config({
-  // For further customization see the advanced usage section
   loader: async () => process.env,
 });
 ```
+
+> [!TIP]
+> For further customization see the advanced usage section
 
 #### Generate the typesafe client
 
@@ -75,9 +97,10 @@ export async function GET() {
 
 #### .gitignore
 
-I highly recommend adding the generated client to your `.gitignore` file.
+Add the generated client to your `.gitignore` file.
 
-Always generate the client on the CI/CD pipeline.
+> [!IMPORTANT]  
+> Always generate the client in the CI/CD pipeline.
 
 ```.gitignore
 # .gitignore
@@ -85,7 +108,46 @@ Always generate the client on the CI/CD pipeline.
 env.ts
 ```
 
-Always generate the client on the CI/CD pipeline.
+### NestJS and OOP
+
+When using NestJS, ts-env will automatically detect your setup and generate a different client from usual:
+
+```typescript
+// env.service.ts
+import { Injectable } from "@nestjs/common";
+import { lib } from "@ferstack/ts-env";
+
+export type EnvironmentVariables = "";
+
+@Injectable()
+export class EnvService {
+  get(key: EnvironmentVariables) {
+    return lib.env.get(key);
+  }
+
+  getNumber(key: EnvironmentVariables) {
+    return lib.env.getNumber(key);
+  }
+}
+```
+
+This will be created under `src/env.service.ts`.
+
+#### OOP
+
+If you don't use nest and still want a class based client, just add the `ClientType.OOP` to your configuration file:
+
+```typescript
+// env.config.ts
+
+import { tsenv, ClientType } from "@ferstack/ts-env";
+import "dotenv/config";
+
+export default tsenv.config({
+  ...,
+  client: ClientType.OOP,
+});
+```
 
 ### Advanced usage
 
