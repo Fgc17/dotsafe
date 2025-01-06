@@ -3,17 +3,20 @@
 ### Works with
 
 <p align="center">
-  <a href="https://nestjs.com/" target="blank">
-    <img src="https://nestjs.com/img/logo-small.svg" width="64" height="64" alt="Nest Logo" style="margin-right: 20px;" />
+  <a href="https://nestjs.com/" target="blank" style="text-decoration: none;">
+    <img src="https://nestjs.com/img/logo-small.svg" width="64" height="64" alt="Nest Logo" />
   </a>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
   <a href="https://nextjs.org" target="blank">
-    <img src="https://assets.vercel.com/image/upload/v1662130559/nextjs/Icon_light_background.png" width="64" height="64" alt="Next.js Logo" style="margin-right: 20px;" />
+    <img src="https://assets.vercel.com/image/upload/v1662130559/nextjs/Icon_light_background.png" width="64" height="64" alt="Next.js Logo" />
   </a>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
   <a href="https://https://trpc.io/" target="blank">
-    <img src="https://avatars.githubusercontent.com/u/78011399?s=200&v=4" width="64" height="64" alt="Trpc Logo" style="margin-right: 20px;" />
+    <img src="https://avatars.githubusercontent.com/u/78011399?s=200&v=4" width="64" height="64" alt="Trpc Logo" />
   </a>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
   <a href="https://trigger.dev/" target="blank">
-    <img src="https://avatars.githubusercontent.com/u/95297378?s=200&v=4" width="64" height="64" alt="Trigger.dev Logo" style="margin-right: 20px;" />
+    <img src="https://avatars.githubusercontent.com/u/95297378?s=200&v=4" width="64" height="64" alt="Trigger.dev Logo" />
   </a>
 </p>
 
