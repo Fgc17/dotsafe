@@ -1,5 +1,11 @@
 # ts-env
 
+## 0.5.0
+
+### Minor Changes
+
+- Loader integrated with dotenv and vercel adapter
+
 ## 0.4.0
 
 ### Minor Changes
