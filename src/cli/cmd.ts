@@ -1,7 +1,6 @@
 import { program } from "commander";
 import { generateAction } from "./actions/generate";
 import { runAction } from "./actions/run";
-import { getActionArgs } from "./utils/get-action-args";
 
 program
   .name("ts-env")
@@ -11,11 +10,7 @@ program
 program
   .command("generate")
   .option("--config <config>", "Config file path")
-  .action(async (options) => {
-    const actionArgs = await getActionArgs(options);
-
-    await generateAction(actionArgs);
-  });
+  .action(generateAction);
 
 program
   .command("run")
@@ -23,13 +18,11 @@ program
   .option("--config <config>", "Config file path")
   .option("-g, --generate", "Runs generate before running the command")
   .action(async (args, options) => {
-    const actionArgs = await getActionArgs(options);
-
     if (options.generate) {
-      await generateAction(actionArgs);
+      await generateAction(options);
     }
 
-    await runAction(actionArgs, args);
+    await runAction(options, args);
   });
 
 program.parse();

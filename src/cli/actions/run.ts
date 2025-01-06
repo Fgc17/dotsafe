@@ -1,18 +1,20 @@
 import { spawn } from "child_process";
 import { logger } from "../utils/logger";
-import { ActionArgs } from "../utils/get-action-args";
+import { getConfig } from "../utils/get-config";
 
-export async function runAction({ config }: ActionArgs, args: string[]) {
+export async function runAction(options: { config: string }, args: string[]) {
+  const config = await getConfig(options.config);
+
   const env = (await config.loader()) ?? {};
 
   const envCount = Object.keys(env).length;
 
   logger.success(`Loaded ${envCount} environment variables`);
 
-  Object.assign(env, process.env, { FORCE_COLOR: "1" });
+  Object.assign(env, process.env, { FORCE_COLOR: "1", TS_ENV: "1" });
 
   const cmd = args.shift();
-  const child = spawn(cmd!, [...args, "--color=always"], {
+  const child = spawn(cmd!, [...args], {
     env,
     shell: true,
     stdio: "inherit",

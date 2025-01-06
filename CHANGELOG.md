@@ -1,5 +1,11 @@
 # ts-env
 
+## 0.4.0
+
+### Minor Changes
+
+- new clients, new options, nestjs support and fixes
+
 ## 0.3.1
 
 ### Patch Changes

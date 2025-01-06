@@ -1,4 +1,4 @@
-import { EnvironmentVariables, GenericClass } from "src/types";
+import { EnvironmentVariables, GenericClass } from "../types";
 
 type InfisicalClientMock = GenericClass<{
   auth: () => {

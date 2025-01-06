@@ -1,5 +1,6 @@
 import { config } from "./config";
 import { adapters } from "./adapters";
+import { lib } from "./utils";
 export * from "./types";
 
 const tsenv = {
@@ -7,4 +8,4 @@ const tsenv = {
   adapters,
 };
 
-export { tsenv };
+export { tsenv, lib };

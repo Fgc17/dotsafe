@@ -2,17 +2,22 @@ import { writeFileSync } from "fs";
 import { createClient } from "src/cli/utils/create-client";
 import { createDeclaration } from "src/cli/utils/create-declaration";
 import path from "path";
-import { ActionArgs } from "../utils/get-action-args";
 import { logger } from "../utils/logger";
+import { getConfig } from "../utils/get-config";
 
-export async function generateAction({ config, configFolder }: ActionArgs) {
+export async function generateAction(options?: { config?: string }) {
+  const config = await getConfig(options?.config);
+
   const generate =
     config.generate === "both" ? ["declaration", "client"] : [config.generate];
 
   const env = (await config.loader()) ?? {};
 
   if (generate.includes("declaration")) {
-    const declarationPath = path.resolve(configFolder, ".d.ts");
+    const declarationPath = path.resolve(
+      config.location.folderPath,
+      "tsenv.d.ts"
+    );
 
     const declaration = createDeclaration(env);
 
@@ -20,9 +25,9 @@ export async function generateAction({ config, configFolder }: ActionArgs) {
   }
 
   if (generate.includes("client")) {
-    const clientPath = path.resolve(configFolder, "env.ts");
+    let clientPath = path.resolve(config.location.folderPath, config.output);
 
-    let client = createClient();
+    let client = createClient(config.client, clientPath);
 
     let environmentVariablesType: string;
 

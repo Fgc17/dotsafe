@@ -7,3 +7,9 @@ export type TSEnvLoader = () => Promise<
 export interface GenericClass<T> extends Function {
   new (...args: any[]): T;
 }
+
+export enum ClientType {
+  Functional = "functional",
+  NestJS = "nestjs",
+  OOP = "oop",
+}

@@ -1,32 +1,74 @@
-export function createClient() {
-  const clientContent = [
-    "type EnvironmentVariables = '';",
-    "",
+import { ClientType } from "src/tsenv/types";
 
-    "const get = (key: EnvironmentVariables) => {",
-    "  if (!process.env[key]) {",
-    "    throw new Error(`Environment variable ${key} is not set`);",
-    "  }",
-    "  return process.env[key];",
-    "};",
-    "",
+const functionalClient = [
+  'import { lib } from "@ferstack/ts-env";',
+  "",
 
-    "const getNumber = (key: EnvironmentVariables) => {",
-    "  const value = get(key);",
-    "  const parsed = Number(value);",
+  "export type EnvironmentVariables = '';",
+  "",
 
-    "  if (isNaN(parsed)) {",
-    "    throw new Error(`Environment variable ${key} is not a number`);",
-    "  }",
-    "  return parsed;",
-    "};",
-    "",
+  "const get = (key: EnvironmentVariables) => {",
+  "  return lib.env.get(key);",
+  "};",
+  "",
 
-    "export const env = {",
-    "  get,",
-    "  getNumber,",
-    "};",
-  ].join("\n");
+  "const getNumber = (key: EnvironmentVariables) => {",
+  "  return lib.env.getNumber(key);",
+  "};",
+  "",
 
-  return clientContent;
+  "export const env = {",
+  "  get,",
+  "  getNumber,",
+  "};",
+];
+
+const oopClient = [
+  'import { lib } from "@ferstack/ts-env";',
+  "",
+
+  "export type EnvironmentVariables = '';",
+  "",
+
+  "export class EnvService {",
+  "  get(key: EnvironmentVariables) {",
+  "    return lib.env.get(key);",
+  "  }",
+  "",
+
+  "  getNumber(key: EnvironmentVariables) {",
+  "    return lib.env.getNumber(key);",
+  "  }",
+  "}",
+];
+
+const nestjsClient = [
+  "import { Injectable } from '@nestjs/common';",
+  'import { lib } from "@ferstack/ts-env";',
+  "",
+
+  "export type EnvironmentVariables = '';",
+  "",
+
+  "@Injectable()",
+  "export class EnvService {",
+  "  get(key: EnvironmentVariables) {",
+  "    return lib.env.get(key);",
+  "  }",
+  "",
+
+  "  getNumber(key: EnvironmentVariables) {",
+  "    return lib.env.getNumber(key);",
+  "  }",
+  "}",
+];
+
+export function createClient(type: ClientType, path?: string) {
+  const clients = {
+    [ClientType.Functional]: functionalClient,
+    [ClientType.OOP]: oopClient,
+    [ClientType.NestJS]: nestjsClient,
+  };
+
+  return clients[type].join("\n");
 }

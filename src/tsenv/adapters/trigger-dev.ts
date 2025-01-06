@@ -1,6 +1,7 @@
-import { EnvironmentVariables } from "src/types";
-import { generateAction } from "src/cli/actions/generate";
-import { getActionArgs } from "src/cli/utils/get-action-args";
+import { resolve } from "path";
+import { EnvironmentVariables } from "../types";
+import { spawn } from "child_process";
+import { getRuntime } from "../utils/get-runtime";
 
 type TriggerDevClientMock = {
   list: (
@@ -53,11 +54,37 @@ export const extension = (config?: string): TriggerDevExtensionMock => ({
       name: "tsenv-trigger-dev",
       async setup(build: any) {
         build.onStart(async () => {
-          const actionArgs = await getActionArgs({
-            config,
-          });
+          const runtime = getRuntime();
 
-          await generateAction(actionArgs);
+          const cmdPath = resolve(
+            process.cwd(),
+            "node_modules/@ferstack/ts-env/dist/cmd.cjs"
+          );
+
+          await new Promise<void>((resolve, reject) => {
+            const child = spawn(
+              runtime,
+              [cmdPath, "generate", config ? `--config=${config}` : ""],
+              {
+                shell: true,
+                stdio: "inherit",
+              }
+            );
+
+            child.on("error", (error) => {
+              console.error(`Error: ${error.message}`);
+              reject(error);
+            });
+
+            child.on("close", (code) => {
+              if (code !== 0) {
+                console.error(`Command exited with code ${code}`);
+                reject(new Error(`Command exited with code ${code}`));
+              } else {
+                resolve();
+              }
+            });
+          });
         });
       },
     });

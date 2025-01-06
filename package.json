@@ -4,7 +4,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.3.1",
+  "version": "0.4.0",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -21,22 +21,19 @@
     "variable"
   ],
   "type": "module",
-  "exports": {
-    ".": {
-      "import": "./dist/index.cjs"
-    }
-  },
+  "exports": "./dist/index.cjs",
+  "types": "./dist/index.d.cts",
   "bin": {
     "ts-env": "dist/cmd.cjs"
   },
   "scripts": {
-    "dev:index": "tsup src/index.ts --dts --shims --watch",
+    "dev:index": "tsup src/tsenv/index.ts --dts --shims --watch",
     "dev:cli": "tsup src/cli/cmd.ts --shims --watch --silent",
     "dev": "concurrently --raw --kill-others pnpm:dev:*",
     "ts-env": "pnpm tsx src/cli/cmd.ts",
     "playground:generate": "pnpm ts-env generate --config='./playground/env.config.ts'",
     "playground:run": "pnpm ts-env run --config='./playground/env.config.ts' -- pnpm tsx ./playground/src/index.ts",
-    "build": "tsup src/index.ts --dts --shims && tsup src/cli/cmd.ts --shims",
+    "build": "tsup src/tsenv/index.ts --dts --shims && tsup src/cli/cmd.ts --shims",
     "bump": "changeset",
     "release": "changeset version && changeset publish"
   },
@@ -51,7 +48,7 @@
   },
   "dependencies": {
     "chalk": "^4",
-    "jiti": "2.4.2",
-    "commander": "13.0.0"
+    "commander": "13.0.0",
+    "jiti": "2.4.2"
   }
 }
