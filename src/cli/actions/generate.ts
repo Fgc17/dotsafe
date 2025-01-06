@@ -4,6 +4,7 @@ import { createDeclaration } from "src/cli/utils/create-declaration";
 import path from "path";
 import { logger } from "../utils/logger";
 import { getConfig } from "../utils/get-config";
+import { config as loadEnv, parse } from "dotenv";
 
 export async function generateAction(options?: { config?: string }) {
   const config = await getConfig(options?.config);
@@ -11,7 +12,9 @@ export async function generateAction(options?: { config?: string }) {
   const generate =
     config.generate === "both" ? ["declaration", "client"] : [config.generate];
 
-  const env = (await config.loader()) ?? {};
+  const processEnv = loadEnv().parsed ?? {};
+
+  const env = (await config.loader({ parse, processEnv })) ?? {};
 
   if (generate.includes("declaration")) {
     const declarationPath = path.resolve(

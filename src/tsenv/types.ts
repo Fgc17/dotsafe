@@ -1,8 +1,11 @@
+import { DotenvParseOutput } from "dotenv";
+
 export type EnvironmentVariables = Record<string, string>;
 
-export type TSEnvLoader = () => Promise<
-  EnvironmentVariables | null | undefined
->;
+export type TSEnvLoader = (env: {
+  processEnv: DotenvParseOutput;
+  parse: <T extends DotenvParseOutput>(src: string | Buffer) => T;
+}) => Promise<EnvironmentVariables | null | undefined>;
 
 export interface GenericClass<T> extends Function {
   new (...args: any[]): T;
