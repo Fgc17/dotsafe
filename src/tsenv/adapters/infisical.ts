@@ -22,7 +22,7 @@ const loader = async (
     clientId: string;
     clientSecret: string;
     projectId: string;
-    environment: string;
+    environment?: string;
   }
 ): Promise<EnvironmentVariables> => {
   const client = new infisicalClient();
@@ -33,7 +33,7 @@ const loader = async (
   });
 
   const { secrets } = await client.secrets().listSecrets({
-    environment: env.environment,
+    environment: env.environment ?? "dev",
     projectId: env.projectId!,
   });
 

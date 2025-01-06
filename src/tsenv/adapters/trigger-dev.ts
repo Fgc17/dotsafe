@@ -19,10 +19,10 @@ const loader = async (
   envvars: TriggerDevClientMock,
   env: {
     projectId: string;
-    environment: string;
+    environment?: string;
   }
 ) => {
-  const secrets = await envvars.list(env.projectId, env.environment);
+  const secrets = await envvars.list(env.projectId, env.environment ?? "dev");
 
   return secrets.reduce((acc, { name, value }) => {
     acc[name] = value;
