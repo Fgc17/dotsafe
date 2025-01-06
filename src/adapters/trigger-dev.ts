@@ -36,6 +36,7 @@ type TriggerDevPluginMock = {
 
 type TriggerDevBuildContextMock = {
   registerPlugin: (plugin: TriggerDevPluginMock) => void;
+  target: string;
 };
 
 type TriggerDevExtensionMock = {
@@ -45,7 +46,9 @@ type TriggerDevExtensionMock = {
 
 export const extension = (config?: string): TriggerDevExtensionMock => ({
   name: "tsenv-trigger-dev",
-  onBuildStart(context: any) {
+  onBuildStart(context) {
+    if (context.target === "dev") return;
+
     context.registerPlugin({
       name: "tsenv-trigger-dev",
       async setup(build: any) {
