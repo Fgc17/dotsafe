@@ -1,4 +1,4 @@
-export function check(key: string) {
+function check(key: string) {
   try {
     const env = process.env[key];
 
@@ -20,13 +20,13 @@ export function check(key: string) {
   }
 }
 
-export function get(key: string) {
+function get(key: string) {
   check(key);
 
   return process.env[key];
 }
 
-export function getNumber(key: string) {
+function getNumber(key: string) {
   const value = get(key);
   const parsed = Number(value);
 
@@ -36,3 +36,9 @@ export function getNumber(key: string) {
 
   return parsed;
 }
+
+export const client = {
+  check,
+  get,
+  getNumber,
+};

@@ -1,5 +1,11 @@
 # ts-env
 
+## 0.5.1
+
+### Patch Changes
+
+- fix: no deps client (was causing issues on nextjs)
+
 ## 0.5.0
 
 ### Minor Changes

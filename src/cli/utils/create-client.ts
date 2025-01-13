@@ -1,19 +1,19 @@
 import { ClientType } from "src/tsenv/types";
 
 const functionalClient = [
-  'import { lib } from "@ferstack/ts-env";',
+  'import { client } from "@ferstack/ts-env/client";',
   "",
 
   "export type EnvironmentVariables = '';",
   "",
 
   "const get = (key: EnvironmentVariables) => {",
-  "  return lib.env.get(key);",
+  "  return client.get(key);",
   "};",
   "",
 
   "const getNumber = (key: EnvironmentVariables) => {",
-  "  return lib.env.getNumber(key);",
+  "  return client.getNumber(key);",
   "};",
   "",
 
@@ -24,7 +24,7 @@ const functionalClient = [
 ];
 
 const oopClient = [
-  'import { lib } from "@ferstack/ts-env";',
+  'import { client } from "@ferstack/ts-env/client";',
   "",
 
   "export type EnvironmentVariables = '';",
@@ -32,19 +32,19 @@ const oopClient = [
 
   "export class EnvService {",
   "  get(key: EnvironmentVariables) {",
-  "    return lib.env.get(key);",
+  "    return client.get(key);",
   "  }",
   "",
 
   "  getNumber(key: EnvironmentVariables) {",
-  "    return lib.env.getNumber(key);",
+  "    return client.getNumber(key);",
   "  }",
   "}",
 ];
 
 const nestjsClient = [
   "import { Injectable } from '@nestjs/common';",
-  'import { lib } from "@ferstack/ts-env";',
+  'import { client } from "@ferstack/ts-env/client";',
   "",
 
   "export type EnvironmentVariables = '';",
@@ -53,12 +53,12 @@ const nestjsClient = [
   "@Injectable()",
   "export class EnvService {",
   "  get(key: EnvironmentVariables) {",
-  "    return lib.env.get(key);",
+  "    return client.get(key);",
   "  }",
   "",
 
   "  getNumber(key: EnvironmentVariables) {",
-  "    return lib.env.getNumber(key);",
+  "    return client.getNumber(key);",
   "  }",
   "}",
 ];

@@ -4,14 +4,14 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.5.0",
+  "version": "0.5.1",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Fgc17/ts-env.git"
   },
   "files": [
-    "dist"
+    "src"
   ],
   "keywords": [
     "env",
@@ -21,19 +21,28 @@
     "variable"
   ],
   "type": "module",
-  "exports": "./dist/index.cjs",
-  "types": "./dist/index.d.cts",
+  "main": "./dist/tsenv/tsenv.cjs",
+  "types": "./dist/tsenv/tsenv.d.cts",
+  "exports": {
+    ".": "./dist/tsenv/tsenv.cjs",
+    "./client": "./dist/client/client.cjs"
+  },
+  "typesVersions": {
+    "*": {
+      "client": [
+        "./dist/client/client.d.cts"
+      ]
+    }
+  },
   "bin": {
-    "ts-env": "dist/cmd.cjs"
+    "ts-env": "./dist/cli/cli.cjs"
   },
   "scripts": {
-    "dev:index": "tsup src/tsenv/index.ts --dts --shims --watch",
-    "dev:cli": "tsup src/cli/cmd.ts --shims --watch --silent",
-    "dev": "concurrently --raw --kill-others pnpm:dev:*",
+    "build": "tsup src/tsenv/tsenv.ts src/cli/cli.ts src/client/client.ts --dts --shims",
+    "dev": "tsup src/tsenv/tsenv.ts src/cli/cli.ts src/client/client.ts --dts --shims --watch",
     "ts-env": "pnpm tsx src/cli/cmd.ts",
     "playground:generate": "pnpm ts-env generate --config='./playground/env.config.ts'",
     "playground:run": "pnpm ts-env run --config='./playground/env.config.ts' -- pnpm tsx ./playground/src/index.ts",
-    "build": "tsup src/tsenv/index.ts --dts --shims && tsup src/cli/cmd.ts --shims",
     "bump": "changeset",
     "release": "changeset version && changeset publish"
   },
