@@ -1,5 +1,11 @@
 # ts-env
 
+## 0.5.3
+
+### Patch Changes
+
+- fix: tsenv.d.ts -> env.d.ts (more organized)
+
 ## 0.5.2
 
 ### Patch Changes
