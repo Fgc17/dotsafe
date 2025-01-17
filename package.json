@@ -44,7 +44,7 @@
     "playground:generate": "pnpm ts-env generate --config='./playground/env.config.ts'",
     "playground:run": "pnpm ts-env run --config='./playground/env.config.ts' -- pnpm tsx ./playground/src/index.ts",
     "bump": "changeset",
-    "release": "changeset version && changeset publish"
+    "release": "pnpm build && changeset version && changeset publish"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.11",
