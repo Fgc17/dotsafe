@@ -1,5 +1,11 @@
 # ts-env
 
+## 0.5.4
+
+### Patch Changes
+
+- fix: missing 0.5.3 files
+
 ## 0.5.3
 
 ### Patch Changes
