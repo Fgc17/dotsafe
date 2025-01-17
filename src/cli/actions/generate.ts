@@ -19,7 +19,7 @@ export async function generateAction(options?: { config?: string }) {
   if (generate.includes("declaration")) {
     const declarationPath = path.resolve(
       config.location.folderPath,
-      "tsenv.d.ts"
+      "env.d.ts"
     );
 
     const declaration = createDeclaration(env);
