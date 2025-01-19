@@ -1,7 +1,7 @@
 import { resolve } from "path";
-import { EnvironmentVariables } from "../types";
 import { spawn } from "child_process";
 import { getRuntime } from "../utils/get-runtime";
+import { UnsafeEnvironmentVariables } from "../types";
 
 type TriggerDevClientMock = {
   list: (
@@ -27,7 +27,7 @@ const loader = async (
   return secrets.reduce((acc, { name, value }) => {
     acc[name] = value;
     return acc;
-  }, {} as EnvironmentVariables);
+  }, {} as UnsafeEnvironmentVariables);
 };
 
 type TriggerDevPluginMock = {
@@ -46,19 +46,19 @@ type TriggerDevExtensionMock = {
 };
 
 export const extension = (config?: string): TriggerDevExtensionMock => ({
-  name: "tsenv-trigger-dev",
+  name: "dotsafe-trigger-dev",
   onBuildStart(context) {
     if (context.target === "dev") return;
 
     context.registerPlugin({
-      name: "tsenv-trigger-dev",
+      name: "dotsafe-trigger-dev",
       async setup(build: any) {
         build.onStart(async () => {
           const runtime = getRuntime();
 
           const cmdPath = resolve(
             process.cwd(),
-            "node_modules/@ferstack/ts-env/dist/cmd.cjs"
+            "node_modules/dotsafe/dist/cmd.cjs"
           );
 
           await new Promise<void>((resolve, reject) => {

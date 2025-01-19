@@ -1,6 +1,6 @@
+import dotenv from "dotenv";
 import { spawn } from "child_process";
 import { promises as fs } from "fs";
-import dotenv from "dotenv";
 
 const loader = async (environment: string = "development") => {
   try {
@@ -36,7 +36,7 @@ const loader = async (environment: string = "development") => {
   } catch (error) {
     console.log(
       "\x1b[41m",
-      "🔒 [ts-env] 'vercel pull env' did not work out, here are some possible reasons:",
+      "🔒 [dotsafe] 'vercel pull env' did not work out, here are some possible reasons:",
       "\n 1. You don't have the Vercel CLI installed: `npm i -g vercel`",
       "\n 2. You are not logged in: `vercel login`",
       "\n 3. Your codebase is not linked to a Vercel project: `vercel link`",

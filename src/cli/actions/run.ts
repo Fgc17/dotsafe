@@ -1,14 +1,12 @@
 import { spawn } from "child_process";
 import { logger } from "../utils/logger";
 import { getConfig } from "../utils/get-config";
-import { config as loadEnv, parse } from "dotenv";
+import { getEnv } from "../utils/get-env";
 
 export async function runAction(options: { config: string }, args: string[]) {
   const config = await getConfig(options.config);
 
-  const processEnv = loadEnv().parsed ?? {};
-
-  const env = (await config.loader({ parse, processEnv })) ?? {};
+  const env = await getEnv(config);
 
   const envCount = Object.keys(env).length;
 

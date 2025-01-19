@@ -1,4 +1,4 @@
-import { EnvironmentVariables, GenericClass } from "../types";
+import { UnsafeEnvironmentVariables, GenericClass } from "../types";
 
 type InfisicalClientMock = GenericClass<{
   auth: () => {
@@ -24,7 +24,7 @@ const loader = async (
     projectId: string;
     environment?: string;
   }
-): Promise<EnvironmentVariables> => {
+): Promise<UnsafeEnvironmentVariables> => {
   const client = new infisicalClient();
 
   await client.auth().universalAuth.login({
@@ -40,7 +40,7 @@ const loader = async (
   return secrets.reduce((acc, { secretKey, secretValue }) => {
     acc[secretKey] = secretValue;
     return acc;
-  }, {} as EnvironmentVariables);
+  }, {} as UnsafeEnvironmentVariables);
 };
 
 export const infisical = {

@@ -1,74 +1,59 @@
-import { ClientType } from "src/tsenv/types";
+import { DotsafeClientOptions } from "src/dotsafe/types";
+import { txt } from "src/dotsafe/utils/txt";
 
-const functionalClient = [
-  'import { client } from "@ferstack/ts-env/client";',
+type ClientStrings = {
+  envKeys: string;
+  createEnvArg: string;
+  createPublicEnvArg?: string;
+  publicPrefix?: string;
+};
+
+const client = (strings: ClientStrings) => [
+  'import { createEnv, createPublicEnv, EnvRecord, PublicEnvRecord } from "dotsafe/env";',
   "",
 
-  "export type EnvironmentVariables = '';",
+  strings.envKeys
+    ? `export type EnvKeys = ${strings.envKeys};
+  `
+    : "export type EnvKeys = ''",
   "",
 
-  "const get = (key: EnvironmentVariables) => {",
-  "  return client.get(key);",
-  "};",
+  `export const env = createEnv(${strings.createEnvArg}) as EnvRecord<EnvKeys, ${strings.publicPrefix}>;`,
   "",
 
-  "const getNumber = (key: EnvironmentVariables) => {",
-  "  return client.getNumber(key);",
-  "};",
-  "",
-
-  "export const env = {",
-  "  get,",
-  "  getNumber,",
-  "};",
+  strings.createPublicEnvArg
+    ? `export const publicEnv = createPublicEnv(${strings.createPublicEnvArg}) as PublicEnvRecord<EnvKeys, ${strings.publicPrefix}>;`
+    : "",
 ];
 
-const oopClient = [
-  'import { client } from "@ferstack/ts-env/client";',
-  "",
+export function createClient(envs: string[], options: DotsafeClientOptions) {
+  let createPublicEnvArg: string | undefined = undefined;
 
-  "export type EnvironmentVariables = '';",
-  "",
+  const publicKeys = options.publicPrefix
+    ? envs.filter((e) => e.startsWith(options.publicPrefix as string))
+    : [];
 
-  "export class EnvService {",
-  "  get(key: EnvironmentVariables) {",
-  "    return client.get(key);",
-  "  }",
-  "",
+  if (publicKeys) {
+    const publicVariables = `${publicKeys.map((key) => `    ${key}: process.env.${key}!`).join(",\n")}`;
 
-  "  getNumber(key: EnvironmentVariables) {",
-  "    return client.getNumber(key);",
-  "  }",
-  "}",
-];
+    createPublicEnvArg = txt(
+      `  {`,
+      `  publicPrefix: "${options.publicPrefix}",`,
+      `  publicVariables: {`,
+      `${publicVariables}`,
+      `  }`,
+      `}`
+    );
+  }
 
-const nestjsClient = [
-  "import { Injectable } from '@nestjs/common';",
-  'import { client } from "@ferstack/ts-env/client";',
-  "",
+  const createEnvArg = `{ isServer: ${options.isServer ? options.isServer.toString() : undefined} }`;
 
-  "export type EnvironmentVariables = '';",
-  "",
+  const envKeys = '\n  | "' + envs.join('" \n  | "') + '"';
 
-  "@Injectable()",
-  "export class EnvService {",
-  "  get(key: EnvironmentVariables) {",
-  "    return client.get(key);",
-  "  }",
-  "",
-
-  "  getNumber(key: EnvironmentVariables) {",
-  "    return client.getNumber(key);",
-  "  }",
-  "}",
-];
-
-export function createClient(type: ClientType, path?: string) {
-  const clients = {
-    [ClientType.Functional]: functionalClient,
-    [ClientType.OOP]: oopClient,
-    [ClientType.NestJS]: nestjsClient,
-  };
-
-  return clients[type].join("\n");
+  return client({
+    createEnvArg,
+    createPublicEnvArg,
+    envKeys,
+    publicPrefix: options.publicPrefix ? `"${options.publicPrefix}"` : "",
+  }).join("\n");
 }
