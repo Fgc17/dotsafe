@@ -54,15 +54,15 @@ And (probably) everything that uses environment variables.
 ## Installation
 
 ```bash
-npm install dotsafe
+npm install @dotsafe/dotsafe
 ```
 
 ```bash
-pnpm install dotsafe
+pnpm install @dotsafe/dotsafe
 ```
 
 ```bash
-yarn add dotsafe
+yarn add @dotsafe/dotsafe
 ```
 
 ## Quickstart
@@ -72,7 +72,7 @@ yarn add dotsafe
 ```typescript
 // env.config.ts
 
-import { dotsafe } from "dotsafe";
+import { dotsafe } from "@dotsafe/dotsafe";
 
 export default dotsafe.config({
   loader: async ({ processEnv }) => processEnv,

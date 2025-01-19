@@ -58,7 +58,7 @@ export const extension = (config?: string): TriggerDevExtensionMock => ({
 
           const cmdPath = resolve(
             process.cwd(),
-            "node_modules/dotsafe/dist/cmd.cjs"
+            "node_modules/@dotsafe/dotsafe/dist/cmd.cjs"
           );
 
           await new Promise<void>((resolve, reject) => {

@@ -9,7 +9,7 @@ type ClientStrings = {
 };
 
 const client = (strings: ClientStrings) => [
-  'import { createEnv, createPublicEnv, EnvRecord, PublicEnvRecord } from "dotsafe/env";',
+  'import { createEnv, createPublicEnv, EnvRecord, PublicEnvRecord } from "@dotsafe/dotsafe/env";',
   "",
 
   strings.envKeys
