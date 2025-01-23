@@ -34,7 +34,7 @@ export function createClient(envs: string[], options: DotsafeClientOptions) {
     : [];
 
   if (publicKeys) {
-    const publicVariables = `${publicKeys.map((key) => `    ${key}: process.env.${key}!`).join(",\n")}`;
+    const publicVariables = `${publicKeys.map((key) => `    ${key}: process.env.${key} as string`).join(",\n")}`;
 
     createPublicEnvArg = txt(
       `  {`,
