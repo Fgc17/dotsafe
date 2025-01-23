@@ -1,5 +1,5 @@
 import { config as loadEnv, parse } from "dotenv";
-import { DotsafeConfig } from "src/dotsafe/config";
+import { DotsafeConfig } from "../../dotsafe/config";
 
 export async function getEnv(config: DotsafeConfig) {
   const processEnv = loadEnv().parsed ?? {};
