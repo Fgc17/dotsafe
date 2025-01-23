@@ -10,11 +10,11 @@ interface CreatePublicEnvOptions {
 }
 
 export type EnvRecord<Keys extends string, Prefix extends string> = {
-  [K in Keys as K extends `${Prefix}${string}` ? never : K]: K;
+  [K in Keys as K extends `${Prefix}${string}` ? never : K]: string;
 };
 
 export type PublicEnvRecord<Keys extends string, Prefix extends string> = {
-  [K in Keys as K extends `${Prefix}${string}` ? K : never]: K;
+  [K in Keys as K extends `${Prefix}${string}` ? K : never]: string;
 };
 
 export const createEnv = (options: CreateEnvOptions) => {
