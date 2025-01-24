@@ -3,10 +3,6 @@
 ## Works with
 
 <p align="center">
-  <a href="https://nestjs.com/" target="blank" style="text-decoration: none;">
-    <img src="https://nestjs.com/img/logo-small.svg" width="64" height="64" alt="Nest Logo" />
-  </a>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
   <a href="https://nextjs.org" target="blank">
     <img src="https://assets.vercel.com/image/upload/v1662130559/nextjs/Icon_light_background.png" width="64" height="64" alt="Next.js Logo" />
   </a>
@@ -17,6 +13,10 @@
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
   <a href="https://trigger.dev/" target="blank">
     <img src="https://avatars.githubusercontent.com/u/95297378?s=200&v=4" width="64" height="64" alt="Trigger.dev Logo" />
+  </a>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="https://nestjs.com/" target="blank" style="text-decoration: none;">
+    <img src="https://nestjs.com/img/logo-small.svg" width="64" height="64" alt="Nest Logo" />
   </a>
 </p>
 
@@ -45,11 +45,11 @@ And (probably) everything that uses environment variables.
 
 ## Features
 
-- Full typesafe environment variables
-- Built in adapters
-- Environment variable in-memory injection
+- Typesafe environment variables `(env[key] or publicEnv[key])`
+- Agnostic validation (zod, typia, valibot, yup, etc)
+- Built-in adapters for loading environments from cloud
+- Inject your environments from the cloud into the process
 - Typescript configuration file
-- Functional or class based client (or injectable).
 
 ## Installation
 
@@ -285,22 +285,14 @@ You can also use the default built-in adapters or create your own.
 
 ```typescript
 import { InfisicalSDK } from "@infisical/sdk";
-import { tsenv, EnvironmentVariables } from "@ferstack/dotsafe";
-import { config } from "dotenv";
+import { dotsafe, EnvKeys } from "@dotsafe/dotsafe";
 
-export default tsenv.config({
-  loader: async () => {
-    const dotenv = config();
-
-    const processEnv = dotenv.parsed as EnvironmentVariables;
-
-    const nodeEnv = processEnv.NODE_ENV as
-      | "development"
-      | "preview"
-      | "production";
+export default dotsafe.config({
+  loader: async ({ processEnv }) => {
+    const nodeEnv = processEnv.NODE_ENV;
 
     if (nodeEnv === "development") {
-      const loader = tsenv.adapters.infisical.loader;
+      const loader = dotsafe.adapters.infisical.loader;
 
       const config = {
         clientId: processEnv.INFISICAL_CLIENT_ID!,
@@ -311,9 +303,10 @@ export default tsenv.config({
 
       const infisicalEnv = loader(InfisicalSDK, config);
 
-      Object.assign(infisicalEnv, processEnv);
-
-      return infisicalEnv;
+      return {
+        ...infisicalEnv,
+        ...processEnv,
+      };
     }
 
     if (nodeEnv === "preview") {
@@ -336,12 +329,12 @@ When deploying to trigger you may not always deploy from your machine, where `en
 ```typescript
 // trigger.config.ts
 import { defineConfig } from "@trigger.dev/sdk/v3";
-import { tsenv } from "@ferstack/dotsafe";
+import { dotsafe } from "@dotsafe/dotsafe";
 
 export default defineConfig({
   project: "my-project",
   build: {
-    extensions: [tsenv.adapters.triggerDev.extension()],
+    extensions: [dotsafe.adapters.triggerDev.extension()],
   },
 });
 ```
@@ -350,16 +343,11 @@ export default defineConfig({
 
 ```typescript
 // env.config.ts
-import { tsenv, EnvironmentVariables } from "@ferstack/dotsafe";
+import { dotsafe, EnvironmentVariables } from "@dotsafe/dotsafe";
 import { envvars, configure } from "@trigger.dev/sdk/v3";
-import { config } from "dotenv";
 
-export default tsenv.config({
-  loader: async () => {
-    const dotenv = config();
-
-    const processEnv = dotenv.parsed as EnvironmentVariables;
-
+export default dotsafe.config({
+  loader: async ({ processEnv }) => {
     const nodeEnv = processEnv.NODE_ENV;
 
     if (nodeEnv === "development") {
@@ -367,7 +355,7 @@ export default tsenv.config({
         accessToken: processEnv.TRIGGER_ACCESS_TOKEN!,
       });
 
-      const loader = tsenv.adapters.triggerDev.loader;
+      const loader = dotsafe.adapters.triggerDev.loader;
 
       const config = {
         projectId: processEnv.TRIGGER_PROJECT_ID!,
@@ -376,9 +364,10 @@ export default tsenv.config({
 
       const triggerEnv = loader(envvars, config);
 
-      Object.assign(triggerEnv, processEnv);
-
-      return triggerEnv;
+      return {
+        ...triggerEnv,
+        ...processEnv,
+      };
     }
 
     if (nodeEnv === "preview" || nodeEnv === "staging") {
