@@ -16,7 +16,7 @@ export async function validateAction(options?: { config?: string }) {
     process.exit(0);
   }
 
-  const { isValid, errors } = validator(env);
+  const { isValid, errors } = await validator(env);
 
   if (!isValid) {
     logger.error(

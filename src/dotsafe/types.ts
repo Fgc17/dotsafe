@@ -1,19 +1,21 @@
 import { DotenvParseOutput } from "dotenv";
 
+export type Promisable<T> = T | Promise<T>;
+
 export type UnsafeEnvironmentVariables = Record<string, string>;
 
 export type DotsafeLoader = (env: {
   processEnv: DotenvParseOutput;
   parse: <T extends DotenvParseOutput>(src: string | Buffer) => T;
-}) => Promise<UnsafeEnvironmentVariables | null | undefined>;
+}) => Promisable<UnsafeEnvironmentVariables | null | undefined>;
 
-export type DotsafeValidator = (env: UnsafeEnvironmentVariables) => {
+export type DotsafeValidator = (env: UnsafeEnvironmentVariables) => Promisable<{
   isValid: boolean;
   errors?: Array<{
     key: string;
     message: string;
   }>;
-};
+}>;
 
 export interface GenericClass<T> extends Function {
   new (...args: any[]): T;
