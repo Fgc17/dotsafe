@@ -31,7 +31,7 @@ export function createClient(envs: string[], options: DotsafeClientOptions) {
 
   const publicKeys = options.publicPrefix
     ? envs.filter((e) => e.startsWith(options.publicPrefix as string))
-    : [];
+    : null;
 
   if (publicKeys) {
     const publicVariables = `${publicKeys.map((key) => `    ${key}: process.env.${key} as string`).join(",\n")}`;
