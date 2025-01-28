@@ -29,7 +29,11 @@ I wouldn’t be talking about it if, last month, a friend of mine hadn’t reach
 
 That surprised me a little, so I asked myself: is everyone handling environments this same bad-but-working way? I’d say the vast majority of programmers are.
 
-And you may ask, “Why is it bad?” Well, managing two sources of truth is bad. You change one thing in one place, and it breaks in another. So you have to manually keep two things always in sync.
+And you may ask, “Why is it bad?” Well, managing multiple sources of truth is bad. You change one thing in one place, and it breaks in another. So you have to manually keep multiple things always in sync.
+
+I couldn't find a good name to this "multiple sources of truth problem", so let's call it the **multus problem**.
+
+One of the most famous examples of the multus problem arises when developing full-stack applications. Every good developer has, at some point, asked themselves: "How do I sync my backend and frontend types?" In an effort to address this issue, some have turned to GraphQL, others to tRPC, and still others to OpenAPI SDK generation. Anyways, let's keep with the env stuff.
 
 The last time I checked typesafe environment packages was a long time ago before this situation, so I quickly looked again to see if things had changed. To my surprise, there still weren’t many solutions to this problem.
 
@@ -45,13 +49,13 @@ declare global {
 }
 ```
 
-Still, two sources of truth.
+Still, multiple sources of truth.
 
-The only respected and popular package I've found was `t3-env`, it tries to solve the problem with the `functional client` approach by providing a `createEnv` function.
+The only respected and popular package I've found was `t3-env`, it implements the `functional client` approach by providing a `createEnv` function.
 
-Although it doesn’t solve the two-sources problem, it brings validation into play, which eases things a bit by explicitly giving errors when you start your app (missing envs, wrong envs, etc.).
+Although it doesn’t solve the _multus problem_, it brings validation into play, which eases things a bit by explicitly giving errors when you start your app (missing envs, wrong envs, etc.).
 
-By this point, I was already brainstorming something around secret managers, and the t3-env package gave me a lot more to think about: variable validation, proxy objects, public and private envs, build errors, runtime errors, etc. So let’s cover all of this and try to solve the two-sources problem.
+By this point, I was already brainstorming something around secret managers, and the t3-env package gave me a lot more to think about: variable validation, proxy objects, public and private envs, build errors, runtime errors, etc. So let’s cover all of this and try to solve the _multus problem_.
 
 ## You need a secret manager
 
@@ -61,27 +65,32 @@ Password, account, and secret management should be a top priority for anyone ser
 
 Every secret manager offers a way to separate different environments: `dev`, `test`, `staging`, `production`, etc. But what happens when you need to fetch the environments for your pipeline or development workspace?
 
-Well, Vercel, for instance, offers all of this out of the box—a CLI for running on your machine and their secret management tab for each project.
+Well, Vercel, for instance, offers all of this out of the box by providing a CLI for running on your machine and their secret manager web page for each project.
 
-Infisical, on the other hand, does the same, but since it isn’t a hosting platform, it provides integration with most of them.
+Infisical, on the other hand, does the same, but since it isn’t a hosting
+platform, it provides integration with most of them.
 
-The list goes on, and the question is: could we create a way to automatically make envs typesafe and validate them directly from secret managers? Yeah, we can. We need a secret loader.
+If we are going to solve the _multus problem_ we can't ignore the existance of secret managers, we need a secret loader.
 
 ## Why we should be agnostic
 
-Environment variables are present in `any` nodejs project, that's a rule, and that's why we should be agnostic here.
+Environment variables are present in `any` nodejs project, that's a rule, and that's why we should be agnostic with `any` implementation we make.
 
-I knew the secret loader should be a function that loads from `any` source and injects into `any` process.
+I knew from start that the secret loader should load from `any` source and inject into `any` process
 
-By using `jiti` for the typescript config file and spawn method from node, dotsafe provides a way for declaring a loader and running `dotsafe run -- npm run script`.
+For the former, I used the `jiti` package for creating a `.ts` config file and the `commander` package for providing a `CLI`.
 
-Any object returned from the loader will be merged into `process.env`, simple as that.
+Simple as that we get our first command: `dotsafe generate`, currently it only reads the declared async loader function inside `env.config.ts` and prints it to the console.
 
-But agnostic doesn’t mean that we shouldn’t provide some kind of help to the user. That’s what I think an “agnostic library” should be: **support all, help most**.
+As for the latter, NodeJS `spawn` method is enough, therefore here's our second command: `dotsafe run -- npm run <your-script>`.
 
-So I got some adapters working. That way a percentage of users won't have a hard time figuring out how to set things up.
+So we get variables the way we want, and inject it into the process we want, things are looking pretty agnostic.
 
-If the loader works, then we have an object with all environments from any source. The next step is to generate the types.
+However, agnostic doesn’t mean that we shouldn’t try to provide some kind of help to the user. That’s what I think an “agnostic library” should be: **support all, help most**.
+
+So I got some adapters working. That way a percentage of users won't have a hard time figuring out how to set things up (vercel really needed an adapter, lol).
+
+There's a loader, now there must be types.
 
 ## About code generation
 
@@ -91,15 +100,25 @@ First we must state that there's no way to avoid multiple sources of truth witho
 
 TRPC works without code generation because frontend can be coded in TS, and trpc is coded in TS.
 
-However we are dealing with `.env` here, and also maybe secret managers, so if we want one source of truth, there must be code generation.
+However we are dealing with `.env -> .ts` here, so if we want one source of truth, there must be code generation.
 
-If you ever worked with prisma (on vscode) you may have noticed that it somehow reloads the typescript server each time you generate the client.
+So let's face the first question: inside or outside node_modules?
 
-That's no mistake, and it happens through the prisma vscode extension. It happens because typescript won't recognize generated types under `node_modules` unless you restart the server or open the type
+If you ever worked with Prisma ORM (on vscode) you may have noticed that it somehow reloads the typescript server each time you generate the types. That's no mistake, and it happens through the prisma vscode extension.
 
-So I thought of making something different: generate code in the project root inside a `.ts` file.
+It happens because vscode is pretty bad at recognizing generated types, even worse when dealing with stuff inside `node_modules`.
 
-And it worked, as soon as you hit `npm dotsafe generate` it automatically reads the new types without having to open the file or restart the server.
+Although setting the vscode file watcher config can help in some type reloading cases, I aimed for the best UX and decided to generate the types in the project root, inside a `.ts` file.
+
+Tweaking the generate command, now it creates a `env.ts` with the following content:
+
+```typescript
+// env.ts
+
+type EnvKeys = "NODE_ENV" | ...
+```
+
+The `EnvKeys` are the same loaded from the secret loader, and most important: as soon as you hit `npm dotsafe generate` it automatically reads the new types without having to open the file or restart the ts server.
 
 ## Functional versus Namespace
 
@@ -115,13 +134,13 @@ Every single step of depth you add to a project is one more thing to think about
 
 We are all familiar with the goold old `process.env['key']`, so it would be really great if we could just use it instead of a client, right? Yeah, but we can't.
 
-Remember when I said types didn’t reload well with `node_modules`? It seems they also don’t reload well when tweaking the NodeJS global namespace. You also need to reload the server or open the file in this case.
+At least for VScode, you can't generate code that modifies the nodejs global namespace and get automatic type reload, you will need to reload the server or open the file.
 
 That means we can't use `process.env` if we aim for a good UX.
 
-Also, using a typed `process.env` in a SSR framework project is not a good idea. (I will cover this further in this article)
+Also, using a typed `process.env` in a SSR framework project is not a good idea. (I will cover this further)
 
-## Ecmascript Proxies
+## Ecmascript proxies
 
 We still got a choice to make: `env.get('key')` or just `env['key']`?
 
@@ -129,15 +148,13 @@ You may say that when using a function instead of an object, we can implement mo
 
 And yeah, that’s true, even more so because we will need more functionality when accessing the environments.
 
-I’ve implemented it, but we would not actually need to verify if the env is defined, because if they aren’t, the project should not even build (as the types won’t generate, and there will be type errors).
-
-However, let's say that in the development environment the user forgets to run their script with `dotsafe run -- ...` and now all variables are undefined.
+Let's say that in the development environment the user forgets to run their script with `dotsafe run -- ...` and now all variables are undefined.
 
 Yeah, I know, they should read the first 10 seconds of the quickstart, but who never installed a library in a rush of emotion just to see things working and forgot some stuff in the process?
 
 Good error messages are extremely important, and **people really like when they are told exactly what is wrong.**
 
-The error "Environment variable not found" is not even as good as "Enviroment variable not found, did you forget to do dotsafe run?"
+I have implemented a "Environment variable not found", but this message is not even as good as "Enviroment variable not found, did you forget to do dotsafe run?"
 
 And that brings us to the crystal clear conclusion of `env.get`, right? Wrong.
 
@@ -145,7 +162,7 @@ We can also implement more functionality around objects if we use ECMAScript pro
 
 By using `new Proxy(process.env, { Reflect api stuff })`, boom, we can validate the access of an object. Isn't that amazing?
 
-## Public and Server Environments
+## Public and Server environments
 
 There's more to the functional approach than just variable access validation, and that would be the differentiation of public and server environments.
 
@@ -153,15 +170,15 @@ This is one of the things I really dislike about `t3-env`, it nests public and s
 
 As I see it, these things should be separate, you shouldn't be able to access a total private secret in the same object you access a public one.
 
-And you may say: "but process.env is nested what are you saying"?
+And you may ask: "but process.env is nested what are you saying?".
 
 Yeah, process.env is nested, but it is doesn't have intellisense, so it is not so easy to leak, which is different from the case you have a list of things to easily pick.
 
 Following this point of view, dotsafe generate two different objects: `env` and `publicEnv`.
 
-## Environment Leaking
+## Environment leaking
 
-One thing that caught my attention on the `t3-env` docs is the code comment that states
+One thing that caught my attention on the `t3-env` docs is the code comment that states:
 
 ```typescript
 // Will throw if you access these (server envs) on the client
@@ -169,7 +186,7 @@ One thing that caught my attention on the `t3-env` docs is the code comment that
 
 Although this statement is right, I find it a bit misleading for new users.
 
-No, `t3-env` will not stop you from leaking any server variables into the client (unlike written in their documentation).
+No, `t3-env` will not stop you from leaking any server variables into the client.
 
 Actually, Next.js already protects you from this. No server environment will ever be defined on the client. What `t3-env` does is just warn you with a different message that you are trying to access something undefined.
 
@@ -180,7 +197,7 @@ Here are the two ways of leaking your environments into the client:
 - Through the server component return (ssr)
 - Through an endpoint response (any backend/client relation)
 
-The first case can be partially solved through an ESLint rule—I’ve written one for Dotsafe.
+The first case can be partially solved through an ESLint rule—I’ve written one for dotsafe.
 
 The rule blocks you from accessing the server variables inside non-specified files (e.g., .jsx), so you can restrict variable access to files like `service.ts`.
 
@@ -194,25 +211,49 @@ In this case, it would be enough to check the type of the response (no one is go
 
 Generally speaking, `carefulness is the ultimate solution for secret leaking`.
 
-## Variable Validation
+## Variable validation
 
-As for the time I started writing this, t3 still didn't have agnostic variable validation, seems now it does.
+As for the time I started writing this, t3 didn't have support for bringing your own validation library, now it does.
 
 It supports anything that follows the Standard Schema, but what about our class-validator (and many other) friends?
 
-Don't get me wrong, although I really like the modern approach, and how it suits all of my current projects, this is far from agnostic.
+Don't get me wrong, I really like the modern approach, and it does suit all of my current projects, but this is far from agnostic.
 
 For dotsafe variable validation I choose to keep my principle: **support all, help most**.
 
-As long as your validation library can return a boolean (e.g `isValid`) and an array of errors, you are good to go with dotsafe.
+Right beside the loader function we got a 'validate' function, as long as your validation library can return a boolean (e.g `isValid`) and an array of errors, you are good to go with dotsafe.
 
-Obviously I don't plan to let most of people down, I hope by the time someone is reading this I've already shipped the `dotsafe.schema` functionality, similar to how loader adapters works.
+Obviously I don't plan to let most of people down, I hope by the time someone is reading this I've already shipped the `dotsafe.validators` functionality, similar to how adapters works.
 
 Now about how validation should happen: through the CLI.
 
-No additional setup, no headache, just hit "dotsafe validate" and it will work.
+No additional setup, no headache, just hit "dotsafe validate" and it will run the validate function against all envs returned from the loader.
 
 Run it before building and you are good to go.
+
+## Watching .env changes
+
+Restarting a process is annoying, very annoying, so we need to do something about hot reloading.
+
+For local development, reloading is straightforward: we set up IPC communication in the spawn method, watch .env files, and update the process.env object whenever changes are detected.
+
+Reloading locally is easy: setup IPC communication in the spawn method, watch '.env' files and re-assign the process.env object when anything happens.
+
+However ghings get trickier when it comes to handling changes that happen in the cloud.
+
+At first glance we can think of some stuff: http servers, tunnels, webhooks, extra configs, built-in tunnels or even "let's forget this feature".
+
+But I really wanted to make this work, what could possibly be cooler than changing a secret in the vercel panel and causing a type error in my vscode window.
+
+So I made things as simples a possible, the only configuration needed is a `--port` option in the `dotsafe run`.
+
+If this option is specified, we spin up a single endpoint server with the nodejs http module.
+
+For exposing the endpoint we need tunneling, I considered a function in the config file that would use tunneling libraries like [localtunnel](https://github.com/localtunnel/localtunnel).
+
+Yet, this approach doesn’t fit every use case. Not all tunneling libraries offer a Node.js API, so it’s better to let users handle tunneling themselves.
+
+After spinning up the local server, setting up the tunnel and configuring the webhook in the secret manager, the environments will reload the same way as they do locally: via IPC and re-assigning the process.env object.
 
 ## My thoughts on t3-env and dotsafe
 
@@ -220,10 +261,8 @@ I’ve discussed t3-env here because it’s the only big one out there.
 
 My general thoughts on it were somehow already leaked above, but in the end, this is what I see: **t3-env was made for t3-stack.**
 
-Nothing wrong with that. Actually, this is what it should be. The package is really nice and suits most people.
+Nothing wrong with that. Actually, this is what it should be. The package is really nice and it works.
 
-But I built dotsafe to try suit all of people, no matter if you are using Next or Nest, Zod or class-validator.
+But I built dotsafe to work with everyone, no matter if you are using next or nest, zod or class-validator.
 
 Clearly this 'agnostic principle' makes the setup a bit harder than just declaring a zod schema when you are already inside t3 stack, so props to t3-env for its awesome simplicity.
-
-As of the time I’m writing this, the library is not complete. There are no tests yet, and some things could be polished. Anyway, there’s some decent progress done already.
