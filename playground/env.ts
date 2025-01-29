@@ -1,22 +1,13 @@
-type EnvironmentVariables = "API_URL" | "API_KEY"
+import { createEnv, EnvRecord } from "@dotsafe/dotsafe/env";
 
-const get = (key: EnvironmentVariables) => {
-  if (!process.env[key]) {
-    throw new Error(`Environment variable ${key} is not set`);
-  }
-  return process.env[key];
-};
+export type EnvKeys = 
+  | "NODE_ENV" 
+  | "TZ";
 
-const getNumber = (key: EnvironmentVariables) => {
-  const value = get(key);
-  const parsed = Number(value);
-  if (isNaN(parsed)) {
-    throw new Error(`Environment variable ${key} is not a number`);
-  }
-  return parsed;
-};
+export type EnvConstraint<Record extends { [key in EnvKeys]?: any } = { [key in EnvKeys]?: string }> = Record;
 
-export const env = {
-  get,
-  getNumber,
-};
+type Env = EnvRecord<EnvKeys, "NEXT_PUBLIC_">
+
+export const env = createEnv({ isServer: undefined }) as Env;
+
+
