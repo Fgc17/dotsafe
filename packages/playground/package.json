@@ -1,0 +1,22 @@
+{
+  "name": "@dotsafe/playground",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "typia:generate": "pnpm dotsafe generate --config ./src/typia/env.config.ts",
+    "typia:validate": "pnpm dotsafe validate --config ./src/typia/env.config.ts"
+  },
+  "dependencies": {
+    "@dotsafe/dotsafe": "workspace:*",
+    "dotenv": "16.4.7",
+    "typia": "7.6.0",
+    "arktype": "^2.0.3"
+  },
+  "devDependencies": {
+    "tsx": "4.19.2"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

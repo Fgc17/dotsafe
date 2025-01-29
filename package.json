@@ -1,67 +1,19 @@
 {
-  "name": "@dotsafe/dotsafe",
-  "description": "typesafe environment variables",
-  "publishConfig": {
-    "access": "public"
-  },
-  "version": "0.0.1",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Fgc17/dotsafe.git"
-  },
-  "files": [
-    "dist"
-  ],
-  "keywords": [
-    "env",
-    "typesafe",
-    "typescript",
-    "environment",
-    "variable"
-  ],
-  "type": "module",
-  "main": "./dist/dotsafe/dotsafe.cjs",
-  "types": "./dist/dotsafe/dotsafe.d.cts",
-  "exports": {
-    ".": "./dist/dotsafe/dotsafe.cjs",
-    "./env": "./dist/env/env.cjs"
-  },
-  "typesVersions": {
-    "*": {
-      "env": [
-        "./dist/env/env.d.cts"
-      ]
-    }
-  },
-  "bin": {
-    "dotsafe": "./dist/cli/cli.cjs"
-  },
+  "name": "repo",
+  "private": true,
   "scripts": {
-    "build": "tsup src/dotsafe/dotsafe.ts src/cli/cli.ts src/env/env.ts --dts --shims",
-    "dev": "tsup src/dotsafe/dotsafe.ts src/cli/cli.ts src/env/env.ts --dts --shims --watch",
-    "dotsafe": "pnpm tsx src/cli/cli.ts",
-    "playground:generate": "pnpm dotsafe generate --config ./playground/env.config.ts",
-    "playground:validate": "pnpm dotsafe validate --config ./playground/env.config.ts",
-    "playground:run": "pnpm dotsafe run --config ./playground/env.config.ts -- pnpm tsx ./playground/src/index.ts",
-    "bump": "changeset",
-    "release": "rm -rf dist && pnpm build && changeset version && changeset publish"
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "lint": "turbo lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
-    "@changesets/cli": "^2.27.11",
-    "@types/node": "^22.9.1",
-    "arktype": "^2.0.3",
-    "concurrently": "9.1.2",
-    "dotenv": "16.4.7",
-    "prettier": "3.3.3",
-    "tsup": "^8.3.5",
-    "tsx": "4.19.2",
-    "typescript": "5.6.3",
-    "typia": "7.6.0"
+    "prettier": "^3.4.2",
+    "turbo": "^2.3.4",
+    "typescript": "5.7.3"
   },
-  "dependencies": {
-    "chalk": "^4",
-    "commander": "13.0.0",
-    "jiti": "2.4.2"
+  "packageManager": "pnpm@9.0.0",
+  "engines": {
+    "node": ">=18"
   }
 }

@@ -12,15 +12,13 @@
     "strict": true,
     "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true,
-
     "baseUrl": "./",
     "outDir": "./dist",
-    "rootDir": "./"
+    "rootDir": "./",
+    "paths": {
+      "@/*": ["src/*"]
+    }
   },
-  "include": [
-    "./src/**/*.ts",
-    "./src/dotsafe/linter/**/*.js",
-    "./playground/**/*.ts"
-  ],
+  "include": ["./src/**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }

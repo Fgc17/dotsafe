@@ -1,0 +1,59 @@
+{
+  "name": "@dotsafe/dotsafe",
+  "description": "typesafe environment variables",
+  "publishConfig": {
+    "access": "public"
+  },
+  "version": "0.0.1",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Fgc17/dotsafe.git"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "env",
+    "typesafe",
+    "typescript",
+    "environment",
+    "variable"
+  ],
+  "type": "module",
+  "main": "./dist/dotsafe/dotsafe.cjs",
+  "types": "./dist/dotsafe/dotsafe.d.cts",
+  "exports": {
+    ".": "./dist/dotsafe/dotsafe.cjs",
+    "./env": "./dist/env/env.cjs"
+  },
+  "typesVersions": {
+    "*": {
+      "env": [
+        "./dist/env/env.d.cts"
+      ]
+    }
+  },
+  "bin": {
+    "dotsafe": "./dist/cli/cli.cjs"
+  },
+  "scripts": {
+    "build": "tsup src/dotsafe/dotsafe.ts src/cli/cli.ts src/env/env.ts --dts --shims",
+    "dev": "pnpm run build --watch",
+    "bump": "changeset",
+    "release": "rm -rf dist && pnpm build && changeset version && changeset publish"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.11",
+    "@types/node": "^22.9.1",
+    "concurrently": "9.1.2",
+    "prettier": "3.3.3",
+    "tsup": "^8.3.5",
+    "typescript": "5.6.3"
+  },
+  "dependencies": {
+    "chalk": "^4",
+    "commander": "13.0.0",
+    "jiti": "2.4.2"
+  }
+}

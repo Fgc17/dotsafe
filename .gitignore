@@ -1,5 +1,21 @@
+
+# editor
 .vscode
+
+# deps
 node_modules
+
+# output
 dist
+.next
+.source
+*.tsbuildinfo
+out
+
+# env
 .env
 env.ts
+
+# nextjs
+.vercel
+next-env.d.ts

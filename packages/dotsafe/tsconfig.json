@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "Preserve",
+    "moduleResolution": "bundler",
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "declaration": true,
+    "declarationDir": "./",
+    "incremental": true,
+    "tsBuildInfoFile": ".tsbuildinfo",
+    "strict": true,
+    "strictNullChecks": true,
+    "forceConsistentCasingInFileNames": true,
+
+    "baseUrl": "./",
+    "outDir": "./dist",
+    "rootDir": "./"
+  },
+  "include": ["./src/**/*.ts", "./src/dotsafe/linter/**/*.js"],
+  "exclude": ["node_modules", "dist"]
+}
