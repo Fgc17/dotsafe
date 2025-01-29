@@ -1,4 +1,4 @@
-![Alt text](./assets/banner.png "Optional title")
+[![Alt text](./assets/banner.png "Optional title")](https://soonheresomething.vercel.app)
 
 ## Works with
 
@@ -50,7 +50,7 @@ And (probably) everything that uses environment variables.
 
 ## Differences from t3-env
 
-See [Thoughts about environment variables and why I built Dotsafe](./docs/thoughts.md)
+See [Thoughts about environment variables and why I built emv.ts](./docs/thoughts.md)
 
 ## Features
 
@@ -63,15 +63,15 @@ See [Thoughts about environment variables and why I built Dotsafe](./docs/though
 ## Installation
 
 ```bash
-npm install @dotsafe/dotsafe
+npm install fatima
 ```
 
 ```bash
-pnpm install @dotsafe/dotsafe
+pnpm install fatima
 ```
 
 ```bash
-yarn add @dotsafe/dotsafe
+yarn add fatima
 ```
 
 ## Quickstart
@@ -81,12 +81,12 @@ yarn add @dotsafe/dotsafe
 ```typescript
 // env.config.ts
 
-import { dotsafe } from "@dotsafe/dotsafe";
+import { config, adapters } from "fatima";
 
 import dotenv from "dotenv";
 
-export default dotsafe.config({
-  loader: async () => dotsafe.adapters.dotenv.load(dotenv),
+export default config({
+  loader: async () => adapters.dotenv.load(dotenv),
 });
 ```
 
@@ -96,7 +96,7 @@ export default dotsafe.config({
 ### Generate the typesafe client
 
 ```bash
-npm dotsafe generate
+npm fatima generate
 ```
 
 ### Client Alias
@@ -135,7 +135,7 @@ This will load, generate and inject variables into the script process.env:
 // package.json
 {
   "scripts": {
-    "dev": "dotsafe dev -- npm start -w",
+    "dev": "fatima dev -- npm start -w",
   },
 }
 ```
@@ -167,7 +167,7 @@ Here is an example using built-in validator for `zod`:
 
 ```typescript
 // env.config.ts
-import { dotsafe } from "dotsafe";
+import { config, validators } from "fatima";
 import { EnvKeys } from "env";
 import { z, ZodType } from "zod";
 
@@ -181,9 +181,9 @@ const schema = z.object<Partial<ZodEnv>>({
   VERY_SECRET_DB_URL: z.string().regex("VERY_PUBLIC_DB_REGEX"),
 });
 
-export default dotsafe.config({
+export default config({
   loader: async () => process.env,
-  validate: dotsafe.validators.zod(schema),
+  validate: validators.zod(schema),
 });
 ```
 
@@ -192,7 +192,7 @@ You can also define the validator by yourself:
 ```typescript
 // env.config.ts
 
-export default dotsafe.config({
+export default config({
   validate: (env) => {
     const result = schema.safeParse(env);
 
@@ -216,7 +216,7 @@ export default dotsafe.config({
 The validation happens with a simple command call:
 
 ```bash
-npm dotsafe validate
+npm fatima validate
 ```
 
 You can include this in your CI/CD pipeline to ensure that the environment variables are always correct before deploying.
@@ -227,9 +227,9 @@ First, setup your public prefix, let's say you are using Next.js, so it will be 
 
 ```typescript
 // env.config.ts
-import { dotsafe } from "@dotsafe/dotsafe";
+import { config } from "fatima";
 
-export default dotsafe.config({
+export default config({
   loader: async ({ processEnv }) => processEnv,
   client: {
     publicPrefix: "NEXT_PUBLIC_",
@@ -245,9 +245,9 @@ You can configure the client/server environment detection by setting the `isServ
 
 ```typescript
 // env.config.ts
-import { dotsafe } from "dotsafe";
+import { config } from "fatima";
 
-export default dotsafe.config({
+export default config({
   loader: async ({ processEnv }) => processEnv,
   client: {
     publicPrefix: "NEXT_PUBLIC_",
@@ -260,10 +260,11 @@ export default dotsafe.config({
 
 ```typescript
 // eslint.config.ts
+import { linter as fatima } from "fatima";
 
 export default [
-  dotsafe.linter.eslint.noEnvPlugin,
-  dotsafe.linter.eslint.noEnvRule("**/*.tsx", "**/*.jsx"),
+  fatima.eslint.noEnvPlugin,
+  fatima.eslint.noEnvRule("**/*.tsx", "**/*.jsx"),
 ];
 ```
 
@@ -284,18 +285,18 @@ This works by programatically running the
 You will get a descriptive error/guide if anything goes wrong, so just try it out.
 
 ```typescript
-import { dotsafe } from "@dotsafe/dotsafe";
+import { config, adapters } from "fatima";
 
 import dotenv from "dotenv";
 
-export default dotsafe.config({
+export default config({
   loader: async ({ processEnv }) => {
     const nodeEnv = processEnv.NODE_ENV;
 
     if (nodeEnv === "development") {
-      const dotenvVars = dotsafe.adapters.dotenv.load(dotenv);
+      const dotenvVars = adapters.dotenv.load(dotenv);
 
-      const load = dotsafe.adapters.vercel.load;
+      const load = adapters.vercel.load;
 
       const vercelEnv = load({
         parser: dotenv.parse,
@@ -322,18 +323,18 @@ export default dotsafe.config({
 
 ```typescript
 import { InfisicalSDK } from "@infisical/sdk";
-import { dotsafe } from "@dotsafe/dotsafe";
+import { config, adapters } from "fatima";
 
 import dotenv from "dotenv";
 
-export default dotsafe.config({
+export default config({
   loader: async ({ processEnv }) => {
     const nodeEnv = processEnv.NODE_ENV;
 
     if (nodeEnv === "development") {
-      const dotenvVars = dotsafe.adapters.dotenv.load(dotenv);
+      const dotenvVars = adapters.dotenv.load(dotenv);
 
-      const load = dotsafe.adapters.infisical.load;
+      const load = adapters.infisical.load;
 
       const infisicalEnv = load(InfisicalSDK, {
         // here or in .env prefixed with INFISICAL_
@@ -365,12 +366,12 @@ When deploying to trigger you may not always deploy from your machine, where `en
 ```typescript
 // trigger.config.ts
 import { defineConfig } from "@trigger.dev/sdk/v3";
-import { dotsafe } from "@dotsafe/dotsafe";
+import { adapters } from "fatima";
 
 export default defineConfig({
   project: "my-project",
   build: {
-    extensions: [dotsafe.adapters.triggerDev.extension()],
+    extensions: [adapters.triggerDev.extension()],
   },
 });
 ```
@@ -379,19 +380,19 @@ export default defineConfig({
 
 ```typescript
 // env.config.ts
-import { dotsafe, EnvironmentVariables } from "@dotsafe/dotsafe";
+import { config, adapters, EnvironmentVariables } from "fatima";
 import * as trigger from "@trigger.dev/sdk/v3";
 
 import dotenv from "dotenv";
 
-export default dotsafe.config({
+export default config({
   loader: async ({ processEnv }) => {
     const nodeEnv = processEnv.NODE_ENV;
 
     if (nodeEnv === "development") {
-      const dotenvVars = dotsafe.adapters.dotenv.load(dotenv);
+      const dotenvVars = adapters.dotenv.load(dotenv);
 
-      const load = dotsafe.adapters.triggerDev.load;
+      const load = adapters.triggerDev.load;
 
       const triggerEnv = load(trigger, {
         // here or in .env prefixed with TRIGGER_
@@ -422,12 +423,12 @@ You can specify a port option to your dev script:
 // package.json
 {
   "scripts": {
-    "dev": "dotsafe dev --port 9000 -- npm start -w",
+    "dev": "fatima dev --port 9000 -- npm start -w",
   },
 }
 ```
 
-This will spin up a localhost server with the **/dotsafe** endpoint (all http methods accepted).
+This will spin up a localhost server with the **/fatima** endpoint (all http methods accepted).
 
 Any requests made to that url will reload the types and re-inject the changes into your process, no need to restart your server.
 

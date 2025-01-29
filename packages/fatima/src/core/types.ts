@@ -1,4 +1,4 @@
-export type Promisable<T> = T | Promise<T>;
+import { Promisable } from "./utils/types";
 
 export type UnsafeEnvironmentVariables = Record<string, string>;
 
@@ -22,10 +22,6 @@ export type DotsafeValidator = (
     message: string;
   }>;
 }>;
-
-export interface GenericClass<T> extends Function {
-  new (...args: any[]): T;
-}
 
 export interface DotsafeClientOptions {
   /**

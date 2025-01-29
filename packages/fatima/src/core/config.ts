@@ -1,7 +1,7 @@
 import { DotsafeClientOptions, DotsafeLoader, DotsafeValidator } from "./types";
 import { getCallerLocation } from "./utils/get-caller-location";
 
-export type DotsafeOptions = {
+export type FatimaOptions = {
   /**
    * Anything you return here will turn into the environment variables
    *
@@ -13,7 +13,7 @@ export type DotsafeOptions = {
    */
   client?: DotsafeClientOptions;
   /**
-   * Function that will be executed with ``dotsafe validate``
+   * Function that will be executed with ``fatima validate``
    */
   validate?: DotsafeValidator;
   /**
@@ -31,7 +31,7 @@ export function config({
   load,
   client,
   validate,
-}: DotsafeOptions) {
+}: FatimaOptions) {
   const { filePath, folderPath } = getCallerLocation();
 
   return {
@@ -43,5 +43,6 @@ export function config({
       filePath,
       folderPath,
     },
+    __fatimaconfig: true,
   };
 }

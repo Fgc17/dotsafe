@@ -4,11 +4,4 @@ import { validators } from "./validators";
 import { linter } from "./linter";
 export * from "./types";
 
-const dotsafe = {
-  config,
-  validators,
-  adapters,
-  linter,
-};
-
-export { dotsafe };
+export { config, validators, adapters, linter };

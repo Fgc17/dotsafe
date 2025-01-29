@@ -17,6 +17,6 @@
     "outDir": "./dist",
     "rootDir": "./"
   },
-  "include": ["./src/**/*.ts", "./src/dotsafe/linter/**/*.js"],
+  "include": ["./src/**/*.ts", "src/core/linter/**/*.js"],
   "exclude": ["node_modules", "dist"]
 }

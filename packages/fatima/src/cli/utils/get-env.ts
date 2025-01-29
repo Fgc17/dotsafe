@@ -1,5 +1,5 @@
-import { UnsafeEnvironmentVariables } from "src/dotsafe/types";
-import { DotsafeConfig } from "../../dotsafe/config";
+import { UnsafeEnvironmentVariables } from "src/core/types";
+import { DotsafeConfig } from "../../core/config";
 import { logger } from "./logger";
 
 export async function getEnv(config: DotsafeConfig) {

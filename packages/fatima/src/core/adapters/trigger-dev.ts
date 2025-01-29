@@ -61,19 +61,19 @@ type TriggerDevExtensionMock = {
 };
 
 export const extension = (config?: string): TriggerDevExtensionMock => ({
-  name: "dotsafe-trigger-dev",
+  name: "fatima-trigger-dev",
   onBuildStart(context) {
     if (context.target === "dev") return;
 
     context.registerPlugin({
-      name: "dotsafe-trigger-dev",
+      name: "fatima-trigger-dev",
       async setup(build: any) {
         build.onStart(async () => {
           const runtime = getRuntime();
 
           const cmdPath = resolve(
             process.cwd(),
-            "node_modules/@dotsafe/dotsafe/dist/cmd.cjs"
+            "node_modules/fatima/dist/cmd.cjs"
           );
 
           await new Promise<void>((resolve, reject) => {

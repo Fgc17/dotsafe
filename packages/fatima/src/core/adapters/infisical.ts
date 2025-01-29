@@ -1,4 +1,5 @@
-import { UnsafeEnvironmentVariables, GenericClass } from "../types";
+import { UnsafeEnvironmentVariables } from "../types";
+import { GenericClass } from "../utils/types";
 
 type InfisicalClientMock = GenericClass<{
   auth: () => {

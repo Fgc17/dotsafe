@@ -3,9 +3,9 @@ import Link from "next/link";
 export default function HomePage() {
   return (
     <main className="flex flex-1 flex-col justify-center text-center">
-      <h1 className="mb-1 text-2xl font-bold">dotsafe</h1>
+      <h1 className="mb-1 text-2xl font-bold">fatima</h1>
       <p className="text-fd-muted-foreground">
-        Dealing once and for all with environment variables and typescript
+        typesafe environment variables for the js ecosystem
       </p>
       <p className="mt-8">
         <Link

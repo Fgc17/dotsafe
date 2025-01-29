@@ -51,11 +51,11 @@ const load = async ({ parser, projectEnv = "development" }: VercelLoadArgs) => {
   } catch (error) {
     console.log(
       "\x1b[41m",
-      "🔒 [dotsafe] 'vercel pull env' didn't work, here are some possible reasons:",
+      "🔒 [fatima] 'vercel pull env' didn't work, here are some possible reasons:",
       "\n 1. You didn't install the Vercel CLI: `npm i -g vercel`",
       "\n 2. You are not logged: `vercel login`",
       "\n 3. You didn't link your codebase to a Vercel project: `vercel link`",
-      "\n 4. You somehow do not have the `development` environment, in this case you can use `dotsafe.adapters.vercel.load({ environment })`",
+      "\n 4. You somehow do not have the `development` environment, in this case you can use `adapters.vercel.load({ environment })`",
       "\x1b[0m"
     );
     process.exit(1);

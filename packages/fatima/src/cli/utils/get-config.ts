@@ -1,6 +1,6 @@
 import { resolve } from "path";
 import { createJiti } from "jiti";
-import { DotsafeConfig } from "src/dotsafe/config";
+import { DotsafeConfig } from "src/core/config";
 import { logger } from "./logger";
 
 const jiti = createJiti(import.meta.url);
@@ -12,6 +12,13 @@ export async function getConfig(configPath?: string) {
     const config = (await jiti.import(path, {
       default: true,
     })) satisfies DotsafeConfig;
+
+    if (!config.__fatimaconfig) {
+      logger.error(
+        "Config file must be created with the env.ts config function."
+      );
+      process.exit(1);
+    }
 
     return {
       ...config,

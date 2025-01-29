@@ -43,7 +43,7 @@ const eslintRule = {
 
 export const noEnvPlugin = {
   plugins: {
-    "@dotsafe": {
+    "@fatima": {
       rules: {
         "no-env": eslintRule,
       },
@@ -54,6 +54,6 @@ export const noEnvPlugin = {
 export const noEnvRule = (...files: string[]) => ({
   files,
   rules: {
-    "@dotsafe/no-env": "error",
+    "@fatima/no-env": "error",
   },
 });

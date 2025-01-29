@@ -1,7 +1,7 @@
 import chalk from "chalk";
 
 const line = (message: string[]) =>
-  "\n" + "🔒 [dotsafe] " + message.join(" ") + "\n";
+  "\n" + "🔒 [fatima] " + message.join(" ") + "\n";
 
 const error = (...message: string[]) => {
   console.log(chalk.bgHex("#2e0a05").hex("c52222")(line(message)));

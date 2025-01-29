@@ -1,8 +1,8 @@
 import { writeFileSync } from "fs";
 import path from "path";
-import { DotsafeConfig } from "src/dotsafe/config";
+import { DotsafeConfig } from "src/core/config";
 import { getClientContent } from "./get-client-content";
-import { UnsafeEnvironmentVariables } from "src/dotsafe/types";
+import { UnsafeEnvironmentVariables } from "src/core/types";
 
 export function createClient(
   config: DotsafeConfig,

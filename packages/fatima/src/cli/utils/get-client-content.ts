@@ -1,5 +1,5 @@
-import { DotsafeClientOptions } from "src/dotsafe/types";
-import { txt } from "src/dotsafe/utils/txt";
+import { DotsafeClientOptions } from "src/core/types";
+import { txt } from "src/core/utils/txt";
 
 type ClientStrings = {
   envKeys: string;
@@ -9,10 +9,10 @@ type ClientStrings = {
 };
 
 const client = (strings: ClientStrings) => [
-  'import { createEnv, EnvRecord } from "@dotsafe/dotsafe/env";',
+  'import { createEnv, EnvRecord } from "fatima/env";',
 
   strings.createPublicEnvArg
-    ? `import {createPublicEnv, PublicEnvRecord } from "@dotsafe/dotsafe/env";`
+    ? `import {createPublicEnv, PublicEnvRecord } from "fatima/env";`
     : "",
 
   strings.envKeys

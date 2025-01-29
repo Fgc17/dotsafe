@@ -2,7 +2,7 @@ import { spawn } from "child_process";
 import { logger } from "../utils/logger";
 import { getConfig } from "../utils/get-config";
 import { getEnv } from "../utils/get-env";
-import { UnsafeEnvironmentVariables } from "src/dotsafe/types";
+import { UnsafeEnvironmentVariables } from "src/core/types";
 import { debounce } from "../utils/debounce";
 import { createClient } from "../utils/create-client";
 import { populateProcessEnv } from "../utils/assign-env";
@@ -59,7 +59,7 @@ export async function devAction(
 
   if (options.port) {
     const server = http.createServer((req, res) => {
-      if (req.url != "/dotsafe") {
+      if (req.url != "/fatima") {
         res.writeHead(404, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ status: "not found" }));
         return;
@@ -108,7 +108,7 @@ export async function devAction(
 
     server.listen(PORT, () => {
       logger.success(
-        `Development webhook is listening on port ${PORT} for POST /dotsafe requests.`
+        `Development webhook is listening on port ${PORT} for POST /fatima requests.`
       );
     });
   }

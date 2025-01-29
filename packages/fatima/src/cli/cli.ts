@@ -5,8 +5,8 @@ import { validateAction } from "./actions/validate";
 import { runAction } from "./actions/run";
 
 program
-  .name("dotsafe")
-  .description("Typesafe environment variables for TypeScript")
+  .name("fatima")
+  .description("typesafe environment variables for the js ecosystem")
   .version("0.0.0");
 
 program

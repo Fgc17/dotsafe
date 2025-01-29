@@ -1,4 +1,4 @@
-# Thoughts about environment variables and how I built Dotsafe
+# Thoughts about environment variables and how I built fatima
 
 ## An overview
 
@@ -73,7 +73,7 @@ However, what if the environments declared in the cloud could be synced and caus
 
 And that's the same as asking: what if we could solve the _multus problem_ not only for .env files, but also for cloud providers?
 
-This bigger purpose was what really got me into developing dotsafe, and for that we will need a secret loader.
+This bigger purpose was what really got me into developing fatima, and for that we will need a secret loader.
 
 ## More config files?
 
@@ -95,9 +95,9 @@ I knew from start that the secret loader should load from `any` source and injec
 
 The loading part is already addressed through the config file by the required `load` key, now we just need a way to execute the loading.
 
-This way will be through the dotsafe CLI, built with [commander](https://www.npmjs.com/package/commander), so here's our first command:
+The way will be through the fatima CLI, built with [commander](https://www.npmjs.com/package/commander), so here's our first command:
 
-`dotsafe generate`.
+`fatima generate`.
 
 Currently this only executes the function, but soon it will be generating something more.
 
@@ -105,7 +105,7 @@ As for the variable injection, NodeJS `spawn` method is enough, just spawn with 
 
 Therefore, here's our second command:
 
-`dotsafe run -- npm run <your-script>`.
+`fatima run -- npm run <your-script>`.
 
 So wet variables the way we want, and inject it into the process we want, things are looking pretty agnostic.
 
@@ -141,7 +141,7 @@ Tweaking the generate command, now it creates a `env.ts` with the following cont
 type EnvKeys = "NODE_ENV" | ...
 ```
 
-The `EnvKeys` are the same loaded from the secret loader, and most important: as soon as you hit `npm dotsafe generate` it automatically reads the new types without having to open the file or restart the ts server.
+The `EnvKeys` are the same loaded from the secret loader, and most important: as soon as you hit `npm fatima generate` it automatically reads the new types without having to open the file or restart the ts server.
 
 ## Functional versus Namespace
 
@@ -171,13 +171,13 @@ You may say that when using a function instead of an object, we can implement mo
 
 And yeah, that’s true, even more so because we will need more functionality when accessing the environments.
 
-Let's say that in the development environment the user forgets to run their script with `dotsafe run -- ...` and now all variables are undefined.
+Let's say that in the development environment the user forgets to run their script with `fatima run -- ...` and now all variables are undefined.
 
 Yeah, I know, they should read the first 10 seconds of the quickstart, but who never installed a library in a rush of emotion just to see things working and forgot some stuff in the process?
 
 Good error messages are extremely important, and **people really like when they are told exactly what is wrong.**
 
-I have implemented a "Environment variable not found", but this message is not even as good as "Enviroment variable not found, did you forget to do dotsafe run?"
+I have implemented a "Environment variable not found", but this message is not even as good as "Enviroment variable not found, did you forget to do fatima run?"
 
 And that brings us to the crystal clear conclusion of `env.get`, right? Wrong.
 
@@ -197,7 +197,7 @@ And you may ask: "but process.env is nested what are you saying?".
 
 Yeah, process.env is nested, but it is doesn't have intellisense, so it is not so easy to leak, which is different from the case you have a list of things to easily pick.
 
-Following this point of view, dotsafe generate two different objects: `env` and `publicEnv`.
+Following this point of view, fatima generate two different objects: `env` and `publicEnv`.
 
 ## Environment leaking
 
@@ -220,7 +220,7 @@ Here are the two ways of leaking your environments into the client:
 - Through the server component return (ssr)
 - Through an endpoint response (any backend/client relation)
 
-The first case can be partially solved through an ESLint rule—I’ve written one for dotsafe. The rule blocks you from accessing the server variables inside specified files (e.g., .jsx).
+The first case can be partially solved through an ESLint rule—I’ve written one for fatima. The rule blocks you from accessing the server variables inside specified files (e.g., .jsx).
 
 And it only partially solves the issue because you can still access the variable in the service file, import the service in the server component, and leak it into the HTML. But at least you will have some kind of protection.
 
@@ -240,15 +240,15 @@ It supports anything that follows the Standard Schema, that currently means `zod
 
 Don't get me wrong, I really like the modern approach, and it does suit all of my current projects, but this is far from 'bring your own'.
 
-For dotsafe variable validation I choose to keep my principle: **support all, help most**.
+For fatima variable validation I choose to keep my principle: **support all, help most**.
 
-Right beside the `load` function we got a `validate` function, as long as your validation library can return a boolean and an array of errors, you are good to go with dotsafe.
+Right beside the `load` function we got a `validate` function, as long as your validation library can return a boolean and an array of errors, you are good to go with fatima.
 
 For the _help most_ part here we will do the same as for loaders, built-in functions, so it can work out of the box not only with standard schema libraries.
 
 Now about how validation should happen: through the CLI.
 
-No additional setup, no headache, just hit `dotsafe validate` and it will run the validate function against all envs returned from the loader.
+No additional setup, no headache, just hit `fatima validate` and it will run the validate function against all envs returned from the loader.
 
 Run it before building and you are good to go.
 
@@ -268,7 +268,7 @@ Still I really wanted to make this work, what could possibly be cooler than chan
 
 One of the most important things here to me is to not create a library that feels _bloated_ with hundreds of options, so I made things as simple as possible.
 
-The only configuration needed is a `--port` option in the `dotsafe run`, in case it is specified, we spin up a single endpoint server with the nodejs http module.
+The only configuration needed is a `--port` option in the `fatima run`, in case it is specified, we spin up a single endpoint server with the nodejs http module.
 
 For exposing the endpoint we need tunneling, I considered a function in the config file that would use tunneling libraries like [localtunnel](https://github.com/localtunnel/localtunnel).
 
@@ -282,11 +282,11 @@ What about secret managers that do not provide webhook functionality?
 
 Usually, these are the ones that _have_ secret managers rather than being secret managers themselves, such as vercel, railway, trigger.dev, etc.
 
-For this unfortunate case, I'm afraid there isn't going to be a dotsafe vscode extension providing a reload button.
+For this unfortunate case, I'm afraid there isn't going to be a fatima vscode extension providing a reload button.
 
-But there will surely be a `dotsafe reload` command that can be executed on a second terminal and tell the `dotsafe run` process to reload without restarting.
+But there will surely be a `fatima reload` command that can be executed on a second terminal and tell the `fatima run` process to reload without restarting.
 
-## My thoughts on t3-env and dotsafe
+## My thoughts on t3-env and fatima
 
 I’ve discussed t3-env here because it’s the only big one out there.
 
@@ -294,6 +294,6 @@ My general thoughts on it were somehow already leaked above, but in the end, thi
 
 Nothing wrong with that. Actually, this is what it should be. The package is really nice and it works.
 
-But I built dotsafe to work with everyone, no matter if you are using next or nest, zod or class-validator.
+But I built fatima to work with everyone, no matter if you are using next or nest, zod or class-validator.
 
 Clearly this 'agnostic principle' makes the setup a bit harder than just declaring a zod schema when you are already inside t3 stack, so props to t3-env for its awesome simplicity.

@@ -13,7 +13,7 @@ export const baseOptions: BaseLayoutProps = {
     title: (
       <>
         <LockClosedIcon className="h-4 w-4 -mr-1" />
-        dotsafe
+        fatima
       </>
     ),
   },
