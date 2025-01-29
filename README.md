@@ -24,6 +24,8 @@ And (probably) everything that uses environment variables.
 
 ## Table of Contents
 
+- [Works with](#works-with)
+- [Differences from t3-env](#differences-from-t3-env)
 - [Features](#features)
 - [Installation](#installation)
 - [Quickstart](#quickstart)
@@ -31,24 +33,31 @@ And (probably) everything that uses environment variables.
   - [Generate the typesafe client](#generate-the-typesafe-client)
   - [Client Alias](#client-alias)
   - [Use your environment variables](#use-your-environment-variables)
-  - [Package.json script](#packagejson-script)
-  - [.gitignore](#gitignore)
+  - [Running your development script](#running-your-development-script)
+    - [.gitignore](#gitignore)
 - [Variable Validation](#variable-validation)
-  - [Defining the constraint and validator](#defining-the-constraint-and-validator)
-  - [Using the validation](#using-the-validation)
+  - [Defining the validator](#defining-the-validator)
+  - [Validating](#validating)
 - [Server and Client (SSR stuff)](#server-and-client-ssr-stuff)
-- [Custom Loaders](#custom-loaders)
+  - [Linter](#linter)
+- [Loader Adapters](#secret-managers)
+  - [Vercel adapter](#vercel-adapter)
   - [Infisical adapter](#infisical-adapter)
   - [Trigger adapter](#trigger-adapter)
     - [Extension](#extension)
     - [Loader](#loader)
+- [Remote environment reloading](#remote-environment-reloading)
+
+## Differences from t3-env
+
+See [Thoughts about environment variables and why I built Dotsafe](./docs/thoughts.md)
 
 ## Features
 
-- Typesafe environment variables `(env[key] or publicEnv[key])`
-- Agnostic validation (zod, typia, valibot, yup, etc)
+- Typesafe environment variables
+- Agnostic validation (zod, typia, valibot, class-validator, whatever)
 - Built-in adapters for loading environments from cloud
-- Inject your environments from the cloud into the process
+- Environments from the cloud directly into process.env
 - Typescript configuration file
 
 ## Installation
@@ -74,13 +83,15 @@ yarn add @dotsafe/dotsafe
 
 import { dotsafe } from "@dotsafe/dotsafe";
 
+import dotenv from "dotenv";
+
 export default dotsafe.config({
-  loader: async ({ processEnv }) => processEnv,
+  loader: async () => dotsafe.adapters.dotenv.load(dotenv),
 });
 ```
 
 > [!TIP]
-> For further customization of the loader see the Custom Loaders section
+> For loading from the cloud, see: [Custom Loaders](#custom-loaders)
 
 ### Generate the typesafe client
 
@@ -116,31 +127,28 @@ export async function GET() {
 }
 ```
 
-### Package.json script
+### Running your development script
 
-By running your process with 'dotsafe run' you can inject the environment variables into the process, no need for `dotenv`.
-
-All the colors and terminal output will be preserved, I'd say that even better sometimes (I got some colors working after running with `dotsafe run`).
+This will load, generate and inject variables into the script process.env:
 
 ```jsonc
 // package.json
 {
   "scripts": {
-    "dev": "dotsafe run -g -- npm start -w",
-    // The `-g` flag regenerates the client each time
-    "postinstall": "dotsafe generate",
-    // or 'prebuild'
-    // the app won't build if the client is not generated
+    "dev": "dotsafe dev -- npm start -w",
   },
 }
 ```
 
-### .gitignore
+It will also watch for changes in `.env` files (excluding `.example.env`).
 
-Add the generated client to your `.gitignore` file.
+> [!TIP]
+> You can also watch for changes in your cloud secret-manager, see [remote environment reloading](#remote-environment-reloading)
+
+#### .gitignore
 
 > [!IMPORTANT]  
-> Always generate the client in the CI/CD pipeline.
+> You should gitignore your env.ts and always generate it before building/installing.
 
 ```.gitignore
 # .gitignore
@@ -150,35 +158,43 @@ env.ts
 
 ## Variable Validation
 
-### Defining the constraint and validator
-
-You can define agnostic constraints for you environment variables: **zod, typia, yup, valibot? Anything that returns a boolean and errors.**
+### Defining the validator
 
 > [!TIP]
-> Generate the client before starting to write validation, the generated types will make it easier to define the constraints.
+> Generate the client before starting to write validation, the generated types will make it easier to define the schema.
 
-You don't need to validate all the variables, only the ones you want to.
-
-Here is an example using `zod`:
+Here is an example using built-in validator for `zod`:
 
 ```typescript
 // env.config.ts
 import { dotsafe } from "dotsafe";
+import { EnvKeys } from "env";
 import { z, ZodType } from "zod";
-import { EnvironmentVariables } from "env";
+
+import "dotenv/config";
 
 type ZodEnv = {
   [key in EnvironmentVariables]: ZodType;
 };
 
-const envConstraint = z.object<Partial<ZodEnv>>({
+const schema = z.object<Partial<ZodEnv>>({
   VERY_SECRET_DB_URL: z.string().regex("VERY_PUBLIC_DB_REGEX"),
 });
 
 export default dotsafe.config({
-  loader: async ({ processEnv }) => processEnv,
+  loader: async () => process.env,
+  validate: dotsafe.validators.zod(schema),
+});
+```
+
+You can also define the validator by yourself:
+
+```typescript
+// env.config.ts
+
+export default dotsafe.config({
   validate: (env) => {
-    const result = envConstraint.safeParse(env);
+    const result = schema.safeParse(env);
 
     const isValid = result.success;
 
@@ -195,27 +211,23 @@ export default dotsafe.config({
 });
 ```
 
-### Using the validation
+### Validating
 
 The validation happens with a simple command call:
 
 ```bash
-dotsafe validate
+npm dotsafe validate
 ```
-
-If the validation fails, the process will exit with an error code and the errors will be displayed in the console.
 
 You can include this in your CI/CD pipeline to ensure that the environment variables are always correct before deploying.
 
 ## Server and Client (SSR stuff)
 
-To start dealing with client and server environment variables, you need to specify your public prefix in the configuration file.
-
-Let's say you are using `Next.js`, so your public prefix will be `NEXT_PUBLIC_`:
+First, setup your public prefix, let's say you are using Next.js, so it will be `NEXT_PUBLIC_`:
 
 ```typescript
 // env.config.ts
-import { dotsafe } from "dotsafe";
+import { dotsafe } from "@dotsafe/dotsafe";
 
 export default dotsafe.config({
   loader: async ({ processEnv }) => processEnv,
@@ -225,9 +237,9 @@ export default dotsafe.config({
 });
 ```
 
-From now on, whenever you generate your client, you will get a `publicEnv` object:
+From now on, if any variable is correctly prefixed, you will get a `publicEnv` object.
 
-Server environments can't be accessed through the `publicEnv` object, and will throw an error if you try to access them on the client.
+Server environments won't be listed under the `publicEnv` object, and you will get warned if you try to access them in the client.
 
 You can configure the client/server environment detection by setting the `isServer` property in the configuration file:
 
@@ -244,68 +256,92 @@ export default dotsafe.config({
 });
 ```
 
+### Linter
+
+```typescript
+// eslint.config.ts
+
+export default [
+  dotsafe.linter.eslint.noEnvPlugin,
+  dotsafe.linter.eslint.noEnvRule("**/*.tsx", "**/*.jsx"),
+];
+```
+
+This will stop you from acessing the server environment object inside ".tsx" and ".jx" files, you can customize it the way you want, as long as you use glob patterns.
+
 > [!CAUTION]
-> There's no way of stopping you from accessing the server variables on the server and passing them to the client via HTML or props. Be careful with sensitive data.
+> Although this rule helps, there's no actual way of completely stopping you from accessing the server variables on the server and passing them to the client via HTML or props. Be careful with sensitive data.
+
+## Secret Managers
+
+The loader function is fully customizable, so you can load secrets from any source you want.
+
+### Vercel adapter
+
+This works by programatically running the
+[Vercel CLI](https://vercel.com/docs/cli), make sure you have it installed.
+
+You will get a descriptive error/guide if anything goes wrong, so just try it out.
 
 ```typescript
-// page.tsx, see that we are on server 👇 (async)
+import { dotsafe } from "@dotsafe/dotsafe";
 
-import { publicEnv } from "env";
-
-export default async function Page() {
-  // ❌ This will leak ❌
-  return <div>{env.SECRET_ENV}</div>;
-}
-```
-
-```typescript
-// page.tsx, see that we are on client 👇
-
-'use client'
-import { publicEnv } from "env";
-
-export default function Page() {
-  useEffect(() => {
-    // ✅ This will not leak ✅
-    console.log(env.SECRET_ENV);
-  }, [])
-
-  // ✅ This will not leak ✅
-  return <div>{env.SECRET_ENV}</div>;
-}
-```
-
-## Custom Loaders
-
-Anything you return from the loader will be injected into the environment variables, so the loader is fully customizable.
-
-You can also use the default built-in adapters or create your own.
-
-### Infisical adapter
-
-```typescript
-import { InfisicalSDK } from "@infisical/sdk";
-import { dotsafe, EnvKeys } from "@dotsafe/dotsafe";
+import dotenv from "dotenv";
 
 export default dotsafe.config({
   loader: async ({ processEnv }) => {
     const nodeEnv = processEnv.NODE_ENV;
 
     if (nodeEnv === "development") {
-      const loader = dotsafe.adapters.infisical.loader;
+      const dotenvVars = dotsafe.adapters.dotenv.load(dotenv);
 
-      const config = {
-        clientId: processEnv.INFISICAL_CLIENT_ID!,
-        clientSecret: processEnv.INFISICAL_CLIENT_SECRET!,
-        projectId: processEnv.INFISICAL_PROJECT_ID!,
-        environment: "dev",
+      const load = dotsafe.adapters.vercel.load;
+
+      const vercelEnv = load({
+        parser: dotenv.parse,
+      });
+
+      return {
+        ...vercelEnv,
+        ...dotenvVars,
       };
+    }
 
-      const infisicalEnv = loader(InfisicalSDK, config);
+    if (nodeEnv === "preview") {
+      return processEnv;
+    }
+
+    if (nodeEnv === "production") {
+      return processEnv;
+    }
+  },
+});
+```
+
+### Infisical adapter
+
+```typescript
+import { InfisicalSDK } from "@infisical/sdk";
+import { dotsafe } from "@dotsafe/dotsafe";
+
+import dotenv from "dotenv";
+
+export default dotsafe.config({
+  loader: async ({ processEnv }) => {
+    const nodeEnv = processEnv.NODE_ENV;
+
+    if (nodeEnv === "development") {
+      const dotenvVars = dotsafe.adapters.dotenv.load(dotenv);
+
+      const load = dotsafe.adapters.infisical.load;
+
+      const infisicalEnv = load(InfisicalSDK, {
+        // here or in .env prefixed with INFISICAL_
+      });
 
       return {
         ...infisicalEnv,
-        ...processEnv,
+        ...dotenvVars,
       };
     }
 
@@ -344,29 +380,26 @@ export default defineConfig({
 ```typescript
 // env.config.ts
 import { dotsafe, EnvironmentVariables } from "@dotsafe/dotsafe";
-import { envvars, configure } from "@trigger.dev/sdk/v3";
+import * as trigger from "@trigger.dev/sdk/v3";
+
+import dotenv from "dotenv";
 
 export default dotsafe.config({
   loader: async ({ processEnv }) => {
     const nodeEnv = processEnv.NODE_ENV;
 
     if (nodeEnv === "development") {
-      configure({
-        accessToken: processEnv.TRIGGER_ACCESS_TOKEN!,
+      const dotenvVars = dotsafe.adapters.dotenv.load(dotenv);
+
+      const load = dotsafe.adapters.triggerDev.load;
+
+      const triggerEnv = load(trigger, {
+        // here or in .env prefixed with TRIGGER_
       });
-
-      const loader = dotsafe.adapters.triggerDev.loader;
-
-      const config = {
-        projectId: processEnv.TRIGGER_PROJECT_ID!,
-        environment: "dev",
-      };
-
-      const triggerEnv = loader(envvars, config);
 
       return {
         ...triggerEnv,
-        ...processEnv,
+        ...dotenvVars,
       };
     }
 
@@ -380,3 +413,24 @@ export default dotsafe.config({
   },
 });
 ```
+
+## Remote environment reloading
+
+You can specify a port option to your dev script:
+
+```jsonc
+// package.json
+{
+  "scripts": {
+    "dev": "dotsafe dev --port 9000 -- npm start -w",
+  },
+}
+```
+
+This will spin up a localhost server with the **/dotsafe** endpoint (all http methods accepted).
+
+Any requests made to that url will reload the types and re-inject the changes into your process, no need to restart your server.
+
+You will need a tunneling solution for exposing your local environment to the world, if you are new to tunneling, check out the npm package [localtunnel](https://github.com/localtunnel/localtunnel).
+
+After that, just setup your webhook in your secret-manger using the url that you got from the tunneling tool.
