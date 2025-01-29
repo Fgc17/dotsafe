@@ -1,15 +1,30 @@
-import dotenv from "dotenv";
 import { spawn } from "child_process";
 import { promises as fs } from "fs";
+import { UnsafeEnvironmentVariables } from "../types";
 
-const loader = async (environment: string = "development") => {
+export interface VercelLoadArgs {
+  /**
+   * Bring your own parser here, it should take a string (env file content) and return an object with the environment variables.
+   * You can use `dotenv.parse` from the `dotenv` package, but you know best.
+   */
+  parser: (envFileContent: string) => UnsafeEnvironmentVariables;
+
+  /**
+   * The environment to pull the variables from.
+   *
+   * @default "development"
+   */
+  projectEnv?: string;
+}
+
+const load = async ({ parser, projectEnv = "development" }: VercelLoadArgs) => {
   try {
     await new Promise<void>((resolve, reject) => {
       const child = spawn("vercel", [
         "env",
         "pull",
         ".tmp.vercel.env",
-        `--environment=${environment}`,
+        `--environment=${projectEnv}`,
       ]);
 
       child.on("error", (e) => {
@@ -28,7 +43,7 @@ const loader = async (environment: string = "development") => {
 
     const envFileContent = await fs.readFile(".tmp.vercel.env", "utf-8");
 
-    const envVariables = dotenv.parse(envFileContent);
+    const envVariables = parser(envFileContent);
 
     await fs.unlink(".tmp.vercel.env");
 
@@ -40,13 +55,13 @@ const loader = async (environment: string = "development") => {
       "\n 1. You didn't install the Vercel CLI: `npm i -g vercel`",
       "\n 2. You are not logged: `vercel login`",
       "\n 3. You didn't link your codebase to a Vercel project: `vercel link`",
-      "\n 3. You do not have the `development` environment, in this case you can use `dotsafe.adapters.vercel.loader(<your-environment>)`",
+      "\n 4. You somehow do not have the `development` environment, in this case you can use `dotsafe.adapters.vercel.load({ environment })`",
       "\x1b[0m"
     );
-    process.exit(0);
+    process.exit(1);
   }
 };
 
 export const vercel = {
-  loader,
+  load,
 };

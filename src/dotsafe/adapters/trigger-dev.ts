@@ -4,25 +4,40 @@ import { getRuntime } from "../utils/get-runtime";
 import { UnsafeEnvironmentVariables } from "../types";
 
 type TriggerDevClientMock = {
-  list: (
-    projectId: string,
-    environment: string
-  ) => Promise<
-    Array<{
-      name: string;
-      value: string;
-    }>
-  >;
+  envvars: {
+    list: (
+      projectId: string,
+      environment: string
+    ) => Promise<
+      Array<{
+        name: string;
+        value: string;
+      }>
+    >;
+  };
+  configure: (config: { accessToken: string }) => void;
 };
 
-const loader = async (
-  envvars: TriggerDevClientMock,
-  env: {
+const load = async (
+  trigger: TriggerDevClientMock,
+  config: {
     projectId: string;
+    accessToken: string;
     environment?: string;
+  } = {
+    projectId: process.env.TRIGGER_PROJECT_ID!,
+    accessToken: process.env.TRIGGER_ACCESS_TOKEN!,
+    environment: "dev",
   }
 ) => {
-  const secrets = await envvars.list(env.projectId, env.environment ?? "dev");
+  trigger.configure({
+    accessToken: process.env.TRIGGER_ACCESS_TOKEN!,
+  });
+
+  const secrets = await trigger.envvars.list(
+    config.projectId,
+    config.environment ?? "dev"
+  );
 
   return secrets.reduce((acc, { name, value }) => {
     acc[name] = value;
@@ -92,6 +107,6 @@ export const extension = (config?: string): TriggerDevExtensionMock => ({
 });
 
 export const triggerDev = {
-  loader,
+  load,
   extension,
 };

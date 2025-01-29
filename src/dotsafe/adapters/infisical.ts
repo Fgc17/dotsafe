@@ -16,13 +16,18 @@ type InfisicalClientMock = GenericClass<{
   };
 }>;
 
-const loader = async (
+const load = async (
   infisicalClient: InfisicalClientMock,
   env: {
     clientId: string;
     clientSecret: string;
     projectId: string;
-    environment?: string;
+    environment: string;
+  } = {
+    clientId: process.env.INFISICAL_CLIENT_ID!,
+    clientSecret: process.env.INFISICAL_CLIENT_SECRET!,
+    projectId: process.env.INFISICAL_PROJECT_ID!,
+    environment: "dev",
   }
 ): Promise<UnsafeEnvironmentVariables> => {
   const client = new infisicalClient();
@@ -33,7 +38,7 @@ const loader = async (
   });
 
   const { secrets } = await client.secrets().listSecrets({
-    environment: env.environment ?? "dev",
+    environment: env.environment,
     projectId: env.projectId!,
   });
 
@@ -44,5 +49,5 @@ const loader = async (
 };
 
 export const infisical = {
-  loader,
+  load,
 };
