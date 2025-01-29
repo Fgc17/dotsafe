@@ -1,6 +1,6 @@
-import { UnsafeEnvironmentVariables } from "../types";
+import { DotsafeValidator, UnsafeEnvironmentVariables } from "../types";
 
-type ZodObjectMock = {
+export type ZodSchemaMock = {
   safeParse: (env: any) => {
     success: boolean;
     error?: {
@@ -13,7 +13,7 @@ type ZodObjectMock = {
   };
 };
 
-export const zod = (schema: ZodObjectMock) => {
+export const zod = (schema: ZodSchemaMock): DotsafeValidator => {
   return (env: UnsafeEnvironmentVariables) => {
     const result = schema.safeParse(env);
 

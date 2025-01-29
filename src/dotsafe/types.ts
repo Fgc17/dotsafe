@@ -9,7 +9,10 @@ export type DotsafeLoader = (env: {
   parse: <T extends DotenvParseOutput>(src: string | Buffer) => T;
 }) => Promisable<UnsafeEnvironmentVariables | null | undefined>;
 
-export type DotsafeValidator = (env: UnsafeEnvironmentVariables) => Promisable<{
+export type DotsafeValidator = (
+  env: UnsafeEnvironmentVariables,
+  context: DotsafeContext
+) => Promisable<{
   isValid: boolean;
   errors?: Array<{
     key: string;
