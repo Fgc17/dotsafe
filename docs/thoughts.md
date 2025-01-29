@@ -1,8 +1,8 @@
-# Thoughts about environment variables and why I built Dotsafe
+# Thoughts about environment variables and how I built Dotsafe
 
 ## An overview
 
-I've been coding with TypeScript for three years now. I remember the first time I created a project with the NestJS CLI, and not long after, I stumbled upon this:
+I've been coding with TypeScript for two years now. I remember the first time I created a project with the NestJS CLI, and not long after, I stumbled upon this:
 
 ```typescript
 type Env = {
@@ -33,11 +33,11 @@ And you may ask, “Why is it bad?” Well, managing multiple sources of truth i
 
 I couldn't find a good name to this "multiple sources of truth problem", so let's call it the **multus problem**.
 
-One of the most famous examples of the multus problem arises when developing full-stack applications. Every good developer has, at some point, asked themselves: "How do I sync my backend and frontend types?" In an effort to address this issue, some have turned to GraphQL, others to tRPC, and still others to OpenAPI SDK generation. Anyways, let's keep with the env stuff.
+One of the most famous examples of the multus problem arises when developing full-stack applications. Every developer has, at some point, asked themselves: "How do I sync my backend and frontend types?" In an effort to address this issue, some have turned to GraphQL, others to tRPC, and still others to OpenAPI SDK generation.
 
-The last time I checked typesafe environment packages was a long time ago before this situation, so I quickly looked again to see if things had changed. To my surprise, there still weren’t many solutions to this problem.
+Whenever this problem arises, usually there is someone trying to solve it, although no one solved it for .env files (still).
 
-Most material I found suggested the functional client approach and some suggested for a change in the global NodeJS namespace, let's call it the `namespace approach`:
+Most answers you get upon googling currently suggests the functional client approach, others suggested for a change in the global NodeJS namespace, let's call it the `namespace approach`:
 
 ```typescript
 declare global {
@@ -63,32 +63,55 @@ The truth is that we shouldn’t be using `.env` files anymore—at least not in
 
 Password, account, and secret management should be a top priority for anyone serious about a project. You need to organize and keep your environments safe. That’s where cloud or self-hosted secret managers come into play.
 
-Every secret manager offers a way to separate different environments: `dev`, `test`, `staging`, `production`, etc. But what happens when you need to fetch the environments for your pipeline or development workspace?
+This is the usual secret manager workflow:
 
-Well, Vercel, for instance, offers all of this out of the box by providing a CLI for running on your machine and their secret manager web page for each project.
+1. Declare your secret in the dashboard
+2. Use their CLI for loading the secrets from the cloud into local, excluding the need for .env files in development.
+3. Setup their built-in integrations for CI/CD pipelines
 
-Infisical, on the other hand, does the same, but since it isn’t a hosting
-platform, it provides integration with most of them.
+However, what if the environments declared in the cloud could be synced and cause type errors in your local codebase?
 
-If we are going to solve the _multus problem_ we can't ignore the existance of secret managers, we need a secret loader.
+And that's the same as asking: what if we could solve the _multus problem_ not only for .env files, but also for cloud providers?
+
+This bigger purpose was what really got me into developing dotsafe, and for that we will need a secret loader.
+
+## More config files?
+
+No one needs more config files: prettier, eslint, package.json, .gitignore, tsconfig.json, next.config.ts, tailwind.config.ts, nest-cli.json, ... (this list probably bigger than the R set).
+
+I tried to think a way out of a config file, but the try didn't last more than 15 seconds, obviously we need a js file for executing js code (the secret loader).
+
+And even though we can't avoid this embarrasing situation, we can make the most out of it by using a `.ts` config rather than a `.js` one.
+
+In case you ever wondered how to execute `.ts` in runtime, there is [jiti](https://www.npmjs.com/package/jiti).
+
+Kinda hard on the bundle size, but we will be using it only on CLI commands.
 
 ## Why we should be agnostic
 
-Environment variables are present in `any` nodejs project, that's a rule, and that's why we should be agnostic with `any` implementation we make.
+Environment variables are present in `any` nodejs project, that's a rule, and that's why we should be agnostic.
 
-I knew from start that the secret loader should load from `any` source and inject into `any` process
+I knew from start that the secret loader should load from `any` source and inject into `any` process.
 
-For the former, I used the `jiti` package for creating a `.ts` config file and the `commander` package for providing a `CLI`.
+The loading part is already addressed through the config file by the required `load` key, now we just need a way to execute the loading.
 
-Simple as that we get our first command: `dotsafe generate`, currently it only reads the declared async loader function inside `env.config.ts` and prints it to the console.
+This way will be through the dotsafe CLI, built with [commander](https://www.npmjs.com/package/commander), so here's our first command:
 
-As for the latter, NodeJS `spawn` method is enough, therefore here's our second command: `dotsafe run -- npm run <your-script>`.
+`dotsafe generate`.
 
-So we get variables the way we want, and inject it into the process we want, things are looking pretty agnostic.
+Currently this only executes the function, but soon it will be generating something more.
+
+As for the variable injection, NodeJS `spawn` method is enough, just spawn with whatever environments you want (in this case, the ones gotten from the loader).
+
+Therefore, here's our second command:
+
+`dotsafe run -- npm run <your-script>`.
+
+So wet variables the way we want, and inject it into the process we want, things are looking pretty agnostic.
 
 However, agnostic doesn’t mean that we shouldn’t try to provide some kind of help to the user. That’s what I think an “agnostic library” should be: **support all, help most**.
 
-So I got some adapters working. That way a percentage of users won't have a hard time figuring out how to set things up (vercel really needed an adapter, lol).
+Hence I got some adapters working. That way a percentage of users won't have a hard time figuring out how to set things up (vercel really needed an adapter, lol).
 
 There's a loader, now there must be types.
 
@@ -197,9 +220,7 @@ Here are the two ways of leaking your environments into the client:
 - Through the server component return (ssr)
 - Through an endpoint response (any backend/client relation)
 
-The first case can be partially solved through an ESLint rule—I’ve written one for dotsafe.
-
-The rule blocks you from accessing the server variables inside non-specified files (e.g., .jsx), so you can restrict variable access to files like `service.ts`.
+The first case can be partially solved through an ESLint rule—I’ve written one for dotsafe. The rule blocks you from accessing the server variables inside specified files (e.g., .jsx).
 
 And it only partially solves the issue because you can still access the variable in the service file, import the service in the server component, and leak it into the HTML. But at least you will have some kind of protection.
 
@@ -209,25 +230,25 @@ NestJS, for instance, provides a thing called 'interceptors'. Interceptors can i
 
 In this case, it would be enough to check the type of the response (no one is going to check if a secret got leaked inside an image, right?) and then search for any secret inside of it.
 
-Generally speaking, `carefulness is the ultimate solution for secret leaking`.
+Generally speaking, **carefulness is the ultimate solution for secret leaking**.
 
 ## Variable validation
 
-As for the time I started writing this, t3 didn't have support for bringing your own validation library, now it does.
+When I started writing this, t3 didn't have support for bringing your own validation library, now it does.
 
-It supports anything that follows the Standard Schema, but what about our class-validator (and many other) friends?
+It supports anything that follows the Standard Schema, that currently means `zod`, `valibot` and `arktype`, but hey, what about our class-validator (and many other) friends?
 
-Don't get me wrong, I really like the modern approach, and it does suit all of my current projects, but this is far from agnostic.
+Don't get me wrong, I really like the modern approach, and it does suit all of my current projects, but this is far from 'bring your own'.
 
 For dotsafe variable validation I choose to keep my principle: **support all, help most**.
 
-Right beside the loader function we got a 'validate' function, as long as your validation library can return a boolean (e.g `isValid`) and an array of errors, you are good to go with dotsafe.
+Right beside the `load` function we got a `validate` function, as long as your validation library can return a boolean and an array of errors, you are good to go with dotsafe.
 
-Obviously I don't plan to let most of people down, I hope by the time someone is reading this I've already shipped the `dotsafe.validators` functionality, similar to how adapters works.
+For the _help most_ part here we will do the same as for loaders, built-in functions, so it can work out of the box not only with standard schema libraries.
 
 Now about how validation should happen: through the CLI.
 
-No additional setup, no headache, just hit "dotsafe validate" and it will run the validate function against all envs returned from the loader.
+No additional setup, no headache, just hit `dotsafe validate` and it will run the validate function against all envs returned from the loader.
 
 Run it before building and you are good to go.
 
@@ -239,21 +260,31 @@ For local development, reloading is straightforward: we set up IPC communication
 
 Reloading locally is easy: setup IPC communication in the spawn method, watch '.env' files and re-assign the process.env object when anything happens.
 
-However ghings get trickier when it comes to handling changes that happen in the cloud.
+However things get trickier when it comes to handling changes that happen in the cloud.
 
-At first glance we can think of some stuff: http servers, tunnels, webhooks, extra configs, built-in tunnels or even "let's forget this feature".
+At first glance we can think of some stuff: http servers, tunnels, webhooks, extra configs, built-in tunnels and even "let's forget this feature".
 
-But I really wanted to make this work, what could possibly be cooler than changing a secret in the vercel panel and causing a type error in my vscode window.
+Still I really wanted to make this work, what could possibly be cooler than changing a secret in the infisical panel and causing a type error in my vscode window.
 
-So I made things as simples a possible, the only configuration needed is a `--port` option in the `dotsafe run`.
+One of the most important things here to me is to not create a library that feels _bloated_ with hundreds of options, so I made things as simple as possible.
 
-If this option is specified, we spin up a single endpoint server with the nodejs http module.
+The only configuration needed is a `--port` option in the `dotsafe run`, in case it is specified, we spin up a single endpoint server with the nodejs http module.
 
 For exposing the endpoint we need tunneling, I considered a function in the config file that would use tunneling libraries like [localtunnel](https://github.com/localtunnel/localtunnel).
 
 Yet, this approach doesn’t fit every use case. Not all tunneling libraries offer a Node.js API, so it’s better to let users handle tunneling themselves.
 
 After spinning up the local server, setting up the tunnel and configuring the webhook in the secret manager, the environments will reload the same way as they do locally: via IPC and re-assigning the process.env object.
+
+It seems everything is fine now, right? Not quite.
+
+What about secret managers that do not provide webhook functionality?
+
+Usually, these are the ones that _have_ secret managers rather than being secret managers themselves, such as vercel, railway, trigger.dev, etc.
+
+For this unfortunate case, I'm afraid there isn't going to be a dotsafe vscode extension providing a reload button.
+
+But there will surely be a `dotsafe reload` command that can be executed on a second terminal and tell the `dotsafe run` process to reload without restarting.
 
 ## My thoughts on t3-env and dotsafe
 
