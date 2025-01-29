@@ -40,20 +40,24 @@
   "scripts": {
     "build": "tsup src/dotsafe/dotsafe.ts src/cli/cli.ts src/env/env.ts --dts --shims",
     "dev": "tsup src/dotsafe/dotsafe.ts src/cli/cli.ts src/env/env.ts --dts --shims --watch",
-    "dotsafe": "pnpm tsx src/cli/cmd.ts",
-    "playground:generate": "pnpm dotsafe generate --config='./playground/env.config.ts'",
-    "playground:run": "pnpm dotsafe run --config='./playground/env.config.ts' -- pnpm tsx ./playground/src/index.ts",
+    "dotsafe": "pnpm tsx src/cli/cli.ts",
+    "playground:generate": "pnpm dotsafe generate --config ./playground/env.config.ts",
+    "playground:validate": "pnpm dotsafe validate --config ./playground/env.config.ts",
+    "playground:run": "pnpm dotsafe run --config ./playground/env.config.ts -- pnpm tsx ./playground/src/index.ts",
     "bump": "changeset",
-    "release": "pnpm build && changeset version && changeset publish"
+    "release": "rm -rf dist && pnpm build && changeset version && changeset publish"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.11",
     "@types/node": "^22.9.1",
+    "arktype": "^2.0.3",
+    "concurrently": "9.1.2",
+    "dotenv": "16.4.7",
     "prettier": "3.3.3",
     "tsup": "^8.3.5",
     "tsx": "4.19.2",
-    "concurrently": "9.1.2",
-    "typescript": "5.6.3"
+    "typescript": "5.6.3",
+    "typia": "7.6.0"
   },
   "dependencies": {
     "chalk": "^4",
