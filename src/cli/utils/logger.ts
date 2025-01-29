@@ -1,16 +1,17 @@
 import chalk from "chalk";
 
-const line = (message: string) => "\n" + "🔒 [dotsafe] " + message + "\n";
+const line = (message: string[]) =>
+  "\n" + "🔒 [dotsafe] " + message.join(" ") + "\n";
 
-const error = (message: string) => {
+const error = (...message: string[]) => {
   console.log(chalk.bgHex("#2e0a05").hex("c52222")(line(message)));
 };
 
-const info = (message: string) => {
+const info = (...message: string[]) => {
   console.log(chalk.bgBlue(line(message)));
 };
 
-const success = (message: string) => {
+const success = (...message: string[]) => {
   console.log(chalk.bgHex("#052e16").hex("#22c55e")(line(message)));
 };
 

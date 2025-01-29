@@ -1,7 +1,8 @@
 import { program } from "commander";
 import { generateAction } from "./actions/generate";
-import { runAction } from "./actions/run";
+import { devAction } from "./actions/dev";
 import { validateAction } from "./actions/validate";
+import { runAction } from "./actions/run";
 
 program
   .name("dotsafe")
@@ -13,10 +14,11 @@ program
   .option("--config <config>", "Config file path")
   .option("-g, --generate", "Generates the declaration file")
   .option("-v, --validate", "Validates with the validate function")
-  .action(async (args, options) => {
+  .action(async (options) => {
     if (options.validate) {
       await validateAction(options);
     }
+
     await generateAction(options);
   });
 
@@ -27,16 +29,16 @@ program
   .action(validateAction);
 
 program
+  .command("dev")
+  .argument("<command...>", "The command to execute after --")
+  .option("--config <config>", "Config file path")
+  .option("--port <port>", "Open a port for hot reloading")
+  .action(devAction);
+
+program
   .command("run")
   .argument("<command...>", "The command to execute after --")
   .option("--config <config>", "Config file path")
-  .option("-g, --generate", "Runs generate before running the command")
-  .action(async (args, options) => {
-    if (options.generate) {
-      await generateAction(options);
-    }
-
-    await runAction(options, args);
-  });
+  .action(runAction);
 
 program.parse();

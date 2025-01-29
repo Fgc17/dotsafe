@@ -5,24 +5,45 @@ import { getEnv } from "../utils/get-env";
 export async function validateAction(options?: { config?: string }) {
   const config = await getConfig(options?.config);
 
-  const env = await getEnv(config);
+  const { env } = await getEnv(config);
 
-  const validator = config.validate;
+  const validate = config.validate;
 
-  if (!validator) {
+  if (!validate) {
     logger.error(
       `Validate command was called but no validator was provided in the config.`
     );
-    process.exit(0);
+    process.exit(1);
   }
 
-  const { isValid, errors } = await validator(env);
+  const { isValid, errors } = await validate(env, {
+    configPath: config.path,
+  });
 
-  if (!isValid) {
+  if (!isValid && errors) {
+    const groupedErrors = errors.reduce(
+      (acc, error) => {
+        const key = error.key;
+
+        if (!acc[key]) {
+          acc[key] = [];
+        }
+
+        acc[key].push(error.message);
+
+        return acc;
+      },
+      {} as Record<string, string[]>
+    );
+
     logger.error(
       `Validation failed, here's the error list:` +
         "\n\n" +
-        errors?.map((error) => `❌ ${error.key}: ${error.message}`).join("\n")
+        Object.entries(groupedErrors)
+          ?.map(
+            ([key, messages]) => `❌ ${key}\n  • ${messages.join("\n  • ")}`
+          )
+          .join("\n")
     );
 
     process.exit(1);

@@ -1,12 +1,15 @@
-import { DotenvParseOutput } from "dotenv";
-
 export type Promisable<T> = T | Promise<T>;
 
 export type UnsafeEnvironmentVariables = Record<string, string>;
 
-export type DotsafeLoader = (env: {
-  processEnv: DotenvParseOutput;
-  parse: <T extends DotenvParseOutput>(src: string | Buffer) => T;
+export type DotsafeContext = {
+  configPath: string;
+};
+
+export type DotsafeLoader = ({
+  processEnv,
+}: {
+  processEnv: UnsafeEnvironmentVariables;
 }) => Promisable<UnsafeEnvironmentVariables | null | undefined>;
 
 export type DotsafeValidator = (

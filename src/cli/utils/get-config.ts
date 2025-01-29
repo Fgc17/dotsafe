@@ -5,18 +5,21 @@ import { logger } from "./logger";
 
 const jiti = createJiti(import.meta.url);
 
-export async function getConfig(path?: string) {
-  const configPath = resolve(process.cwd(), path ?? "env.config.ts");
+export async function getConfig(configPath?: string) {
+  const path = resolve(process.cwd(), configPath ?? "env.config.ts");
 
   try {
-    const config = (await jiti.import(configPath, {
+    const config = (await jiti.import(path, {
       default: true,
     })) satisfies DotsafeConfig;
 
-    return config as DotsafeConfig;
+    return {
+      ...config,
+      path,
+    };
   } catch (error: any) {
     console.log(error);
     logger.error("Failed to read config file, check if it exists.");
-    return process.exit(1);
+    process.exit(1);
   }
 }
