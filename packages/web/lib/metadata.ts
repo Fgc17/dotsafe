@@ -3,9 +3,9 @@ import { createMetadataImage } from "fumadocs-core/server";
 import { source } from "@/lib/source";
 
 export const baseUrl =
-  process.env.NODE_ENV === "development" || !process.env.VERCEL_URL
+  process.env.NODE_ENV === "development" || !process.env.APP_URL
     ? new URL("https://fatima-tunnel.loca.lt")
-    : new URL(`https://${process.env.VERCEL_URL}`);
+    : new URL(`https://${process.env.APP_URL}`);
 
 export const metadataImage = createMetadataImage({
   imageRoute: "/api/open-graph",
