@@ -1,47 +1,41 @@
-import { DotsafeClientOptions, DotsafeLoader, DotsafeValidator } from "./types";
+import path from "path";
+import { FatimaClientOptions, FatimaLoader, FatimaValidator } from "./types";
 import { getCallerLocation } from "./utils/get-caller-location";
+import { logger } from "./utils/logger";
 
 export type FatimaOptions = {
   /**
    * Anything you return here will turn into the environment variables
    *
-   * Check README for more information on built-in loaders
+   * Check docs for more information on built-in loaders
    */
-  load: DotsafeLoader;
+  load: FatimaLoader;
   /**
    * Environment options
    */
-  client?: DotsafeClientOptions;
+  client?: FatimaClientOptions;
   /**
    * Function that will be executed with ``fatima validate``
    */
-  validate?: DotsafeValidator;
-  /**
-   * Output path for the generated file (always relative to the config file)
-   *
-   * @default "./env.ts" or "./src/env.service.ts" for NestJS
-   */
-  output?: string;
+  validate?: FatimaValidator;
 };
 
-export type DotsafeConfig = ReturnType<typeof config>;
+export type FatimaConfig = ReturnType<typeof config>;
 
-export function config({
-  output = "./env.ts",
-  load,
-  client,
-  validate,
-}: FatimaOptions) {
-  const { filePath, folderPath } = getCallerLocation();
+export function config({ load, client, validate }: FatimaOptions) {
+  const { filePath: configFilePath, folderPath: configFolderPath } =
+    getCallerLocation();
+
+  const configExtension = path.extname(configFilePath);
 
   return {
     client,
-    output,
     load,
     validate,
-    location: {
-      filePath,
-      folderPath,
+    file: {
+      extension: configExtension,
+      path: configFilePath,
+      folderPath: configFolderPath,
     },
     __fatimaconfig: true,
   };

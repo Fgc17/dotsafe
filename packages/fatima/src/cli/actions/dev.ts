@@ -1,39 +1,53 @@
-import { spawn } from "child_process";
-import { logger } from "../utils/logger";
-import { getConfig } from "../utils/get-config";
-import { getEnv } from "../utils/get-env";
+import { ChildProcess, spawn } from "child_process";
+import { logger } from "../../core/utils/logger";
+import { transpileConfig } from "../utils/transpile-config";
+import { loadEnv } from "../utils/load-env";
 import { UnsafeEnvironmentVariables } from "src/core/types";
 import { debounce } from "../utils/debounce";
 import { createClient } from "../utils/create-client";
-import { populateProcessEnv } from "../utils/assign-env";
+import { createInjectableEnv, populateEnv } from "../utils/env-patch";
 
 import path from "path";
 import fs from "fs";
 import http from "http";
 
-export async function devAction(
-  options: { config: string; generate: boolean; port: boolean },
-  args: string[]
-) {
-  const config = await getConfig(options.config);
+type ActionOptions = {
+  config: string;
+  generate: boolean;
+  port: boolean;
+};
 
-  const { env, envCount } = await getEnv(config);
+export const devAction = async (options: ActionOptions, args: string[]) => {
+  populateEnv({
+    NODE_ENV: "development",
+  });
+
+  const config = await transpileConfig(options.config);
+
+  const { env, envCount } = await loadEnv(config);
 
   createClient(config, env);
 
   logger.success(`Loaded ${envCount} environment variables`);
 
-  populateProcessEnv(env);
+  const injectableEnv = createInjectableEnv(env);
 
   const cmd = args.shift();
 
   const child = spawn(cmd!, [...args], {
-    env: process.env,
+    env: injectableEnv,
     shell: true,
     stdio: ["inherit", "inherit", "inherit", "ipc"],
   });
 
-  const envFilesDir = path.dirname(config.path);
+  const envFilesDir = config.file.folderPath;
+
+  const updateChildEnv = (
+    child: ChildProcess,
+    env: UnsafeEnvironmentVariables
+  ) => {
+    child.send({ type: "update-env", env });
+  };
 
   const watcher = fs.watch(
     envFilesDir,
@@ -45,13 +59,13 @@ export async function devAction(
       )
         return;
 
-      const { env, envCount } = await getEnv(config);
+      const { env, envCount } = await loadEnv(config);
 
       createClient(config, env);
 
-      populateProcessEnv(env);
+      const injectableEnv = createInjectableEnv(env);
 
-      child.send({ type: "update-env", env });
+      updateChildEnv(child, injectableEnv);
 
       logger.success(`Reloaded ${envCount} environment variables`);
     }, 100)
@@ -73,13 +87,13 @@ export async function devAction(
 
       req.on("end", async () => {
         try {
-          const { env, envCount } = await getEnv(config);
+          const { env, envCount } = await loadEnv(config);
 
           createClient(config, env);
 
-          populateProcessEnv(env);
+          const injectableEnv = createInjectableEnv(env);
 
-          child.send({ type: "update-env", env });
+          updateChildEnv(child, injectableEnv);
 
           logger.success(`Reloaded ${envCount} environment variables`);
 
@@ -99,7 +113,10 @@ export async function devAction(
 
         res.writeHead(500, { "Content-Type": "application/json" });
         res.end(
-          JSON.stringify({ status: "error", message: "Internal Server Error" })
+          JSON.stringify({
+            status: "error",
+            message: "Internal Server Error",
+          })
         );
       });
     });
@@ -117,7 +134,9 @@ export async function devAction(
     "message",
     (message: { type: string; env: UnsafeEnvironmentVariables }) => {
       if (message.type === "update-env") {
-        populateProcessEnv(message.env);
+        const injectableEnv = createInjectableEnv(message.env);
+
+        Object.assign(process.env, injectableEnv);
       }
     }
   );
@@ -135,4 +154,4 @@ export async function devAction(
       process.exit(code!);
     }
   });
-}
+};

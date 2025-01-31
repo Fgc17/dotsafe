@@ -11,6 +11,7 @@ dist
 .source
 *.tsbuildinfo
 out
+.turbo
 
 # env
 .env

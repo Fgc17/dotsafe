@@ -1,25 +1,25 @@
 import { spawn } from "child_process";
-import { logger } from "../utils/logger";
-import { getConfig } from "../utils/get-config";
-import { getEnv } from "../utils/get-env";
-import { populateProcessEnv } from "../utils/assign-env";
+import { logger } from "../../core/utils/logger";
+import { transpileConfig } from "../utils/transpile-config";
+import { loadEnv } from "../utils/load-env";
+import { createInjectableEnv } from "../utils/env-patch";
 
-export async function runAction(
+export const runAction = async (
   options: { config: string; generate: boolean },
   args: string[]
-) {
-  const config = await getConfig(options.config);
+) => {
+  const config = await transpileConfig(options.config);
 
-  const { env, envCount } = await getEnv(config);
+  const { env, envCount } = await loadEnv(config);
 
   logger.success(`Loaded ${envCount} environment variables`);
 
-  populateProcessEnv(env);
-
   const cmd = args.shift();
 
+  const injectableEnv = createInjectableEnv(env);
+
   const child = spawn(cmd!, [...args], {
-    env: process.env,
+    env: injectableEnv,
     shell: true,
     stdio: "inherit",
   });
@@ -35,4 +35,4 @@ export async function runAction(
       process.exit(code!);
     }
   });
-}
+};

@@ -1,6 +1,7 @@
 import { spawn } from "child_process";
 import { promises as fs } from "fs";
-import { UnsafeEnvironmentVariables } from "../types";
+import { FatimaLoadFunction, UnsafeEnvironmentVariables } from "../types";
+import { logger } from "../utils/logger";
 
 export interface VercelLoadArgs {
   /**
@@ -17,50 +18,52 @@ export interface VercelLoadArgs {
   projectEnv?: string;
 }
 
-const load = async ({ parser, projectEnv = "development" }: VercelLoadArgs) => {
-  try {
-    await new Promise<void>((resolve, reject) => {
-      const child = spawn("vercel", [
-        "env",
-        "pull",
-        ".tmp.vercel.env",
-        `--environment=${projectEnv}`,
-      ]);
+const load =
+  ({
+    parser,
+    projectEnv = "development",
+  }: VercelLoadArgs): FatimaLoadFunction =>
+  async () => {
+    try {
+      await new Promise<void>((resolve, reject) => {
+        const child = spawn("vercel", [
+          "env",
+          "pull",
+          ".tmp.vercel.env",
+          `--environment=${projectEnv}`,
+        ]);
 
-      child.on("error", (e) => {
-        console.log(e);
-        reject(e);
+        child.on("error", (e) => {
+          reject(e);
+        });
+
+        child.on("close", (code) => {
+          if (code === 0) {
+            resolve();
+          } else {
+            reject(new Error(`Process exited with code ${code}`));
+          }
+        });
       });
 
-      child.on("close", (code) => {
-        if (code === 0) {
-          resolve();
-        } else {
-          reject(new Error(`Process exited with code ${code}`));
-        }
-      });
-    });
+      const envFileContent = await fs.readFile(".tmp.vercel.env", "utf-8");
 
-    const envFileContent = await fs.readFile(".tmp.vercel.env", "utf-8");
+      const envVariables = parser(envFileContent);
 
-    const envVariables = parser(envFileContent);
+      await fs.unlink(".tmp.vercel.env");
 
-    await fs.unlink(".tmp.vercel.env");
-
-    return envVariables;
-  } catch (error) {
-    console.log(
-      "\x1b[41m",
-      "🔒 [fatima] 'vercel pull env' didn't work, here are some possible reasons:",
-      "\n 1. You didn't install the Vercel CLI: `npm i -g vercel`",
-      "\n 2. You are not logged: `vercel login`",
-      "\n 3. You didn't link your codebase to a Vercel project: `vercel link`",
-      "\n 4. You somehow do not have the `development` environment, in this case you can use `adapters.vercel.load({ environment })`",
-      "\x1b[0m"
-    );
-    process.exit(1);
-  }
-};
+      return envVariables;
+    } catch (error) {
+      logger.error(
+        "'vercel pull env' didn't work, here are some possible reasons:\n",
+        "1. You didn't install the Vercel CLI: `npm i -g vercel`",
+        "2. You are not logged: `vercel login`",
+        "3. You didn't link your codebase to a Vercel project: `vercel link`",
+        "4. You somehow do not have the `development` environment, in this case you can use `adapters.vercel.load({ environment })`"
+      );
+      process.exit(1);
+    }
+  };
 
 export const vercel = {
   load,

@@ -1,0 +1,11 @@
+{
+  "title": "Loaders",
+  "pages": [
+    "index",
+    "./(loaders)/dotenv",
+    "./(loaders)/infisical",
+    "./(loaders)/vercel",
+    "./(loaders)/trigger"
+  ],
+  "defaultOpen": true
+}

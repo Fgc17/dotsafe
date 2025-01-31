@@ -1,0 +1,11 @@
+{
+  "pages": [
+    "index",
+    "getting-started",
+    "security",
+    "client-secrets",
+    "environment-reloading",
+    "loaders",
+    "validators"
+  ]
+}

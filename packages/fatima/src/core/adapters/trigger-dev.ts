@@ -1,7 +1,7 @@
 import { resolve } from "path";
 import { spawn } from "child_process";
 import { getRuntime } from "../utils/get-runtime";
-import { UnsafeEnvironmentVariables } from "../types";
+import { FatimaLoadFunction, UnsafeEnvironmentVariables } from "../types";
 
 type TriggerDevClientMock = {
   envvars: {
@@ -18,32 +18,34 @@ type TriggerDevClientMock = {
   configure: (config: { accessToken: string }) => void;
 };
 
-const load = async (
-  trigger: TriggerDevClientMock,
-  config: {
-    projectId: string;
-    accessToken: string;
-    environment?: string;
-  } = {
-    projectId: process.env.TRIGGER_PROJECT_ID!,
-    accessToken: process.env.TRIGGER_ACCESS_TOKEN!,
-    environment: "dev",
-  }
-) => {
-  trigger.configure({
-    accessToken: process.env.TRIGGER_ACCESS_TOKEN!,
-  });
+const load =
+  (
+    trigger: TriggerDevClientMock,
+    config: {
+      projectId: string;
+      accessToken: string;
+      environment?: string;
+    } = {
+      projectId: process.env.TRIGGER_PROJECT_ID!,
+      accessToken: process.env.TRIGGER_ACCESS_TOKEN!,
+      environment: "dev",
+    }
+  ): FatimaLoadFunction =>
+  async () => {
+    trigger.configure({
+      accessToken: process.env.TRIGGER_ACCESS_TOKEN!,
+    });
 
-  const secrets = await trigger.envvars.list(
-    config.projectId,
-    config.environment ?? "dev"
-  );
+    const secrets = await trigger.envvars.list(
+      config.projectId,
+      config.environment ?? "dev"
+    );
 
-  return secrets.reduce((acc, { name, value }) => {
-    acc[name] = value;
-    return acc;
-  }, {} as UnsafeEnvironmentVariables);
-};
+    return secrets.reduce((acc, { name, value }) => {
+      acc[name] = value;
+      return acc;
+    }, {} as UnsafeEnvironmentVariables);
+  };
 
 type TriggerDevPluginMock = {
   name: string;
@@ -60,7 +62,7 @@ type TriggerDevExtensionMock = {
   onBuildStart: (context: TriggerDevBuildContextMock) => void;
 };
 
-export const extension = (config?: string): TriggerDevExtensionMock => ({
+export const extension = (configPath?: string): TriggerDevExtensionMock => ({
   name: "fatima-trigger-dev",
   onBuildStart(context) {
     if (context.target === "dev") return;
@@ -79,7 +81,7 @@ export const extension = (config?: string): TriggerDevExtensionMock => ({
           await new Promise<void>((resolve, reject) => {
             const child = spawn(
               runtime,
-              [cmdPath, "generate", config ? `--config=${config}` : ""],
+              [cmdPath, "generate", configPath ? `--config=${configPath}` : ""],
               {
                 shell: true,
                 stdio: "inherit",

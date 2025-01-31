@@ -1,0 +1,41 @@
+---
+title: infisical
+description: '"All-in-one platform to securely manage application configuration and secrets..."'
+---
+
+## Dependencies
+
+<Tabs groupId='package-manager' persist items={['npm', 'pnpm', 'yarn']}>
+
+```bash tab="npm"
+npm install @infisical/sdk
+```
+
+```bash tab="pnpm"
+pnpm add @infisical/sdk
+```
+
+```bash tab="yarn"
+yarn add @infisical/sdk
+```
+
+</Tabs>
+
+## Importing the loader
+
+```ts title="env.config.ts"
+import { config, adapters } from "fatima";
+import { InfisicalSDK } from "@infisical/sdk";
+import dotenv from "dotenv";
+
+export default config({
+  load: {
+    development: [
+      adapters.dotenv.load(dotenv),
+      adapters.infisical.load(InfisicalSDK, {
+        // You can check here the needed options, they can be loaded through the previous loader
+      }),
+    ],
+  },
+});
+```

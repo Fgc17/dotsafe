@@ -1,6 +1,6 @@
-import { DotsafeValidator, UnsafeEnvironmentVariables } from "../types";
-import { getConfig } from "src/cli/utils/get-config";
-import { InternalDotsafeTempFolderName } from "../utils/tmp";
+import { FatimaValidator, UnsafeEnvironmentVariables } from "../types";
+import { transpileConfig } from "src/cli/utils/transpile-config";
+import { InternalFatimaTempFolderName } from "../utils/tmp";
 
 import { spawn } from "child_process";
 import fs from "fs/promises";
@@ -18,13 +18,13 @@ interface IError {
   value: any;
 }
 
-export const typia = (fn: TypiaFunction): DotsafeValidator => {
+export const typia = (fn: TypiaFunction): FatimaValidator => {
   return async (env: any, { configPath }) => {
-    if (!configPath.includes(InternalDotsafeTempFolderName)) {
+    if (!configPath.includes(InternalFatimaTempFolderName)) {
       const configDir = path.dirname(configPath);
       const tempFolderPath = path.join(
         configDir,
-        `${InternalDotsafeTempFolderName}-${Date.now()}`
+        `${InternalFatimaTempFolderName}-${Date.now()}`
       );
       await fs.mkdir(tempFolderPath);
 
@@ -70,7 +70,7 @@ export const typia = (fn: TypiaFunction): DotsafeValidator => {
         path.basename(configPath)
       );
 
-      const transformedConfig = await getConfig(transformedConfigPath);
+      const transformedConfig = await transpileConfig(transformedConfigPath);
 
       const validate = transformedConfig.validate!;
 

@@ -1,46 +1,52 @@
-import { DotsafeClientOptions } from "src/core/types";
+import { FatimaClientOptions } from "src/core/types";
 import { txt } from "src/core/utils/txt";
 
 type ClientStrings = {
   envKeys: string;
+  envClass: string;
   createEnvArg: string;
   createPublicEnvArg?: string;
   publicPrefix?: string;
 };
 
 const client = (strings: ClientStrings) => [
-  'import { createEnv, EnvRecord } from "fatima/env";',
-
-  strings.createPublicEnvArg
-    ? `import {createPublicEnv, PublicEnvRecord } from "fatima/env";`
-    : "",
+  'import { createEnv, ServerEnvRecord } from "fatima/env";',
+  "",
 
   strings.envKeys
     ? `export type EnvKeys = ${strings.envKeys};`
     : "export type EnvKeys = ''",
   "",
 
-  `export type EnvConstraint<Record extends { [key in EnvKeys]?: any } = { [key in EnvKeys]?: string }> = Record;`,
+  `export type EnvRecord<V = string> = Record<EnvKeys, V>;`,
   "",
 
-  `type Env = EnvRecord<EnvKeys, ${strings.publicPrefix}>`,
+  `export interface EnvClass {`,
+  `  ${strings.envClass}`,
+  `}`,
+  "",
+
+  `export type EnvType<Type extends { [key in EnvKeys]?: any } = { [key in EnvKeys]?: string }> = Type;`,
+  "",
+
+  `type Env = ServerEnvRecord<EnvKeys, ${strings.publicPrefix}>`,
   "",
 
   `export const env = createEnv(${strings.createEnvArg}) as Env;`,
   "",
 
   strings.createPublicEnvArg
-    ? `type PublicEnv = PublicEnvRecord<EnvKeys, ${strings.publicPrefix}>`
-    : "",
-
-  strings.createPublicEnvArg
-    ? `export const publicEnv = createPublicEnv(${strings.createPublicEnvArg}) as PublicEnv;`
+    ? txt(
+        `import {createPublicEnv, PublicEnvRecord } from "fatima/env";`,
+        `type PublicEnv = PublicEnvRecord<EnvKeys, ${strings.publicPrefix}>`,
+        `export const publicEnv = createPublicEnv(${strings.createPublicEnvArg}) as PublicEnv;`
+      )
     : "",
 ];
 
-export function getClientContent(
+export function getTypescriptClient(
   envs: string[],
-  options: DotsafeClientOptions = {}
+  options: FatimaClientOptions = {}
 ) {
   const publicKeys = options.publicPrefix
     ? envs.filter((e) => e.startsWith(options.publicPrefix as string))
@@ -64,10 +70,13 @@ export function getClientContent(
 
   const envKeys = '\n  | "' + envs.sort().join('" \n  | "') + '"';
 
+  const envClass = envs.map((key) => `"${key}": string;`).join("\n  ");
+
   return client({
     createEnvArg,
     createPublicEnvArg,
     envKeys,
+    envClass,
     publicPrefix: options.publicPrefix ? `"${options.publicPrefix}"` : "",
   }).join("\n");
 }

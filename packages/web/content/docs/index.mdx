@@ -1,20 +1,27 @@
 ---
-title: Quickstart
-description: Get fatima working
-icon: Album
+title: Why Fatima?
+description: In case you're wondering, the name refers to "Our Lady of Fátima".
+icon: QuestionMarkCircle
 ---
 
-## Installation
+We need end-to-end type safety, we need to be able to validate with _any_ library, we need better envs for js and ts, so here it is.
 
-```package-install
-fatima
-```
+## Comparison with other libraries
 
-Welcome to the docs! You can start writing documents in `/content/docs`.
+|                                   | Fatima | [t3-env][t3env] | [typedotenv][typedotenv]   |
+| --------------------------------- | ------ | --------------- | -------------------------- |
+| Javascript support                | ✅     | ✅              | ❌                         |
+| Typescript setup file             | ✅     | ✅              | Doesn't require setup file |
+| Type Safety                       | ✅     | ✅              | ✅                         |
+| End-to-end type safety            | ✅     | ❌              | ❌                         |
+| Load from cloud to local          | ✅     | ❌              | ❌                         |
+| Validate with any library         | ✅     | ❌              | ❌                         |
+| Public and server secrets         | ✅     | ✅              | ❌                         |
+| Files to setup                    | One    | One / Two       | One                        |
+| ESlint helper plugin              | ✅     | ❌              | ❌                         |
+| Development environment reloading | ✅     | ❌              | ❌                         |
+| Doesn't require codegen           | ❌     | ✅              | ❌                         |
 
-## What is Next?
-
-<Cards>
-  <Card title="Learn more about Next.js" href="https://nextjs.org/docs" />
-  <Card title="Learn more about Fumadocs" href="https://fumadocs.vercel.app" />
-</Cards>
+[t3env]: https://github.com/t3-oss/t3-env
+[typedotenv]: https://github.com/ssssota/typedotenv
+[dotenv]: https://github.com/motdotla/dotenv

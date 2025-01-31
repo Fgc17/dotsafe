@@ -1,0 +1,254 @@
+---
+title: Quickstart
+description: Get started with fatima in minutes.
+---
+
+import { File, Folder, Files } from "fumadocs-ui/components/files";
+
+## Installation
+
+<Tabs groupId='package-manager' persist items={['npm', 'pnpm', 'yarn']}>
+
+```bash tab="npm"
+npm install fatima
+```
+
+```bash tab="pnpm"
+pnpm add fatima
+```
+
+```bash tab="yarn"
+yarn add fatima
+```
+
+</Tabs>
+
+## Configuration file
+
+Let's load some stuff from `.env`, declare a `publicPrefix` and then validate everything with `zod`.
+
+First create your file `env.config.ts` file:
+
+<Tabs groupId='languages' persist items={['typescript', 'javascript']}>
+
+```ts title="env.config.ts" tab="typescript"
+import dotenv from "dotenv";
+import { config, adapters } from "fatima";
+
+export default config({
+  client: {
+    publicPrefix: "NEXT_PUBLIC_",
+  },
+  load: {
+    development: [adapters.dotenv.load(dotenv)],
+  },
+});
+```
+
+```js title="env.config.js" tab="javascript"
+const dotenv = require("dotenv");
+const { config, adapters, validators } = require("fatima");
+
+module.exports = config({
+  client: {
+    publicPrefix: "NEXT_PUBLIC_",
+  },
+  load: {
+    development: [adapters.dotenv.load(dotenv)],
+  },
+});
+```
+
+</Tabs>
+
+### Generate `env.ts`:
+
+```bash
+pnpm fatima generate
+```
+
+## import \* from "env";
+
+Make sure you can import `env` from anywhere in your project without big relative imports:
+
+<Tabs groupId='languages' persist items={['typescript', 'javascript']}>
+
+```json tab="typescript" title="tsconfig.json"
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "env": ["./env.ts"]
+    }
+  }
+}
+```
+
+```json tab="javascript" title="package.json"
+{
+  "imports": {
+    "#env": "./env.js"
+  }
+}
+```
+
+```json tab="javascript" title="jsconfig.json"
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "#env": ["./env.js"]
+    }
+  }
+}
+```
+
+</Tabs>
+
+## Add validation
+
+<Tabs groupId='languages' persist items={['typescript', 'javascript']}>
+
+```ts title="env.config.ts" tab="typescript"
+import dotenv from "dotenv";
+import { config, adapters, validators } from "fatima";
+import { z, ZodType } from "zod";
+import { EnvRecord } from "env";
+
+// This will make sure that your constraint is typesafe
+type Constraint = Partial<EnvRecord<ZodType>>;
+
+const constraint = z.object<Constraint>({
+  NEXT_PUBLIC_URL: z.string().url(),
+  NODE_ENV: z.enum(["development", "preview", "production"]),
+  TZ: z.string(),
+});
+
+export default config({
+  load: {
+    development: [adapters.dotenv.load(dotenv)],
+  },
+  validate: validators.zod(constraint),
+});
+```
+
+```js title="env.config.js" tab="javascript"
+const dotenv = require("dotenv");
+const { config, adapters, validators } = require("fatima");
+const { z } = require("zod");
+
+// This JSDoc comment will make sure that your constraint is typesafe
+/**
+ * @type {import('#env').Constraint}
+ */
+const constraint = {
+  NODE_ENV: z.string(),
+  TZ: z.string(),
+  NEXT_PUBLIC_API_URL: z.string(),
+};
+
+module.exports = config({
+  load: {
+    development: [adapters.dotenv.load(dotenv)],
+  },
+  validate: validators.zod(z.object(constraint)),
+});
+```
+
+</Tabs>
+
+### Validate
+
+```bash
+pnpm fatima validate
+```
+
+## Go on and use it
+
+<Tabs groupId='languages' persist items={['typescript', 'javascript']}>
+
+```ts title="route.ts" tab="typescript"
+import { env } from "env";
+import { Response } from "server";
+
+export async function GET() {
+  // Full intellisense 👇
+  const port = env.PORT;
+
+  return Response(port);
+}
+```
+
+```js title="route.js" tab="javascript"
+const { env } = require("#env");
+const { Response } = require("server");
+
+export async function GET() {
+  // Full intellisense 👇
+  const port = env.PORT;
+
+  return Response(port);
+}
+```
+
+</Tabs>
+
+## Run your app with fatima
+
+This will load, generate and inject the environment variables into your app.
+
+```json title="package.json"
+{
+  "scripts": {
+    "dev": "fatima dev -- node index"
+  }
+}
+```
+
+## Add env to your `.gitignore`
+
+You should gitignore your `env` and always generate it before building/installing.
+
+<Tabs groupId='languages' persist items={['typescript', 'javascript']}>
+
+```json tab="typescript" title="gitignore"
+env.ts
+```
+
+```json tab="javascript" title="gitignore"
+env.js
+```
+
+</Tabs>
+
+## Overview
+
+At the end of the setup, your project should look like something around this:
+
+<Tabs groupId='languages' persist items={['typescript', 'javascript']}>
+
+<Tab tab="typescript">
+  <Files>
+    <Folder name="project" defaultOpen>
+      <Folder name="src" disabled></Folder>
+      <File name="env.config.ts" />
+      <File name="env.ts" />
+      <File name="package.json" />
+      <File name="tsconfig.json" />
+    </Folder>
+  </Files>
+</Tab>
+
+<Tab tab="javascript">
+  <Files>
+    <Folder name="project" defaultOpen>
+      <Folder name="src" disabled></Folder>
+      <File name="env.config.js" />
+      <File name="env.js" />
+      <File name="package.json" />
+      <File name="jsconfig.json" />
+    </Folder>
+  </Files>
+</Tab>
+
+</Tabs>

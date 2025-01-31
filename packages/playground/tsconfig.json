@@ -12,6 +12,10 @@
     "strict": true,
     "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "strictPropertyInitialization": false,
+    "allowJs": false,
     "baseUrl": "./",
     "outDir": "./dist",
     "rootDir": "./",
@@ -19,6 +23,6 @@
       "@/*": ["src/*"]
     }
   },
-  "include": ["./src/**/*.ts"],
+  "include": ["./src/**/*.ts", "./src/**/*.js"],
   "exclude": ["node_modules", "dist"]
 }

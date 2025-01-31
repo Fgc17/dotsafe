@@ -1,4 +1,4 @@
-import { DotsafeValidator, UnsafeEnvironmentVariables } from "../types";
+import { FatimaValidator, UnsafeEnvironmentVariables } from "../types";
 
 export type ZodSchemaMock = {
   safeParse: (env: any) => {
@@ -13,9 +13,9 @@ export type ZodSchemaMock = {
   };
 };
 
-export const zod = (schema: ZodSchemaMock): DotsafeValidator => {
+export const zod = (constraint: ZodSchemaMock): FatimaValidator => {
   return (env: UnsafeEnvironmentVariables) => {
-    const result = schema.safeParse(env);
+    const result = constraint.safeParse(env);
 
     const isValid = result.success;
 

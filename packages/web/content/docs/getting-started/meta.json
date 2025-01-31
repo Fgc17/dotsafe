@@ -1,0 +1,5 @@
+{
+  "title": "Getting Started",
+  "pages": ["quickstart", "quickstart-js", "environment-reloading", "eslint"],
+  "defaultOpen": true
+}

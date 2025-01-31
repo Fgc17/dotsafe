@@ -12,11 +12,15 @@
     "strict": true,
     "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true,
-
     "baseUrl": "./",
     "outDir": "./dist",
-    "rootDir": "./"
+    "rootDir": "./",
+    "noEmit": true
   },
-  "include": ["./src/**/*.ts", "src/core/linter/**/*.js"],
+  "include": [
+    "./src/**/*.ts",
+    "src/core/linter/**/*.js",
+    "src/cli/utils/test.js"
+  ],
   "exclude": ["node_modules", "dist"]
 }

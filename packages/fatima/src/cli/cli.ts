@@ -3,6 +3,10 @@ import { generateAction } from "./actions/generate";
 import { devAction } from "./actions/dev";
 import { validateAction } from "./actions/validate";
 import { runAction } from "./actions/run";
+import { initAction } from "./actions/init";
+import { populateEnv } from "./utils/env-patch";
+
+populateEnv();
 
 program
   .name("fatima")
@@ -11,8 +15,7 @@ program
 
 program
   .command("generate")
-  .option("--config <config>", "Config file path")
-  .option("-g, --generate", "Generates the declaration file")
+  .option("-c, --config <config>", "Config file path")
   .option("-v, --validate", "Validates with the validate function")
   .action(async (options) => {
     if (options.validate) {
@@ -24,21 +27,37 @@ program
 
 program
   .command("validate")
-  .option("--config <config>", "Config file path")
+  .option("-c, --config <config>", "Config file path")
   .option("-v, --validate", "Validates with the validate function")
   .action(validateAction);
 
 program
   .command("dev")
+  .option("-c, --config <config>", "Config file path")
+  .option("-v, --validate", "Validates with the validate function")
+  .option("-p, --port <port>", "Open a port for hot reloading")
   .argument("<command...>", "The command to execute after --")
-  .option("--config <config>", "Config file path")
-  .option("--port <port>", "Open a port for hot reloading")
-  .action(devAction);
+  .action(async (args, options) => {
+    if (options.validate) {
+      await validateAction(options);
+    }
+
+    await devAction(options, args);
+  });
 
 program
   .command("run")
+  .option("-c, --config <config>", "Config file path")
+  .option("-v, --validate", "Validates with the validate function")
   .argument("<command...>", "The command to execute after --")
-  .option("--config <config>", "Config file path")
-  .action(runAction);
+  .action(async (args, options) => {
+    if (options.validate) {
+      await validateAction(options);
+    }
+
+    await runAction(options, args);
+  });
+
+program.command("init").action(initAction);
 
 program.parse();

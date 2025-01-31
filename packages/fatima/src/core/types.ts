@@ -2,19 +2,24 @@ import { Promisable } from "./utils/types";
 
 export type UnsafeEnvironmentVariables = Record<string, string>;
 
-export type DotsafeContext = {
+export type FatimaContext = {
   configPath: string;
 };
 
-export type DotsafeLoader = ({
-  processEnv,
-}: {
-  processEnv: UnsafeEnvironmentVariables;
-}) => Promisable<UnsafeEnvironmentVariables | null | undefined>;
+export type FatimaLoadFunction = () => Promisable<
+  UnsafeEnvironmentVariables | null | undefined
+>;
 
-export type DotsafeValidator = (
+export type FatimaLoaderChain = FatimaLoadFunction[] | FatimaLoadFunction;
+
+export type FatimaLoader = {
+  development: FatimaLoaderChain;
+  [nodeEnv: string]: FatimaLoaderChain;
+};
+
+export type FatimaValidator = (
   env: UnsafeEnvironmentVariables,
-  context: DotsafeContext
+  context: FatimaContext
 ) => Promisable<{
   isValid: boolean;
   errors?: Array<{
@@ -23,7 +28,7 @@ export type DotsafeValidator = (
   }>;
 }>;
 
-export interface DotsafeClientOptions {
+export interface FatimaClientOptions {
   /**
    * Prefix for the client
    */

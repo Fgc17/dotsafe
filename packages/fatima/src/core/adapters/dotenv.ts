@@ -1,24 +1,23 @@
-import { UnsafeEnvironmentVariables } from "../types";
+import { FatimaLoadFunction, UnsafeEnvironmentVariables } from "../types";
 
-export interface DotenvLoadArgs {
-  config: () => {
+export type DotenvConfigOptionsMock = {
+  path: string | string[] | URL;
+};
+
+export interface DotenvMock {
+  config: (config?: DotenvConfigOptionsMock) => {
     parsed?: any;
   };
 }
 
-const load = (dotenv: DotenvLoadArgs) => {
-  const env = (dotenv.config().parsed ?? {}) as UnsafeEnvironmentVariables;
+const load =
+  (dotenv: DotenvMock, config?: DotenvConfigOptionsMock): FatimaLoadFunction =>
+  async () => {
+    const env = (dotenv.config(config).parsed ??
+      {}) as UnsafeEnvironmentVariables;
 
-  if (!env.NODE_ENV) {
-    env.NODE_ENV = "development";
-  }
-
-  if (!env.TZ) {
-    env.TZ = process.env.TZ ?? "UTC";
-  }
-
-  return env;
-};
+    return env;
+  };
 
 export const dotenv = {
   load,

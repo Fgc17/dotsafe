@@ -1,11 +1,11 @@
-import { getConfig } from "../utils/get-config";
-import { logger } from "../utils/logger";
-import { getEnv } from "../utils/get-env";
+import { transpileConfig } from "../utils/transpile-config";
+import { logger } from "../../core/utils/logger";
+import { loadEnv } from "../utils/load-env";
 
-export async function validateAction(options?: { config?: string }) {
-  const config = await getConfig(options?.config);
+export const validateAction = async (options: { config?: string }) => {
+  const config = await transpileConfig(options?.config);
 
-  const { env } = await getEnv(config);
+  const { env } = await loadEnv(config);
 
   const validate = config.validate;
 
@@ -17,7 +17,7 @@ export async function validateAction(options?: { config?: string }) {
   }
 
   const { isValid, errors } = await validate(env, {
-    configPath: config.path,
+    configPath: config.file.path,
   });
 
   if (!isValid && errors) {
@@ -50,4 +50,4 @@ export async function validateAction(options?: { config?: string }) {
   }
 
   logger.success(`Successfully validated environment variables`);
-}
+};
