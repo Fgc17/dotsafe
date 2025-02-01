@@ -21,24 +21,27 @@ type TriggerDevClientMock = {
 const load =
   (
     trigger: TriggerDevClientMock,
-    config: {
+    config?: {
       projectId: string;
       accessToken: string;
       environment?: string;
-    } = {
-      projectId: process.env.TRIGGER_PROJECT_ID!,
-      accessToken: process.env.TRIGGER_ACCESS_TOKEN!,
-      environment: "dev",
     }
   ): FatimaLoadFunction =>
   async () => {
+    const auth = {
+      ...config,
+      projectId: process.env.TRIGGER_PROJECT_ID!,
+      accessToken: process.env.TRIGGER_ACCESS_TOKEN!,
+      environment: "dev",
+    };
+
     trigger.configure({
       accessToken: process.env.TRIGGER_ACCESS_TOKEN!,
     });
 
     const secrets = await trigger.envvars.list(
-      config.projectId,
-      config.environment ?? "dev"
+      auth.projectId,
+      auth.environment ?? "dev"
     );
 
     return secrets.reduce((acc, { name, value }) => {
