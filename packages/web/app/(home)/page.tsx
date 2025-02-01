@@ -12,7 +12,7 @@ export default function HomePage() {
       </p>
       <p className="mt-8">
         <Link
-          href="/docs/getting-started/quickstart"
+          href="/docs/"
           className="text-fd-foreground font-semibold   border-white"
         >
           Get started <ArrowUpRightIcon className="size-4 inline" />
