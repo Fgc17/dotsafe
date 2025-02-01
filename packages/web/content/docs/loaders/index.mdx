@@ -58,17 +58,16 @@ export default config({
     development: [
       adapters.dotenv.load(dotenv),
       async () => {
+        // All of the process.env were loaded by the previous dotenv loader
+
         const client = new infisicalClient();
 
         await client.auth().universalAuth.login({
-          clientId: config.clientId!,
-          clientSecret: config.clientSecret!,
+          clientId: process.env.INFISICAL_CLIENT_ID!,,
+          clientSecret: process.env.INFISICAL_CLIENT_SECRET!,
         });
 
         const { secrets } = await client.secrets().listSecrets({
-          // All of these were loaded by the dotenv loader
-          clientId: process.env.INFISICAL_CLIENT_ID!,
-          clientSecret: process.env.INFISICAL_CLIENT_SECRET!,
           projectId: process.env.INFISICAL_PROJECT_ID!,
           environment: "dev",
         });
