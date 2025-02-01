@@ -1,6 +1,6 @@
 {
   "name": "@fatima/playground",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "scripts": {
     "fatimax": "node fatima-script.js"
