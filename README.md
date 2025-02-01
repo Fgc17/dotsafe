@@ -2,7 +2,7 @@
 
 ## Documentation
 
-Visit https://fatimajs.vercel.app to view the documentation.
+Visit https://fatimajs.vercel.app to see the documentation.
 
 ## Installation
 
