@@ -2,19 +2,20 @@ import { Promisable } from "./utils/types";
 
 export type UnsafeEnvironmentVariables = Record<string, string>;
 
+export type FatimaEnvironment = string;
+
 export type FatimaContext = {
   configPath: string;
 };
 
-export type FatimaLoadFunction = () => Promisable<
-  UnsafeEnvironmentVariables | null | undefined
->;
+export type FatimaLoadFunction = (
+  processEnv: UnsafeEnvironmentVariables
+) => Promisable<UnsafeEnvironmentVariables | null | undefined>;
 
 export type FatimaLoaderChain = FatimaLoadFunction[] | FatimaLoadFunction;
 
-export type FatimaLoader = {
-  development: FatimaLoaderChain;
-  [nodeEnv: string]: FatimaLoaderChain;
+export type FatimaLoadObject<Environments extends FatimaEnvironment> = {
+  [env in Environments]?: FatimaLoaderChain;
 };
 
 export type FatimaValidator = (
@@ -27,6 +28,10 @@ export type FatimaValidator = (
     message: string;
   }>;
 }>;
+
+export type FatimaEnvironmentFunction = (
+  processEnv: UnsafeEnvironmentVariables
+) => string;
 
 export interface FatimaClientOptions {
   /**

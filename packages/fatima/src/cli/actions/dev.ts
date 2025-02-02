@@ -5,10 +5,11 @@ import { loadEnv } from "../utils/load-env";
 import { UnsafeEnvironmentVariables } from "src/core/types";
 import { debounce } from "../utils/debounce";
 import { createClient } from "../utils/create-client";
-import { createInjectableEnv, populateEnv } from "../utils/env-patch";
+import { createInjectableEnv } from "../utils/env-patch";
 
 import fs from "fs";
 import http from "http";
+import { fatimaEnv } from "src/core/utils/fatima-env";
 
 type ActionOptions = {
   config: string;
@@ -16,12 +17,28 @@ type ActionOptions = {
   port: boolean;
 };
 
-export const devAction = async (options: ActionOptions, args: string[]) => {
-  populateEnv({
-    NODE_ENV: "development",
-  });
+const environmentBlacklist = [
+  "production",
+  "prod",
+  "staging",
+  "stg",
+  "preview",
+  "pre",
+  "prev",
+  "preprod",
+];
 
+export const devAction = async (options: ActionOptions, args: string[]) => {
   const config = await transpileConfig(options.config);
+
+  const environment = fatimaEnv.get();
+
+  if (environmentBlacklist.includes(environment)) {
+    logger.error(
+      `Your 'config.environment()' function returned '${environment}', you can't run 'fatima dev' in this environment.`
+    );
+    process.exit(1);
+  }
 
   const { env, envCount } = await loadEnv(config);
 

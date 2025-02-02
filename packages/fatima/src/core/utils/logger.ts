@@ -1,5 +1,7 @@
+import { fatimaEnv } from "./fatima-env";
+
 const join = (message: string[]) =>
-  `🔒 [fatima] (${process.env.NODE_ENV?.toLowerCase()}) ` + message.join("\n ");
+  `🔒 [fatima] (${fatimaEnv.get()}) ` + message.join("\n ");
 
 const block = (message: string) => {
   let block = message + "\n";

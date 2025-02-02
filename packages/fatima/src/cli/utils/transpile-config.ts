@@ -3,6 +3,8 @@ import { FatimaConfig } from "src/core/config";
 import { logger } from "../../core/utils/logger";
 import pluginTransformClassProperties from "@babel/plugin-transform-class-properties";
 import { resolveConfigPath } from "./resolve-config-path";
+import { fatimaEnv } from "src/core/utils/fatima-env";
+import { UnsafeEnvironmentVariables } from "src/core/types";
 
 export async function transpileConfig(
   configPath?: string
@@ -38,14 +40,18 @@ export async function transpileConfig(
       default: true,
     })) satisfies FatimaConfig;
 
+    process.env = originalEnv;
+
+    fatimaEnv.set(
+      config.environment(process.env as UnsafeEnvironmentVariables)
+    );
+
     if (!config.__fatimaconfig) {
       logger.error(
-        "Config file must be created with the env.ts config function."
+        "Config file must be created with the fatima config function."
       );
       process.exit(1);
     }
-
-    process.env = originalEnv;
 
     return config;
   } catch (error: any) {

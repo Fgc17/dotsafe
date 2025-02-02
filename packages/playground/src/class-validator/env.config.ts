@@ -14,7 +14,9 @@ class Constraint implements Partial<EnvClass> {
   TZ?: string | undefined;
 }
 
-export default config({
+type Environment = "development" | "staging" | "production";
+
+export default config<Environment>({
   client: {
     publicPrefix: "NEST_PUBLIC",
   },
@@ -25,4 +27,5 @@ export default config({
     plainToInstance,
     validate,
   }),
+  environment: (processEnv) => processEnv.NODE_ENV ?? "development",
 });

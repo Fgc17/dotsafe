@@ -4,9 +4,9 @@ import { devAction } from "./actions/dev";
 import { validateAction } from "./actions/validate";
 import { runAction } from "./actions/run";
 import { initAction } from "./actions/init";
-import { populateEnv } from "./utils/env-patch";
+import { initializeEnv } from "./utils/env-patch";
 
-populateEnv();
+initializeEnv();
 
 program
   .name("fatima")

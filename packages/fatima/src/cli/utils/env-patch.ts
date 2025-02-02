@@ -7,11 +7,7 @@ export function createInjectableEnv(env?: UnsafeEnvironmentVariables) {
   } as UnsafeEnvironmentVariables;
 }
 
-export function populateEnv(env: UnsafeEnvironmentVariables = {}) {
-  if (!process.env.NODE_ENV) {
-    process.env.NODE_ENV = "development";
-  }
-
+export function initializeEnv(env: UnsafeEnvironmentVariables = {}) {
   process.env = {
     ...process.env,
     ...env,
