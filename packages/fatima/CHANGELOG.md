@@ -1,5 +1,11 @@
 # fatima
 
+## 0.0.4
+
+### Patch Changes
+
+- fix: consistent load function for vercel
+
 ## 0.0.3
 
 ### Patch Changes
