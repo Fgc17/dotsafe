@@ -35,13 +35,16 @@ First create your file `env.config.ts` file:
 import dotenv from "dotenv";
 import { config, adapters } from "fatima";
 
-export default config({
+type Environment = "development" | "staging" | "production";
+
+export default config<Environment>({
   client: {
     publicPrefix: "NEXT_PUBLIC_",
   },
   load: {
     development: [adapters.dotenv.load(dotenv)],
   },
+  environment: () => process.env.NODE_ENV ?? "development",
 });
 ```
 
@@ -56,10 +59,13 @@ module.exports = config({
   load: {
     development: [adapters.dotenv.load(dotenv)],
   },
+  environment: () => process.env.NODE_ENV,
 });
 ```
 
 </Tabs>
+
+For more information about the `environment` function, check [Environment Mixing](/docs/security/environment-mixing).
 
 ### Generate `env.ts`:
 

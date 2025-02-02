@@ -5,7 +5,7 @@
     "security",
     "client-secrets",
     "environment-reloading",
-    "loaders",
+    "adapters",
     "validators"
   ]
 }

@@ -1,5 +1,5 @@
 ---
-title: Environment Mixing
+title: Environment mixing
 description: Environment mixing is dangerous, and Fatima can help you prevent it.
 icon: "ExclamationTriangle"
 ---
@@ -10,57 +10,42 @@ Environment mixing happens when you accidentally load secrets from the wrong env
 
 ## How Fatima helps
 
-First of all, fatima will strictly set `NODE_ENV = "development"` when you run `fatima dev`.
+Fatima will require you to explicitly define a `environment` function in your `env.config.ts` file
 
-<Callout type="info" title="Don't worry about 'fatima generate'">
-  You don't need to worry about `fatima generate` because it doesn't load
-  secrets, so no environment mixing risk.
-
-Also, you would need to explicitly run
-`NODE_ENV="production" fatima generate` to generate types based on production, that's because fatima defaults to `development` when running `fatima generate`, so pretty hard to mess up here.
-
-</Callout>
-
-Even further, fatima expects the loaded `NODE_ENV` to be the same as the local `NODE_ENV`.
-
-For instance, if you're running `fatima dev` with `NODE_ENV = "development"`, fatima will throw an error if it loads secrets containing `NODE_ENV = "production"`.
-
-## How you could mess up
-
-### 1. Making a mistake on your load function
-
-This is mainly for people using secret managers.
-
-You could accidentally load the wrong environment in your load function:
-
-```ts
+```ts title="env.config.ts"
 export default config({
-  load: {
-    // The loader defaults 'env' to 'dev', but you can make a mistake:
-    development: [adapters.infisical.load(InfisicalSDK, { ⚠️ env: "prod" })]
-  },
-  validate: validators.zod(envSchema),
+  environment: ({ processEnv }) => processEnv.NODE_ENV,
 });
 ```
 
-This code would load production secrets into the development environment, which is a big no-no.
+When Fatima tries to load secrets, it uses the `environment` function to determine which environment to load variables from.
 
-Although it's hard to make this mistake when using the built-in loaders, as they default to the development environment, it can happen.
+However, right after all secrets are loaded, Fatima injects them into `process.env` and runs the `environment` function again.
 
-To avoid this you can add a second layer of protection by correctly assigning the `NODE_ENV` in your secret storage.
+If for some reason the `environment` function returns a different environment than the one loaded, Fatima will throw an error.
 
-Fatima will throw an error if you return `NODE_ENV = "production"` from the `load.development` function.
+By doing so we can add a double layer of security to make sure that the loaded secrets are from the same environment as the one we're asking them for, or vice-versa.
 
-### 2. Using `NODE_ENV=production fatima run` in development
+<Callout type="info" title="Don't worry about 'fatima generate'">
+  Although `fatima generate` temporarily loads secrets names and values to generate types,
+  it doesn't inject them anywhere in your application.
+
+It's a safe command to run, and you don't need to worry about environment mixing when running it.
+
+</Callout>
+
+## How you could mess up
+
+### 1. Using `WHATEVER_ENV=production fatima run` in development
 
 Few people will define a `load.production` function in config, that's because `fatima run` generally should not be used in production.
 
-Production environments should be loaded in CI/CD pipelines directly to the hosting machine `process.env`.
+Production variables should be loaded in CI/CD pipelines, directly into the hosting machine `process.env`.
 
-But if you actually defined a load function for production environment in `env.config.ts`, and you run this command, you will load production secrets in a development environment. Not much to do here, Fatima can't help you with that.
+But if you actually defined `load.production` and you run the command described above, you will load production secrets into your local process. Not much to do here, Fatima can't help you with that.
 
 As for the existance of the `fatima run` command, I've also questioned it, but it is nice for testing purposes.
 
-### 3. Setting the wrong environments in your secret storage
+### 2. Setting the wrong environments in your secret storage
 
 Unfortunately, there's not much to do if you set your production database URL in your secret storage development environment. Fatima can't help you with that.
