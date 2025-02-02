@@ -4,7 +4,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.0.4",
+  "version": "0.0.5",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -38,7 +38,8 @@
     "fatima": "./dist/cli/cli.cjs"
   },
   "scripts": {
-    "dev": "pnpm tsup --watch",
+    "build": "pnpm tsup",
+    "dev": "pnpm run build --watch",
     "bump": "changeset",
     "release": "rm -rf dist && pnpm build && changeset version && changeset publish"
   },
