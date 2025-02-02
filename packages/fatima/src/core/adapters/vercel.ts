@@ -3,13 +3,16 @@ import { promises as fs } from "fs";
 import { FatimaLoadFunction, UnsafeEnvironmentVariables } from "../types";
 import { logger } from "../utils/logger";
 
-export interface VercelLoadArgs {
-  /**
-   * Bring your own parser here, it should take a string (env file content) and return an object with the environment variables.
-   * You can use `dotenv.parse` from the `dotenv` package, but you know best.
-   */
-  parser: (envFileContent: string) => UnsafeEnvironmentVariables;
+export type VercelParseFunction = (
+  envFileContent: string
+) => UnsafeEnvironmentVariables;
 
+export type VercelLoaderConfig = {
+  parse: VercelParseFunction;
+  projectEnv?: string;
+};
+
+export interface VercelLoadArgs {
   /**
    * The environment to pull the variables from.
    *
@@ -19,10 +22,10 @@ export interface VercelLoadArgs {
 }
 
 const load =
-  ({
-    parser,
-    projectEnv = "development",
-  }: VercelLoadArgs): FatimaLoadFunction =>
+  (
+    parse: VercelParseFunction,
+    config?: VercelLoaderConfig
+  ): FatimaLoadFunction =>
   async () => {
     try {
       await new Promise<void>((resolve, reject) => {
@@ -30,7 +33,7 @@ const load =
           "env",
           "pull",
           ".tmp.vercel.env",
-          `--environment=${projectEnv}`,
+          `--environment=${config?.projectEnv ?? "development"}`,
         ]);
 
         child.on("error", (e) => {
@@ -48,7 +51,7 @@ const load =
 
       const envFileContent = await fs.readFile(".tmp.vercel.env", "utf-8");
 
-      const envVariables = parser(envFileContent);
+      const envVariables = parse(envFileContent);
 
       await fs.unlink(".tmp.vercel.env");
 
