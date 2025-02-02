@@ -4,6 +4,10 @@
 
 Visit https://fatimajs.vercel.app to see the documentation.
 
+## NPM
+
+Visit [https://npmjs.com/package/fatima](https://www.npmjs.com/package/fatima) to see the registry.
+
 ## Installation
 
 ```bash
