@@ -8,6 +8,12 @@ export const runAction = async (
   options: { config: string; generate: boolean },
   args: string[]
 ) => {
+  if (!process.env.NODE_ENV) {
+    logger.warn(
+      `No NODE_ENV found, I will use "development" as the default environment. Consider setting the NODE_ENV environment variable.`
+    );
+  }
+
   const config = await transpileConfig(options.config);
 
   const { env, envCount } = await loadEnv(config);
