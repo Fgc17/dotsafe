@@ -7,7 +7,6 @@ import { debounce } from "../utils/debounce";
 import { createClient } from "../utils/create-client";
 import { createInjectableEnv, populateEnv } from "../utils/env-patch";
 
-import path from "path";
 import fs from "fs";
 import http from "http";
 
