@@ -10,7 +10,7 @@ export async function loadEnv(config: FatimaConfig) {
 
     if (!load) {
       logger.info(
-        `No loader function found for "NODE_ENV=${initialNodeEnv}", I will load the process.env object (this is expected for production environments).`
+        `No loader function found for "NODE_ENV=${initialNodeEnv}", I will load the system process.env object (this is expected for production environments).`
       );
 
       return {
