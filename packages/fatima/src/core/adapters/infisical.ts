@@ -1,3 +1,4 @@
+import { lifecycle } from "../lifecycle";
 import { FatimaLoadFunction, UnsafeEnvironmentVariables } from "../types";
 import { GenericClass } from "../utils/types";
 
@@ -38,14 +39,26 @@ const load =
       environment: "dev",
     };
 
+    if (!auth.clientId) {
+      return lifecycle.error.missingConfig("INFISICAL_CLIENT_ID");
+    }
+
+    if (!auth.clientSecret) {
+      return lifecycle.error.missingConfig("INFISICAL_CLIENT_SECRET");
+    }
+
+    if (!auth.projectId) {
+      return lifecycle.error.missingConfig("INFISICAL_PROJECT_ID");
+    }
+
     await client.auth().universalAuth.login({
-      clientId: auth.clientId!,
-      clientSecret: auth.clientSecret!,
+      clientId: auth.clientId,
+      clientSecret: auth.clientSecret,
     });
 
     const { secrets } = await client.secrets().listSecrets({
       environment: auth.environment,
-      projectId: auth.projectId!,
+      projectId: auth.projectId,
     });
 
     const env = secrets.reduce((acc, { secretKey, secretValue }) => {

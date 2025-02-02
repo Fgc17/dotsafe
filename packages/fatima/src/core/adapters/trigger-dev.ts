@@ -2,6 +2,7 @@ import { resolve } from "path";
 import { spawn } from "child_process";
 import { getRuntime } from "../utils/get-runtime";
 import { FatimaLoadFunction, UnsafeEnvironmentVariables } from "../types";
+import { lifecycle } from "../lifecycle";
 
 type TriggerDevClientMock = {
   envvars: {
@@ -30,18 +31,26 @@ const load =
   async () => {
     const auth = {
       ...config,
-      projectId: process.env.TRIGGER_PROJECT_ID!,
-      accessToken: process.env.TRIGGER_ACCESS_TOKEN!,
+      projectId: process.env.TRIGGER_PROJECT_ID,
+      accessToken: process.env.TRIGGER_ACCESS_TOKEN,
       environment: "dev",
     };
 
+    if (!auth.projectId) {
+      return lifecycle.error.missingConfig("TRIGGER_PROJECT_ID");
+    }
+
+    if (!auth.accessToken) {
+      return lifecycle.error.missingConfig("TRIGGER_ACCESS_TOKEN");
+    }
+
     trigger.configure({
-      accessToken: process.env.TRIGGER_ACCESS_TOKEN!,
+      accessToken: auth.accessToken,
     });
 
     const secrets = await trigger.envvars.list(
       auth.projectId,
-      auth.environment ?? "dev"
+      auth.environment
     );
 
     return secrets.reduce((acc, { name, value }) => {
