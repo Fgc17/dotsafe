@@ -7,12 +7,7 @@ export type VercelParseFunction = (
   envFileContent: string
 ) => UnsafeEnvironmentVariables;
 
-export type VercelLoaderConfig = {
-  parse: VercelParseFunction;
-  projectEnv?: string;
-};
-
-export interface VercelLoadArgs {
+export interface VercelLoadConfig {
   /**
    * The environment to pull the variables from.
    *
@@ -22,10 +17,7 @@ export interface VercelLoadArgs {
 }
 
 const load =
-  (
-    parse: VercelParseFunction,
-    config?: VercelLoaderConfig
-  ): FatimaLoadFunction =>
+  (parse: VercelParseFunction, config?: VercelLoadConfig): FatimaLoadFunction =>
   async () => {
     try {
       await new Promise<void>((resolve, reject) => {
