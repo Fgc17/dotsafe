@@ -16,11 +16,8 @@ program
 program
   .command("generate")
   .option("-c, --config <config>", "Config file path")
-  .option("-v, --validate", "Validates with the validate function")
   .action(async (options) => {
-    if (options.validate) {
-      await validateAction(options);
-    }
+    await validateAction(options);
 
     await generateAction(options);
   });
@@ -28,19 +25,15 @@ program
 program
   .command("validate")
   .option("-c, --config <config>", "Config file path")
-  .option("-v, --validate", "Validates with the validate function")
   .action(validateAction);
 
 program
   .command("dev")
   .option("-c, --config <config>", "Config file path")
-  .option("-v, --validate", "Validates with the validate function")
   .option("-p, --port <port>", "Open a port for hot reloading")
   .argument("<command...>", "The command to execute after --")
   .action(async (args, options) => {
-    if (options.validate) {
-      await validateAction(options);
-    }
+    await validateAction(options);
 
     await devAction(options, args);
   });
@@ -48,12 +41,9 @@ program
 program
   .command("run")
   .option("-c, --config <config>", "Config file path")
-  .option("-v, --validate", "Validates with the validate function")
   .argument("<command...>", "The command to execute after --")
   .action(async (args, options) => {
-    if (options.validate) {
-      await validateAction(options);
-    }
+    await validateAction(options);
 
     await runAction(options, args);
   });
