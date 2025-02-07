@@ -5,6 +5,7 @@ import { validateAction } from "./actions/validate";
 import { runAction } from "./actions/run";
 import { initAction } from "./actions/init";
 import { initializeEnv } from "./utils/env-patch";
+import { reloadAction } from "./actions/reload";
 
 initializeEnv();
 
@@ -26,6 +27,11 @@ program
   .command("validate")
   .option("-c, --config <config>", "Config file path")
   .action(validateAction);
+
+program
+  .command("reload")
+  .option("-c, --config <config>", "Config file path")
+  .action(reloadAction);
 
 program
   .command("dev")

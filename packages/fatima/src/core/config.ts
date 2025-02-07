@@ -3,6 +3,7 @@ import {
   FatimaClientOptions,
   FatimaEnvironment,
   FatimaEnvironmentFunction,
+  FatimaHookOptions,
   FatimaLoadObject,
   FatimaValidator,
 } from "./types";
@@ -27,9 +28,13 @@ export type FatimaOptions<
    */
   client?: FatimaClientOptions;
   /**
-   * Function that will be executed with ``fatima validate``
+   * Function that will validate the environment variables
    */
   validate?: FatimaValidator;
+  /**
+   * Config for remote environment variable reloading
+   */
+  hook?: FatimaHookOptions;
 };
 
 export type FatimaConfig = ReturnType<typeof config>;
@@ -38,6 +43,7 @@ export function config<Environments extends FatimaEnvironment>({
   load,
   environment,
   client,
+  hook,
   validate,
 }: FatimaOptions<Environments>) {
   const { filePath: configFilePath, folderPath: configFolderPath } =
@@ -61,6 +67,7 @@ export function config<Environments extends FatimaEnvironment>({
       path: configFilePath,
       folderPath: configFolderPath,
     },
+    hook,
     __fatimaconfig: true,
   };
 }

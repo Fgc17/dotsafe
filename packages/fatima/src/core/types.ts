@@ -43,3 +43,7 @@ export interface FatimaClientOptions {
    */
   isServer?: () => boolean;
 }
+
+export interface FatimaHookOptions {
+  port: number;
+}
