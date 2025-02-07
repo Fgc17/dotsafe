@@ -36,7 +36,7 @@ program
 program
   .command("dev")
   .option("-c, --config <config>", "Config file path")
-  .option("-p, --port <port>", "Open a port for hot reloading")
+  .option("-l, --lite", "Lite mode, won't generate client")
   .argument("<command...>", "The command to execute after --")
   .action(async (args, options) => {
     await validateAction(options);

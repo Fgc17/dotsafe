@@ -14,7 +14,7 @@ import { fatimaEnv } from "src/core/utils/fatima-env";
 type ActionOptions = {
   config: string;
   generate: boolean;
-  port: boolean;
+  lite: boolean;
 };
 
 const environmentBlacklist = [
@@ -42,7 +42,9 @@ export const devAction = async (options: ActionOptions, args: string[]) => {
 
   const { env, envCount } = await loadEnv(config);
 
-  createClient(config, env);
+  if (!options.lite) {
+    createClient(config, env);
+  }
 
   logger.success(`Loaded ${envCount} environment variables`);
 
@@ -77,7 +79,9 @@ export const devAction = async (options: ActionOptions, args: string[]) => {
 
       const { env, envCount } = await loadEnv(config);
 
-      createClient(config, env);
+      if (!options.lite) {
+        createClient(config, env);
+      }
 
       const injectableEnv = createInjectableEnv(env);
 
@@ -87,7 +91,7 @@ export const devAction = async (options: ActionOptions, args: string[]) => {
     }, 100)
   );
 
-  if (options.port) {
+  if (config.hook?.port) {
     const server = http.createServer((req, res) => {
       if (req.url != "/fatima") {
         res.writeHead(404, { "Content-Type": "application/json" });
@@ -105,7 +109,9 @@ export const devAction = async (options: ActionOptions, args: string[]) => {
         try {
           const { env, envCount } = await loadEnv(config);
 
-          createClient(config, env);
+          if (!options.lite) {
+            createClient(config, env);
+          }
 
           const injectableEnv = createInjectableEnv(env);
 
@@ -137,7 +143,7 @@ export const devAction = async (options: ActionOptions, args: string[]) => {
       });
     });
 
-    const PORT = options.port;
+    const PORT = config.hook.port;
 
     server.listen(PORT, () => {
       logger.success(
