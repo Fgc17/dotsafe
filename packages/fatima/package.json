@@ -38,10 +38,10 @@
     "fatima": "./dist/cli/cli.cjs"
   },
   "scripts": {
-    "build": "pnpm tsup",
+    "build": "rm -rf dist && pnpm tsup",
     "dev": "pnpm run build --watch",
     "bump": "changeset",
-    "release": "rm -rf dist && pnpm build && changeset version && changeset publish"
+    "release": "pnpm build && changeset version && changeset publish"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.11",
