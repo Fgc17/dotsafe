@@ -72,11 +72,15 @@ export function getTypescriptClient(
 
   const envClass = envs.map((key) => `"${key}": string;`).join("\n  ");
 
+  const publicPrefix = options.publicPrefix
+    ? `"${options.publicPrefix}"`
+    : `"PUBLIC_"`;
+
   return client({
     createEnvArg,
     createPublicEnvArg,
     envKeys,
     envClass,
-    publicPrefix: options.publicPrefix ? `"${options.publicPrefix}"` : "",
+    publicPrefix,
   }).join("\n");
 }
