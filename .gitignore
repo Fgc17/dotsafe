@@ -15,7 +15,6 @@ out
 
 # env
 .env
-env.ts
 
 # nextjs
 .vercel
