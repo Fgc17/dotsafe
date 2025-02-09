@@ -1,7 +1,7 @@
-import { writeFileSync } from "fs";
-import path from "path";
-import { FatimaConfig } from "src/core/config";
-import { UnsafeEnvironmentVariables } from "src/core/types";
+import { writeFileSync } from "node:fs";
+import path from "node:path";
+import type { FatimaConfig } from "src/core/config";
+import type { UnsafeEnvironmentVariables } from "src/core/types";
 import { getTypescriptClient } from "../client/typescript-client";
 import { getJavascriptClient } from "../client/javascript-client";
 
@@ -9,16 +9,16 @@ export function createClient(
 	config: FatimaConfig,
 	env: UnsafeEnvironmentVariables,
 ) {
-	let clientPath = path.resolve(
+	const clientPath = path.resolve(
 		config.file.folderPath,
 		`env${config.file.extension}`,
 	);
 
-	let envs = Object.keys(env ?? {});
+	const envs = Object.keys(env ?? {});
 
 	const isTypescript = config.file.path.endsWith("ts");
 
-	let client = isTypescript
+	const client = isTypescript
 		? getTypescriptClient(envs, config.client)
 		: getJavascriptClient(envs, config.client);
 

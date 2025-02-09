@@ -1,25 +1,26 @@
-import { FatimaValidator, UnsafeEnvironmentVariables } from "../types";
+import type { FatimaValidator, UnsafeEnvironmentVariables } from "../types";
+import type { AnyType } from "../utils/types";
 import { transpileConfig } from "src/cli/utils/transpile-config";
 import { InternalFatimaTempFolderName } from "../utils/tmp";
 
-import { spawn } from "child_process";
-import fs from "fs/promises";
-import path from "path";
+import { spawn } from "node:child_process";
+import fs from "node:fs/promises";
+import path from "node:path";
 
 export type TypiaFunction = (env: UnsafeEnvironmentVariables) => {
 	success: boolean;
-	data?: any;
+	data?: AnyType;
 	errors?: IError[];
 };
 
 interface IError {
 	path: string;
 	expected: string;
-	value: any;
+	value: AnyType;
 }
 
 export const typia = (fn: TypiaFunction): FatimaValidator => {
-	return async (env: any, { configPath }) => {
+	return async (env: AnyType, { configPath }) => {
 		if (!configPath.includes(InternalFatimaTempFolderName)) {
 			const configDir = path.dirname(configPath);
 			const tempFolderPath = path.join(
@@ -72,7 +73,7 @@ export const typia = (fn: TypiaFunction): FatimaValidator => {
 
 			const transformedConfig = await transpileConfig(transformedConfigPath);
 
-			const validate = transformedConfig.validate!;
+			const validate = transformedConfig.validate as FatimaValidator;
 
 			const result = validate(env, { configPath: transformedConfigPath });
 

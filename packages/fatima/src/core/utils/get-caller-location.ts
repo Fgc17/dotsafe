@@ -1,6 +1,6 @@
 import path from "node:path";
 
-export function getCallerLocation(index: number = 3) {
+export function getCallerLocation(index = 3) {
 	const callerStack = new Error().stack || "";
 	const callerLine = callerStack.split("\n")[index];
 	const callerFileMatch =

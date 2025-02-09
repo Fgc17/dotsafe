@@ -1,4 +1,4 @@
-import { ImageResponseOptions } from "next/server";
+import type { ImageResponseOptions } from "next/server";
 
 type FontOptions = ImageResponseOptions["fonts"];
 
@@ -11,7 +11,7 @@ async function loadGoogleFont(font: string, weight: number) {
 
 	if (resource) {
 		const response = await fetch(resource[1]);
-		if (response.status == 200) {
+		if (response.status === 200) {
 			return {
 				buffer: await response.arrayBuffer(),
 				font: { family: font, weight: weight },

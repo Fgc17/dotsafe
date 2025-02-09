@@ -1,4 +1,4 @@
-import { Promisable } from "./utils/types";
+import type { Promisable } from "./utils/types";
 
 export type UnsafeEnvironmentVariables = Record<string, string>;
 

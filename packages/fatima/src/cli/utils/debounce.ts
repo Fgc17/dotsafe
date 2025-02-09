@@ -1,4 +1,6 @@
-export function debounce<T extends (...args: any[]) => void>(
+import type { AnyType } from "src/core/utils/types";
+
+export function debounce<T extends (...args: AnyType[]) => void>(
 	func: T,
 	delay: number,
 ): (...args: Parameters<T>) => void {

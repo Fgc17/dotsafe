@@ -11,7 +11,7 @@ export const validateAction = async (options: { config?: string }) => {
 
 	if (!validate) {
 		logger.error(
-			`Validate command was called but no validator was provided in the config.`,
+			"Validate command was called but no validator was provided in the config.",
 		);
 		process.exit(1);
 	}
@@ -37,7 +37,7 @@ export const validateAction = async (options: { config?: string }) => {
 		);
 
 		logger.error(
-			`Validation failed, here's the error list:` +
+			"Validation failed, here's the error list:" +
 				"\n\n" +
 				Object.entries(groupedErrors)
 					?.map(
@@ -49,5 +49,5 @@ export const validateAction = async (options: { config?: string }) => {
 		process.exit(1);
 	}
 
-	logger.success(`Successfully validated environment variables`);
+	logger.success("Successfully validated environment variables");
 };

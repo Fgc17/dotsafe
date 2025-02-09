@@ -4,7 +4,7 @@ import { config, adapters, validators } from "fatima";
 import { IsEmail, IsTimeZone, validate } from "class-validator";
 import { plainToInstance } from "class-transformer";
 
-import { EnvClass } from "./env";
+import type { EnvClass } from "./env";
 
 class Constraint implements Partial<EnvClass> {
 	@IsEmail()

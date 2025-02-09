@@ -1,7 +1,7 @@
 import { config, adapters, validators } from "fatima";
-import { EnvType } from "@/typia/env";
+import type { EnvType } from "@/typia/env";
 
-import typia, { tags } from "typia";
+import typia, { type tags } from "typia";
 import dotenv from "dotenv";
 
 type Constraint = EnvType<{

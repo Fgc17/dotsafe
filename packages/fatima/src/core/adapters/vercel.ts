@@ -1,6 +1,6 @@
-import { spawn } from "child_process";
-import { promises as fs } from "fs";
-import { FatimaLoadFunction, UnsafeEnvironmentVariables } from "../types";
+import { spawn } from "node:child_process";
+import { promises as fs } from "node:fs";
+import type { FatimaLoadFunction, UnsafeEnvironmentVariables } from "../types";
 import { logger } from "../utils/logger";
 
 export type VercelParseFunction = (

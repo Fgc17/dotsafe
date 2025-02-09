@@ -1,6 +1,6 @@
-import { resolve } from "path";
-import { existsSync } from "fs";
-import { parse } from "path";
+import { resolve } from "node:path";
+import { existsSync } from "node:fs";
+import { parse } from "node:path";
 import { logger } from "src/core/utils/logger";
 
 export function resolveConfigPath(configPath?: string) {

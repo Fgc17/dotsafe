@@ -1,4 +1,4 @@
-import { UnsafeEnvironmentVariables } from "src/core/types";
+import type { UnsafeEnvironmentVariables } from "src/core/types";
 
 export function createInjectableEnv(env?: UnsafeEnvironmentVariables) {
 	return {

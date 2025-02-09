@@ -1,6 +1,7 @@
-import { FatimaValidator, UnsafeEnvironmentVariables } from "../types";
+import type { FatimaValidator, UnsafeEnvironmentVariables } from "../types";
+import type { AnyType } from "../utils/types";
 
-export type ClassValidatorValidateMock = (instance: any) => Promise<
+export type ClassValidatorValidateMock = (instance: AnyType) => Promise<
 	Array<{
 		property: string;
 		constraints?: {
@@ -10,12 +11,12 @@ export type ClassValidatorValidateMock = (instance: any) => Promise<
 >;
 
 export type ClassTransformerPlainToInstance = (
-	constraint: any,
-	object: any,
-) => any;
+	constraint: AnyType,
+	object: AnyType,
+) => AnyType;
 
 export const classValidator = (
-	constraint: any,
+	constraint: AnyType,
 	helpers: {
 		validate: ClassValidatorValidateMock;
 		plainToInstance: ClassTransformerPlainToInstance;

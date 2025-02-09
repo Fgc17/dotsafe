@@ -1,4 +1,4 @@
-import { spawn } from "child_process";
+import { spawn } from "node:child_process";
 import { logger } from "../../core/utils/logger";
 import { transpileConfig } from "../utils/transpile-config";
 import { loadEnv } from "../utils/load-env";
@@ -18,7 +18,7 @@ export const runAction = async (
 
 	const injectableEnv = createInjectableEnv(env);
 
-	const child = spawn(cmd!, [...args], {
+	const child = spawn(cmd as string, [...args], {
 		env: injectableEnv,
 		shell: true,
 		stdio: "inherit",
@@ -32,7 +32,7 @@ export const runAction = async (
 	child.on("close", (code) => {
 		if (code !== 0) {
 			console.error(`Command exited with code ${code}`);
-			process.exit(code!);
+			process.exit(code);
 		}
 	});
 };

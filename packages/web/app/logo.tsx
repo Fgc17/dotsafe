@@ -11,6 +11,7 @@ export function FatimaLogo({
 			className={cn("size-8 fill-black dark:fill-white", className)}
 			{...props}
 		>
+			<title>Fatima Logo</title>
 			<g
 				transform="translate(0.000000,500.000000) scale(0.100000,-0.100000)"
 				stroke="none"

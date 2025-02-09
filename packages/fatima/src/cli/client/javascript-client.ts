@@ -1,4 +1,4 @@
-import { FatimaClientOptions } from "src/core/types";
+import type { FatimaClientOptions } from "src/core/types";
 import { txt } from "src/core/utils/txt";
 
 const client = (strings: {
@@ -50,12 +50,12 @@ export function getJavascriptClient(
 			.join(",\n")}`;
 
 		createPublicEnvArg = txt(
-			`  {`,
+			"  {",
 			`  publicPrefix: "${options.publicPrefix}",`,
-			`  publicVariables: {`,
+			"  publicVariables: {",
 			`${publicVariables}`,
-			`  }`,
-			`}`,
+			"  }",
+			"}",
 		);
 	}
 

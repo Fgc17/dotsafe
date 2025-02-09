@@ -1,8 +1,10 @@
-declare const Bun: any;
-declare const Deno: any;
+import type { AnyType } from "./types";
+
+declare const Bun: AnyType;
+declare const Deno: AnyType;
 
 export const getRuntime = () => {
-	let runtime: string = "";
+	let runtime = "";
 
 	if (process.release.name === "node") {
 		runtime = "node";

@@ -1,5 +1,5 @@
 import { lifecycle } from "../lifecycle";
-import { FatimaLoadFunction, UnsafeEnvironmentVariables } from "../types";
+import type { FatimaLoadFunction, UnsafeEnvironmentVariables } from "../types";
 
 export interface HerokuLoadOptions {
 	app_id_or_name: string;

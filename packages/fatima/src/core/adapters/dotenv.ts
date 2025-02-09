@@ -1,4 +1,5 @@
-import { FatimaLoadFunction, UnsafeEnvironmentVariables } from "../types";
+import type { FatimaLoadFunction, UnsafeEnvironmentVariables } from "../types";
+import type { AnyType } from "../utils/types";
 
 export type DotenvConfigOptionsMock = {
 	path: string | string[] | URL;
@@ -6,7 +7,7 @@ export type DotenvConfigOptionsMock = {
 
 export interface DotenvMock {
 	config: (config?: DotenvConfigOptionsMock) => {
-		parsed?: any;
+		parsed?: AnyType;
 	};
 }
 

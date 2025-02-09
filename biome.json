@@ -12,14 +12,19 @@
 	"formatter": {
 		"enabled": true,
 		"indentStyle": "tab",
-		"include": ["**/*.ts", "**/*.tsx", "**/*.json"]
+		"include": ["**/*.ts", "**/*.tsx", "**/*.json"],
+		"ignore": [".next", "dist", "node_modules"]
 	},
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"recommended": true
+			"recommended": true,
+			"style": {
+				"useTemplate": "off"
+			}
 		},
-		"include": ["**/*.ts", "**/*.tsx", "**/*.json"]
+		"include": ["**/*.ts", "**/*.tsx", "**/*.json"],
+		"ignore": [".next", "dist", "node_modules"]
 	},
 	"organizeImports": {
 		"enabled": true

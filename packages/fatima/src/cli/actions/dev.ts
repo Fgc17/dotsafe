@@ -1,14 +1,14 @@
-import { ChildProcess, spawn } from "child_process";
+import { type ChildProcess, spawn } from "node:child_process";
 import { logger } from "../../core/utils/logger";
 import { transpileConfig } from "../utils/transpile-config";
 import { loadEnv } from "../utils/load-env";
-import { UnsafeEnvironmentVariables } from "src/core/types";
+import type { UnsafeEnvironmentVariables } from "src/core/types";
 import { debounce } from "../utils/debounce";
 import { createClient } from "../utils/create-client";
 import { createInjectableEnv } from "../utils/env-patch";
 
-import fs from "fs";
-import http from "http";
+import fs from "node:fs";
+import http from "node:http";
 import { fatimaEnv } from "src/core/utils/fatima-env";
 
 type ActionOptions = {
@@ -52,7 +52,7 @@ export const devAction = async (options: ActionOptions, args: string[]) => {
 
 	const cmd = args.shift();
 
-	const child = spawn(cmd!, [...args], {
+	const child = spawn(cmd as string, [...args], {
 		env: injectableEnv,
 		shell: true,
 		stdio: ["inherit", "inherit", "inherit", "ipc"],
@@ -93,7 +93,7 @@ export const devAction = async (options: ActionOptions, args: string[]) => {
 
 	if (config.hook?.port) {
 		const server = http.createServer((req, res) => {
-			if (req.url != "/fatima") {
+			if (req.url !== "/fatima") {
 				res.writeHead(404, { "Content-Type": "application/json" });
 				res.end(JSON.stringify({ status: "not found" }));
 				return;
@@ -121,8 +121,8 @@ export const devAction = async (options: ActionOptions, args: string[]) => {
 
 					res.writeHead(200, { "Content-Type": "application/json" });
 					res.end(JSON.stringify({ status: "success" }));
-				} catch (error: any) {
-					logger.error("Error processing webhook:", error);
+				} catch (error) {
+					logger.error("Error processing webhook:", error.message);
 
 					res.writeHead(400, { "Content-Type": "application/json" });
 
@@ -130,8 +130,8 @@ export const devAction = async (options: ActionOptions, args: string[]) => {
 				}
 			});
 
-			req.on("error", (err: any) => {
-				logger.error("Request error:", err);
+			req.on("error", (err) => {
+				logger.error("Request error:", err.message);
 
 				res.writeHead(500, { "Content-Type": "application/json" });
 				res.end(
@@ -173,7 +173,7 @@ export const devAction = async (options: ActionOptions, args: string[]) => {
 		if (code !== 0) {
 			console.error(`Command exited with code ${code}`);
 			watcher.close();
-			process.exit(code!);
+			process.exit(code);
 		}
 	});
 };

@@ -1,4 +1,4 @@
-import { FatimaClientOptions } from "src/core/types";
+import type { FatimaClientOptions } from "src/core/types";
 import { txt } from "src/core/utils/txt";
 
 type ClientStrings = {
@@ -18,15 +18,15 @@ const client = (strings: ClientStrings) => [
 		: "export type EnvKeys = ''",
 	"",
 
-	`export type EnvRecord<V = string> = Record<EnvKeys, V>;`,
+	"export type EnvRecord<V = string> = Record<EnvKeys, V>;",
 	"",
 
-	`export interface EnvClass {`,
+	"export interface EnvClass {",
 	`  ${strings.envClass}`,
-	`}`,
+	"}",
 	"",
 
-	`export type EnvType<Type extends { [key in EnvKeys]?: any } = { [key in EnvKeys]?: string }> = Type;`,
+	"export type EnvType<Type extends { [key in EnvKeys]?: unknown } = { [key in EnvKeys]?: string }> = Type;",
 	"",
 
 	`type Env = ServerEnvRecord<EnvKeys, ${strings.publicPrefix}>`,
@@ -57,12 +57,12 @@ export function getTypescriptClient(
 		const publicVariables = `${publicKeys.map((key) => `    ${key}: process.env.${key} as string`).join(",\n")}`;
 
 		createPublicEnvArg = txt(
-			`  {`,
+			"  {",
 			`  publicPrefix: "${options.publicPrefix}",`,
-			`  publicVariables: {`,
+			"  publicVariables: {",
 			`${publicVariables}`,
-			`  }`,
-			`}`,
+			"  }",
+			"}",
 		);
 	}
 

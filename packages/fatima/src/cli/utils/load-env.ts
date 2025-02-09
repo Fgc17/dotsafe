@@ -1,5 +1,8 @@
-import { FatimaLoadFunction, UnsafeEnvironmentVariables } from "src/core/types";
-import { FatimaConfig } from "../../core/config";
+import type {
+	FatimaLoadFunction,
+	UnsafeEnvironmentVariables,
+} from "src/core/types";
+import type { FatimaConfig } from "../../core/config";
 import { logger } from "../../core/utils/logger";
 import { lifecycle } from "src/core/lifecycle";
 import { fatimaEnv } from "src/core/utils/fatima-env";
@@ -55,7 +58,7 @@ export async function loadEnv(config: FatimaConfig) {
 			env,
 			envCount: Object.keys(env).length,
 		};
-	} catch (err: any) {
+	} catch (err) {
 		logger.error(`Failed to load environment variables: ${err.message}`);
 		process.exit(1);
 	}

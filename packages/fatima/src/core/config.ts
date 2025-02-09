@@ -1,5 +1,5 @@
-import path from "path";
-import {
+import path from "node:path";
+import type {
 	FatimaClientOptions,
 	FatimaEnvironment,
 	FatimaEnvironmentFunction,

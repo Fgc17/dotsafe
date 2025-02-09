@@ -1,7 +1,7 @@
-import { FatimaValidator, UnsafeEnvironmentVariables } from "../types";
+import type { FatimaValidator, UnsafeEnvironmentVariables } from "../types";
 
 export type ZodSchemaMock = {
-	safeParse: (env: any) => {
+	safeParse: (env: unknown) => {
 		success: boolean;
 		error?: {
 			errors: Array<{
@@ -9,7 +9,7 @@ export type ZodSchemaMock = {
 				message: string;
 			}>;
 		};
-		data?: any;
+		data?: unknown;
 	};
 };
 

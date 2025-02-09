@@ -12,6 +12,7 @@
 		"strict": true,
 		"strictNullChecks": true,
 		"forceConsistentCasingInFileNames": true,
+		"useUnknownInCatchVariables": false,
 		"baseUrl": "./",
 		"outDir": "./dist",
 		"rootDir": "./",

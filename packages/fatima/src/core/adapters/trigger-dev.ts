@@ -1,8 +1,8 @@
-import { resolve } from "path";
-import { spawn } from "child_process";
-import { getRuntime } from "../utils/get-runtime";
-import { FatimaLoadFunction, UnsafeEnvironmentVariables } from "../types";
+import type { FatimaLoadFunction, UnsafeEnvironmentVariables } from "../types";
+import { resolve } from "node:path";
+import { spawn } from "node:child_process";
 import { lifecycle } from "../lifecycle";
+import { getRuntime } from "../utils/get-runtime";
 
 type TriggerDevClientMock = {
 	envvars: {
@@ -81,7 +81,7 @@ export const extension = (configPath?: string): TriggerDevExtensionMock => ({
 
 		context.registerPlugin({
 			name: "fatima-trigger-dev",
-			async setup(build: any) {
+			async setup(build) {
 				build.onStart(async () => {
 					const runtime = getRuntime();
 

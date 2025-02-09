@@ -1,8 +1,8 @@
 import { select, Separator } from "@inquirer/prompts";
-import { execSync } from "child_process";
+import { execSync } from "node:child_process";
 
-import fs from "fs";
-import path from "path";
+import fs from "node:fs";
+import path from "node:path";
 
 function hasNestedPackage(directory = process.cwd()) {
 	function search(dir: string, isRoot = true) {

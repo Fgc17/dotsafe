@@ -1,10 +1,10 @@
-import { createJiti, Jiti, JitiOptions } from "jiti";
-import { FatimaConfig } from "src/core/config";
+import { createJiti, type Jiti, type JitiOptions } from "jiti";
+import type { FatimaConfig } from "src/core/config";
 import { logger } from "../../core/utils/logger";
 import pluginTransformClassProperties from "@babel/plugin-transform-class-properties";
 import { resolveConfigPath } from "./resolve-config-path";
 import { fatimaEnv } from "src/core/utils/fatima-env";
-import { UnsafeEnvironmentVariables } from "src/core/types";
+import type { UnsafeEnvironmentVariables } from "src/core/types";
 
 export async function transpileConfig(
 	configPath?: string,
@@ -54,7 +54,7 @@ export async function transpileConfig(
 		}
 
 		return config;
-	} catch (error: any) {
+	} catch (error) {
 		logger.error(error.message);
 		logger.error("Failed to read config file, check if it exists.");
 		process.exit(1);

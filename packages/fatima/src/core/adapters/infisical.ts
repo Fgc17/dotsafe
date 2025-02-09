@@ -1,11 +1,14 @@
 import { lifecycle } from "../lifecycle";
-import { FatimaLoadFunction, UnsafeEnvironmentVariables } from "../types";
-import { GenericClass } from "../utils/types";
+import type { FatimaLoadFunction, UnsafeEnvironmentVariables } from "../types";
+import type { AnyType, GenericClass } from "../utils/types";
 
 type InfisicalClientMock = GenericClass<{
 	auth: () => {
 		universalAuth: {
-			login: (args: { clientId: string; clientSecret: string }) => Promise<any>;
+			login: (args: {
+				clientId: string;
+				clientSecret: string;
+			}) => Promise<AnyType>;
 		};
 	};
 	secrets: () => {
