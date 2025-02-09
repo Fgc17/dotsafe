@@ -1,60 +1,50 @@
 {
-  "name": "fatima",
-  "description": "typesafe secrets for the js ecosystem",
-  "publishConfig": {
-    "access": "public"
-  },
-  "version": "0.0.5",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Fgc17/fatima.git"
-  },
-  "files": [
-    "dist"
-  ],
-  "keywords": [
-    "env",
-    "typesafe",
-    "typescript",
-    "environment",
-    "variable"
-  ],
-  "type": "module",
-  "main": "./dist/core/core.cjs",
-  "types": "./dist/core/core.d.cts",
-  "exports": {
-    ".": "./dist/core/core.cjs",
-    "./env": "./dist/env/env.cjs"
-  },
-  "typesVersions": {
-    "*": {
-      "env": [
-        "./dist/env/env.d.cts"
-      ]
-    }
-  },
-  "bin": {
-    "fatima": "./dist/cli/cli.cjs"
-  },
-  "scripts": {
-    "build": "rm -rf dist && pnpm tsup",
-    "dev": "pnpm run build --watch",
-    "bump": "changeset",
-    "release": "pnpm build && changeset version && changeset publish"
-  },
-  "devDependencies": {
-    "@changesets/cli": "^2.27.11",
-    "@types/node": "^22.9.1",
-    "concurrently": "9.1.2",
-    "prettier": "3.3.3",
-    "tsup": "^8.3.5",
-    "typescript": "5.6.3"
-  },
-  "dependencies": {
-    "@babel/plugin-transform-class-properties": "7.25.9",
-    "@inquirer/prompts": "^7.2.4",
-    "commander": "13.0.0",
-    "jiti": "2.4.2"
-  }
+	"name": "fatima",
+	"description": "typesafe secrets for the javascript ecosystem",
+	"publishConfig": {
+		"access": "public"
+	},
+	"version": "0.0.5",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Fgc17/fatima.git"
+	},
+	"files": ["dist"],
+	"keywords": ["env", "typesafe", "typescript", "environment", "variable"],
+	"type": "module",
+	"main": "./dist/core/core.cjs",
+	"types": "./dist/core/core.d.cts",
+	"exports": {
+		".": "./dist/core/core.cjs",
+		"./env": "./dist/env/env.cjs"
+	},
+	"typesVersions": {
+		"*": {
+			"env": ["./dist/env/env.d.cts"]
+		}
+	},
+	"bin": {
+		"fatima": "./dist/cli/cli.cjs"
+	},
+	"scripts": {
+		"build": "rm -rf dist && pnpm tsup",
+		"dev": "pnpm run build --watch",
+		"bump": "changeset",
+		"release": "pnpm build && changeset version && changeset publish"
+	},
+	"devDependencies": {
+		"@changesets/cli": "^2.27.11",
+		"@types/node": "^22.9.1",
+		"concurrently": "9.1.2",
+		"prettier": "3.3.3",
+		"tsup": "^8.3.5",
+		"typescript": "5.6.3"
+	},
+	"dependencies": {
+		"@babel/plugin-transform-class-properties": "7.25.9",
+		"@inquirer/prompts": "^7.2.4",
+		"commander": "13.0.0",
+		"jiti": "2.4.2"
+	}
 }

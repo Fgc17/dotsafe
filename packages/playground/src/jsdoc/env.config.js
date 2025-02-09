@@ -7,14 +7,14 @@ const { z } = require("zod");
  * @type {import('#env').Constraint}
  */
 const constraint = {
-  NODE_ENV: z.string(),
-  TZ: z.string(),
-  NEXT_PUBLIC_API_URL: z.string(),
+	NODE_ENV: z.string(),
+	TZ: z.string(),
+	NEXT_PUBLIC_API_URL: z.string(),
 };
 
 module.exports = config({
-  load: {
-    development: [adapters.dotenv.load(dotenv)],
-  },
-  validate: validators.zod(z.object(constraint)),
+	load: {
+		development: [adapters.dotenv.load(dotenv)],
+	},
+	validate: validators.zod(z.object(constraint)),
 });

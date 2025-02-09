@@ -1,1 +1,1 @@
-const { env } = require('#jsdoc-env')
+const { env } = require("#jsdoc-env");

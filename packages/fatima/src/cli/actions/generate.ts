@@ -4,13 +4,13 @@ import { logger } from "../../core/utils/logger";
 import { createClient } from "../utils/create-client";
 
 export const generateAction = async (options: { config?: string }) => {
-  const config = await transpileConfig(options?.config);
+	const config = await transpileConfig(options?.config);
 
-  const { env, envCount } = await loadEnv(config);
+	const { env, envCount } = await loadEnv(config);
 
-  createClient(config, env);
+	createClient(config, env);
 
-  logger.success(
-    `Successfully generated env.ts with ${envCount} environment variables`
-  );
+	logger.success(
+		`Successfully generated env.ts with ${envCount} environment variables`,
+	);
 };

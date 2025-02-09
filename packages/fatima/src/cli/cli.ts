@@ -10,49 +10,49 @@ import { reloadAction } from "./actions/reload";
 initializeEnv();
 
 program
-  .name("fatima")
-  .description("typesafe environment variables for the js ecosystem")
-  .version("0.0.0");
+	.name("fatima")
+	.description("typesafe environment variables for the js ecosystem")
+	.version("0.0.0");
 
 program
-  .command("generate")
-  .option("-c, --config <config>", "Config file path")
-  .action(async (options) => {
-    await validateAction(options);
+	.command("generate")
+	.option("-c, --config <config>", "Config file path")
+	.action(async (options) => {
+		await validateAction(options);
 
-    await generateAction(options);
-  });
-
-program
-  .command("validate")
-  .option("-c, --config <config>", "Config file path")
-  .action(validateAction);
+		await generateAction(options);
+	});
 
 program
-  .command("reload")
-  .option("-c, --config <config>", "Config file path")
-  .action(reloadAction);
+	.command("validate")
+	.option("-c, --config <config>", "Config file path")
+	.action(validateAction);
 
 program
-  .command("dev")
-  .option("-c, --config <config>", "Config file path")
-  .option("-l, --lite", "Lite mode, won't generate client")
-  .argument("<command...>", "The command to execute after --")
-  .action(async (args, options) => {
-    await validateAction(options);
-
-    await devAction(options, args);
-  });
+	.command("reload")
+	.option("-c, --config <config>", "Config file path")
+	.action(reloadAction);
 
 program
-  .command("run")
-  .option("-c, --config <config>", "Config file path")
-  .argument("<command...>", "The command to execute after --")
-  .action(async (args, options) => {
-    await validateAction(options);
+	.command("dev")
+	.option("-c, --config <config>", "Config file path")
+	.option("-l, --lite", "Lite mode, won't generate client")
+	.argument("<command...>", "The command to execute after --")
+	.action(async (args, options) => {
+		await validateAction(options);
 
-    await runAction(options, args);
-  });
+		await devAction(options, args);
+	});
+
+program
+	.command("run")
+	.option("-c, --config <config>", "Config file path")
+	.argument("<command...>", "The command to execute after --")
+	.action(async (args, options) => {
+		await validateAction(options);
+
+		await runAction(options, args);
+	});
 
 program.command("init").action(initAction);
 

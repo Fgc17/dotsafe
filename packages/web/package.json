@@ -1,39 +1,39 @@
 {
-  "name": "@fatima/web",
-  "version": "0.0.0",
-  "private": true,
-  "scripts": {
-    "build": "next build",
-    "dev": "next dev --turbopack",
-    "tunnel": "lt --port 3000 --subdomain fatima-tunnel",
-    "dev-tunnel": "concurrently --raw --kill-others \"npm run dev\" \"npm run tunnel\"",
-    "start": "next start",
-    "postinstall": "fumadocs-mdx"
-  },
-  "dependencies": {
-    "@heroicons/react": "^2.2.0",
-    "fumadocs-core": "14.7.7",
-    "fumadocs-docgen": "^1.3.5",
-    "fumadocs-mdx": "11.3.1",
-    "fumadocs-ui": "14.7.7",
-    "next": "15.1.5",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "shiki": "^2.2.0"
-  },
-  "devDependencies": {
-    "@fumadocs/cli": "0.0.7",
-    "@types/mdx": "^2.0.13",
-    "@types/node": "22.10.7",
-    "@types/react": "^19.0.7",
-    "@types/react-dom": "^19.0.3",
-    "autoprefixer": "^10.4.20",
-    "concurrently": "9.1.2",
-    "eslint": "^8",
-    "eslint-config-next": "15.1.5",
-    "localtunnel": "2.0.2",
-    "postcss": "^8.5.1",
-    "tailwindcss": "^3.4.17",
-    "typescript": "^5.7.3"
-  }
+	"name": "@fatima/web",
+	"version": "0.0.0",
+	"private": true,
+	"scripts": {
+		"build": "next build",
+		"dev": "next dev --turbopack",
+		"tunnel": "lt --port 3000 --subdomain fatima-tunnel",
+		"dev-tunnel": "concurrently --raw --kill-others \"npm run dev\" \"npm run tunnel\"",
+		"start": "next start",
+		"postinstall": "fumadocs-mdx"
+	},
+	"dependencies": {
+		"@heroicons/react": "^2.2.0",
+		"fumadocs-core": "14.7.7",
+		"fumadocs-docgen": "^1.3.5",
+		"fumadocs-mdx": "11.3.1",
+		"fumadocs-ui": "14.7.7",
+		"next": "15.1.5",
+		"react": "^19.0.0",
+		"react-dom": "^19.0.0",
+		"shiki": "^2.2.0"
+	},
+	"devDependencies": {
+		"@fumadocs/cli": "0.0.7",
+		"@types/mdx": "^2.0.13",
+		"@types/node": "22.10.7",
+		"@types/react": "^19.0.7",
+		"@types/react-dom": "^19.0.3",
+		"autoprefixer": "^10.4.20",
+		"concurrently": "9.1.2",
+		"eslint": "^8",
+		"eslint-config-next": "15.1.5",
+		"localtunnel": "2.0.2",
+		"postcss": "^8.5.1",
+		"tailwindcss": "^3.4.17",
+		"typescript": "^5.7.3"
+	}
 }

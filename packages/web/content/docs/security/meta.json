@@ -1,5 +1,5 @@
 {
-  "title": "Security",
-  "pages": ["environment-mixing", "secret-leaking"],
-  "defaultOpen": true
+	"title": "Security",
+	"pages": ["environment-mixing", "secret-leaking"],
+	"defaultOpen": true
 }

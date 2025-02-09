@@ -9,20 +9,20 @@ import { FatimaLogo } from "./logo";
  * Docs Layout: app/docs/layout.tsx
  */
 export const baseOptions: BaseLayoutProps = {
-  githubUrl: "https://github.com/Fgc17/fatima",
-  nav: {
-    title: (
-      <>
-        <FatimaLogo />
-        fatima
-      </>
-    ),
-  },
-  links: [
-    {
-      text: "Documentation",
-      url: "/docs",
-      active: "nested-url",
-    },
-  ],
+	githubUrl: "https://github.com/Fgc17/fatima",
+	nav: {
+		title: (
+			<>
+				<FatimaLogo />
+				fatima
+			</>
+		),
+	},
+	links: [
+		{
+			text: "Documentation",
+			url: "/docs",
+			active: "nested-url",
+		},
+	],
 };

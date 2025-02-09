@@ -1,11 +1,11 @@
 {
-  "title": "Adapters",
-  "pages": [
-    "index",
-    "./(adapters)/dotenv",
-    "./(adapters)/infisical",
-    "./(adapters)/vercel",
-    "./(adapters)/trigger"
-  ],
-  "defaultOpen": true
+	"title": "Adapters",
+	"pages": [
+		"index",
+		"./(adapters)/dotenv",
+		"./(adapters)/infisical",
+		"./(adapters)/vercel",
+		"./(adapters)/trigger"
+	],
+	"defaultOpen": true
 }

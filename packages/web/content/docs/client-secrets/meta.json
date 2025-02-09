@@ -1,4 +1,4 @@
 {
-  "title": "Client Secrets",
-  "pages": ["client-secrets", "additional-setup"]
+	"title": "Client Secrets",
+	"pages": ["client-secrets", "additional-setup"]
 }

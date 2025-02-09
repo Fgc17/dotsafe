@@ -14,4 +14,3 @@ const { createEnv } = require("fatima/env");
 
 /** @type {import('fatima/env').ServerEnvRecord<keyof EnvKeys, undefined>} */
 exports.env = createEnv({ isServer: undefined });
-

@@ -1,11 +1,11 @@
 {
-  "pages": [
-    "index",
-    "getting-started",
-    "security",
-    "client-secrets",
-    "environment-reloading",
-    "adapters",
-    "validators"
-  ]
+	"pages": [
+		"index",
+		"getting-started",
+		"security",
+		"client-secrets",
+		"environment-reloading",
+		"adapters",
+		"validators"
+	]
 }

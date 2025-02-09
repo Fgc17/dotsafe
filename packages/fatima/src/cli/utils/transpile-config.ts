@@ -7,56 +7,56 @@ import { fatimaEnv } from "src/core/utils/fatima-env";
 import { UnsafeEnvironmentVariables } from "src/core/types";
 
 export async function transpileConfig(
-  configPath?: string
+	configPath?: string,
 ): Promise<FatimaConfig> {
-  const originalEnv = { ...process.env };
+	const originalEnv = { ...process.env };
 
-  const path = resolveConfigPath(configPath);
+	const path = resolveConfigPath(configPath);
 
-  let jiti: Jiti;
+	let jiti: Jiti;
 
-  const jitiOptions: JitiOptions = {
-    interopDefault: true,
-    fsCache: false,
-    transformOptions: {
-      ts: true,
-      babel: {
-        plugins: [pluginTransformClassProperties],
-      },
-    },
-  };
+	const jitiOptions: JitiOptions = {
+		interopDefault: true,
+		fsCache: false,
+		transformOptions: {
+			ts: true,
+			babel: {
+				plugins: [pluginTransformClassProperties],
+			},
+		},
+	};
 
-  try {
-    jiti = createJiti(import.meta.url, {
-      ...jitiOptions,
-      tryNative: true,
-    });
-  } catch {
-    jiti = createJiti(import.meta.url, jitiOptions);
-  }
+	try {
+		jiti = createJiti(import.meta.url, {
+			...jitiOptions,
+			tryNative: true,
+		});
+	} catch {
+		jiti = createJiti(import.meta.url, jitiOptions);
+	}
 
-  try {
-    const config = (await jiti.import(path, {
-      default: true,
-    })) satisfies FatimaConfig;
+	try {
+		const config = (await jiti.import(path, {
+			default: true,
+		})) satisfies FatimaConfig;
 
-    process.env = originalEnv;
+		process.env = originalEnv;
 
-    fatimaEnv.set(
-      config.environment(process.env as UnsafeEnvironmentVariables)
-    );
+		fatimaEnv.set(
+			config.environment(process.env as UnsafeEnvironmentVariables),
+		);
 
-    if (!config.__fatimaconfig) {
-      logger.error(
-        "Config file must be created with the fatima config function."
-      );
-      process.exit(1);
-    }
+		if (!config.__fatimaconfig) {
+			logger.error(
+				"Config file must be created with the fatima config function.",
+			);
+			process.exit(1);
+		}
 
-    return config;
-  } catch (error: any) {
-    logger.error(error.message);
-    logger.error("Failed to read config file, check if it exists.");
-    process.exit(1);
-  }
+		return config;
+	} catch (error: any) {
+		logger.error(error.message);
+		logger.error("Failed to read config file, check if it exists.");
+		process.exit(1);
+	}
 }
