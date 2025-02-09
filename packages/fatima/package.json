@@ -21,6 +21,7 @@
 	},
 	"typesVersions": {
 		"*": {
+			".": ["./dist/core/core.d.cts"],
 			"env": ["./dist/env/env.d.cts"]
 		}
 	},
