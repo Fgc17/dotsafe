@@ -5,23 +5,25 @@ import * as icons from "@heroicons/react/16/solid";
 import { createElement } from "react";
 
 export const source = loader({
-  baseUrl: "/docs",
-  source: createMDXSource(docs, meta),
-  icon(icon) {
-    if (!icon) {
-      return;
-    }
+	baseUrl: "/docs",
+	source: createMDXSource(docs, meta),
+	icon(iconString) {
+		let icon = iconString;
 
-    if (!icon.endsWith("Icon")) {
-      icon = `${icon}Icon`;
-    }
+		if (!icon) {
+			return;
+		}
 
-    if (icon && !(icon in icons)) {
-      console.log(`Icon not found: ${icon}`);
+		if (!icon.endsWith("Icon")) {
+			icon = `${icon}Icon`;
+		}
 
-      return;
-    }
+		if (icon && !(icon in icons)) {
+			console.log(`Icon not found: ${icon}`);
 
-    if (icon in icons) return createElement(icons[icon as keyof typeof icons]);
-  },
+			return;
+		}
+
+		if (icon in icons) return createElement(icons[icon as keyof typeof icons]);
+	},
 });
