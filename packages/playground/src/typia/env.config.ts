@@ -17,4 +17,5 @@ export default config({
 		development: [adapters.dotenv.load(dotenv)],
 	},
 	validate: validators.typia((env) => typia.validate<Constraint>(env)),
+	environment: (processEnv) => processEnv.NODE_ENV ?? "development",
 });
