@@ -10,7 +10,13 @@ type ClientStrings = {
 };
 
 const client = (strings: ClientStrings) => [
-	'import { createEnv, ServerEnvRecord } from "fatima/env";',
+	"import {",
+	"  createEnv,",
+	"  type ServerEnvRecord,",
+	"  type EnvType as FatimaEnvType,",
+	"  type EnvRecord as FatimaEnvRecord,",
+	"  type PrimitiveEnvType as FatimaPrimitiveEnvType,",
+	"} from 'fatima/env';",
 	"",
 
 	strings.envKeys
@@ -18,7 +24,7 @@ const client = (strings: ClientStrings) => [
 		: "export type EnvKeys = ''",
 	"",
 
-	"export type EnvRecord<V = string> = Record<EnvKeys, V>;",
+	"export type EnvRecord<V = string> = FatimaEnvRecord<EnvKeys, V>;",
 	"",
 
 	"export interface EnvClass {",
@@ -26,7 +32,8 @@ const client = (strings: ClientStrings) => [
 	"}",
 	"",
 
-	"export type EnvType<Type extends { [key in EnvKeys]?: unknown } = { [key in EnvKeys]?: string }> = Type;",
+	"type PrimitiveEnvType = FatimaPrimitiveEnvType<EnvKeys>;",
+	"export type EnvType<T extends PrimitiveEnvType> = FatimaEnvType<EnvKeys, T>;",
 	"",
 
 	`type Env = ServerEnvRecord<EnvKeys, ${strings.publicPrefix}>`,
@@ -37,7 +44,7 @@ const client = (strings: ClientStrings) => [
 
 	strings.createPublicEnvArg
 		? txt(
-				`import {createPublicEnv, PublicEnvRecord } from "fatima/env";`,
+				`import { createPublicEnv, type PublicEnvRecord } from "fatima/env";`,
 				`type PublicEnv = PublicEnvRecord<EnvKeys, ${strings.publicPrefix}>`,
 				`export const publicEnv = createPublicEnv(${strings.createPublicEnvArg}) as PublicEnv;`,
 			)
