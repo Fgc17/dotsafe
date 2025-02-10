@@ -1,10 +1,10 @@
-const dotenv = require("dotenv");
 const { config, adapters, validators } = require("fatima");
 const { z } = require("zod");
 
-// This JSDoc comment will make sure that your constraint is typesafe
+const dotenv = require("dotenv");
+
 /**
- * @type {import('#env').Constraint}
+ * @type {import('#jsdoc-env').Constraint}
  */
 const constraint = {
 	NODE_ENV: z.string(),
@@ -17,4 +17,5 @@ module.exports = config({
 		development: [adapters.dotenv.load(dotenv)],
 	},
 	validate: validators.zod(z.object(constraint)),
+	environment: () => process.env.NODE_ENV ?? "development",
 });

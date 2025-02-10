@@ -5,8 +5,9 @@ import typia, { type tags } from "typia";
 import dotenv from "dotenv";
 
 type Constraint = EnvType<{
-	NODE_ENV: string & tags.Format<"email">;
+	NODE_ENV: string;
 	TZ: string;
+	TEST: string & tags.Format<"email">;
 }>;
 
 export default config({
