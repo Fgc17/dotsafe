@@ -10,25 +10,31 @@ export function resolveConfigPath(configPath?: string) {
 	if (configPath) {
 		const parsed = parse(configPath);
 
-		if (parsed.ext in extensions) {
-			const fullPath = resolve(baseDir, configPath);
-			if (!existsSync(fullPath)) {
-				logger.error(`Config file not found at ${fullPath}`);
+		if (!extensions.includes(parsed.ext)) {
+			logger.error(`Invalid given config file extension: ${parsed.ext}`);
 
-				process.exit(1);
-			}
-			return fullPath;
+			process.exit(1);
 		}
+
+		const fullPath = resolve(baseDir, configPath);
+
+		if (!existsSync(fullPath)) {
+			logger.error(`Config file doesn't exist: ${fullPath}`);
+
+			process.exit(1);
+		}
+
+		return fullPath;
 	}
 
-	const baseName = configPath ?? "env.config";
+	const baseName = "env.config";
 
 	const foundPaths = extensions
 		.map((ext) => resolve(baseDir, baseName + ext))
 		.filter((path) => existsSync(path));
 
 	if (foundPaths.length === 0) {
-		logger.error(`Config file not found at ${baseDir}`);
+		logger.error(`No config file found on ${baseDir}`);
 
 		process.exit(1);
 	}
