@@ -18,10 +18,6 @@
 		"rootDir": "./",
 		"noEmit": true
 	},
-	"include": [
-		"./src/**/*.ts",
-		"src/core/linter/**/*.js",
-		"src/cli/utils/test.js"
-	],
+	"include": ["./src/**/*.ts"],
 	"exclude": ["node_modules", "dist"]
 }
