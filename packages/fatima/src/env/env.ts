@@ -1,4 +1,5 @@
 import type { UnsafeEnvironmentVariables } from "src/core/types";
+import type { AnyType } from "src/core/utils/types";
 
 interface CreateEnvOptions {
 	isServer?: () => boolean;
@@ -8,6 +9,20 @@ interface CreatePublicEnvOptions {
 	publicPrefix: string;
 	publicVariables: UnsafeEnvironmentVariables;
 }
+
+export type EnvRecord<
+	EnvKeys extends string = string,
+	EnvValues = AnyType,
+> = Record<EnvKeys, EnvValues>;
+
+export type PrimitiveEnvType<EnvKeys extends string = string> = {
+	[key in EnvKeys]?: AnyType;
+};
+
+export type EnvType<
+	EnvKeys extends string = string,
+	Type extends PrimitiveEnvType<EnvKeys> = PrimitiveEnvType<EnvKeys>,
+> = Type;
 
 export type ServerEnvRecord<Keys extends string, Prefix extends string> = {
 	[K in Keys as K extends `${Prefix}${string}` ? never : K]: string;
