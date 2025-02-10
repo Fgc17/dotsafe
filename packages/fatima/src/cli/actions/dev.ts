@@ -69,10 +69,11 @@ export const devAction = async (options: ActionOptions, args: string[]) => {
 
 	const watcher = fs.watch(
 		envFilesDir,
-		debounce(async (_, filename) => {
+		debounce(async (_, filename: string | null) => {
 			if (
 				!filename ||
 				!filename.endsWith(".env") ||
+				filename.startsWith(".tmp") ||
 				filename === ".example.env"
 			)
 				return;
