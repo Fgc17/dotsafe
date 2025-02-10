@@ -1,5 +1,17 @@
 # fatima
 
+## 0.0.7
+
+### Patch Changes
+
+- new publishing method
+
+## 0.0.6
+
+### Patch Changes
+
+- underlying type api, reload command, general fixes
+
 ## 0.0.5
 
 ### Patch Changes

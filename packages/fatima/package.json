@@ -4,7 +4,7 @@
 	"publishConfig": {
 		"access": "public"
 	},
-	"version": "0.0.5",
+	"version": "0.0.7",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
@@ -29,12 +29,13 @@
 		"fatima": "./dist/cli/cli.cjs"
 	},
 	"scripts": {
-		"build": "rm -rf dist && pnpm tsup",
-		"dev": "pnpm run build --watch"
+		"typecheck": "tsc",
+		"build": "rm -rf dist && tsc && pnpm tsup",
+		"dev": "pnpm run build --watch",
+		"release": "pnpm publish --no-git-checks"
 	},
 	"devDependencies": {
 		"@types/node": "^22.9.1",
-		"concurrently": "9.1.2",
 		"tsup": "^8.3.5",
 		"typescript": "5.6.3"
 	},

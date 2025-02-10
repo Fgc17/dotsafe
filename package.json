@@ -4,10 +4,11 @@
 	"scripts": {
 		"build": "turbo build",
 		"dev": "turbo dev",
+		"release": "turbo release",
 		"lint": "biome lint --error-on-warnings",
 		"format": "biome format --write",
-		"bump": "changeset",
-		"release": "pnpm build && changeset version && changeset publish"
+		"change": "changeset",
+		"bump": "changeset version"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.9.4",
