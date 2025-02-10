@@ -4,24 +4,26 @@ description: In case you're wondering, the name refers to "Our Lady of Fátima".
 icon: QuestionMarkCircle
 ---
 
-We need end-to-end type safety, we need to be able to validate with _any_ library, we need better envs for js and ts, so here it is.
+Fatima brings end-to-end type safety, completely agnostic validation, and a better development experience to your environment variables.
 
 ## Comparison with other libraries
 
-|                                   | Fatima | [t3-env][t3env] | [typedotenv][typedotenv]   |
-| --------------------------------- | ------ | --------------- | -------------------------- |
-| Javascript support                | ✅     | ✅              | ❌                         |
-| Typescript setup file             | ✅     | ✅              | Doesn't require setup file |
-| Type Safety                       | ✅     | ✅              | ✅                         |
-| End-to-end type safety            | ✅     | ❌              | ❌                         |
-| Load from cloud to local          | ✅     | ❌              | ❌                         |
-| Validate with any library         | ✅     | ❌              | ❌                         |
-| Public and server secrets         | ✅     | ✅              | ❌                         |
-| Files to setup                    | One    | One / Two       | Zero                       |
-| ESlint helper plugin              | ✅     | ❌              | ❌                         |
-| Development environment reloading | ✅     | ❌              | ❌                         |
-| Doesn't require codegen           | ❌     | ✅              | ❌                         |
+|                           | Fatima | [t3-env][t3env] | [typedotenv][typedotenv] | [dotenvx][dotenvx] |
+| ------------------------- | ------ | --------------- | ------------------------ | ------------------ |
+| Javascript support        | ✅     | ✅              | ❌                       | ✅                 |
+| Typescript setup file     | ✅     | ✅              | CLI Only                 | CLI Only           |
+| Type Safety               | ✅     | ✅              | ✅                       | ❌                 |
+| End-to-end type safety    | ✅     | ❌              | ❌                       | ❌                 |
+| Load from cloud to local  | ✅     | ❌              | ❌                       | ❌                 |
+| Validate with any library | ✅     | ❌              | ❌                       | ❌                 |
+| Public and server secrets | ✅     | ✅              | ❌                       | ❌                 |
+| Files to setup            | 0      | 1 -> 2          | 0                        | 0                  |
+| ESlint helper plugin      | ✅     | ❌              | ❌                       | ❌                 |
+| Development reloading     | ✅     | ❌              | ❌                       | ❌                 |
+| Zero Codegen              | ❌     | ✅              | ❌                       | ✅                 |
+| Native .env load          | ❌     | ❌              | ✅                       | ✅                 |
 
 [t3env]: https://github.com/t3-oss/t3-env
 [typedotenv]: https://github.com/ssssota/typedotenv
 [dotenv]: https://github.com/motdotla/dotenv
+[dotenvx]: https://github.com/dotenvx/dotenvx
