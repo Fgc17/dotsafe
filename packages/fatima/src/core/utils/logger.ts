@@ -1,7 +1,10 @@
 import { fatimaEnv } from "./fatima-env";
 
-const join = (message: string[]) =>
-	`🔒 [fatima] (${fatimaEnv.get()}) ` + message.join("\n ");
+const join = (message: string[]) => {
+	const env = fatimaEnv.get() ?? "EnvironmentNotFound";
+
+	return `🔒 [fatima] (${env}) ` + message.join("\n ");
+};
 
 const block = (message: string) => {
 	let block = message + "\n";
