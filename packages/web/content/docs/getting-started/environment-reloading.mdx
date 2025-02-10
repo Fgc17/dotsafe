@@ -15,11 +15,15 @@ All `.env` except `.example.env` files will be watched for changes and reloaded 
 
 You can also setup a webhook with `fatima dev` to listen to your secret manager for changes.
 
-```bash
-fatima dev --port 3333
+```typescript title="fatima.config.ts"
+export default config({
+  hook: {
+    port: 4242,
+  },
+});
 ```
 
-This will spin up an endpoint at `http://localhost:3333/fatima` accepting any HTTP method to trigger a reload.
+This will spin up an endpoint at `http://localhost:4242/fatima` accepting any HTTP method to trigger a reload.
 
 It is your job to provide the tunneling service, here's a list of services you can use:
 
@@ -30,16 +34,16 @@ It is your job to provide the tunneling service, here's a list of services you c
 
 For much more, check the [Awesome Tunneling repo](https://github.com/anderspitman/awesome-tunneling)
 
-After settin up the tunneling you just need to set the webhook URL in your secret manager to the endpoint URL.
+After setting up the tunneling you just need to set the webhook URL in your secret manager to the endpoint URL.
 
 ## My secret manager does not support webhooks
 
 This usually happens with tools that _have_ a secret manager but aren't secret managers themselves: vercel, railway, trigger.dev, etc.
 
-In this case, you can use the `fatima send-reload` command to trigger a reload.
+In this case, you can use the `fatima reload` command to trigger a reload.
 
 ```bash
-fatima send-reload
+fatima reload
 ```
 
 You can run this command without stopping any process, it will work as the webhook would (maybe even faster depending on you).
