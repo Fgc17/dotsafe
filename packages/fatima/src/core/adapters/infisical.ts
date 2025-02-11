@@ -1,5 +1,8 @@
 import { lifecycle } from "../lifecycle";
-import type { FatimaLoadFunction, UnsafeEnvironmentVariables } from "../types";
+import type {
+	FatimaBuiltInLoadFunction,
+	UnsafeEnvironmentVariables,
+} from "../types";
 import type { AnyType, GenericClass } from "../utils/types";
 
 type InfisicalClientMock = GenericClass<{
@@ -30,7 +33,7 @@ const load =
 			projectId: string;
 			environment?: string;
 		},
-	): FatimaLoadFunction =>
+	): FatimaBuiltInLoadFunction =>
 	async () => {
 		const client = new infisicalClient();
 

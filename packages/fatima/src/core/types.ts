@@ -8,9 +8,16 @@ export type FatimaContext = {
 	configPath: string;
 };
 
-export type FatimaLoadFunction = (
+export type FatimaBuiltInLoadFunction =
+	() => Promisable<UnsafeEnvironmentVariables>;
+
+export type FatimaCustomLoadFunction = (
 	processEnv: UnsafeEnvironmentVariables,
-) => Promisable<UnsafeEnvironmentVariables | null | undefined>;
+) => Promisable<UnsafeEnvironmentVariables>;
+
+export type FatimaLoadFunction =
+	| FatimaBuiltInLoadFunction
+	| FatimaCustomLoadFunction;
 
 export type FatimaLoaderChain = FatimaLoadFunction[] | FatimaLoadFunction;
 

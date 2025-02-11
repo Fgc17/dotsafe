@@ -1,4 +1,7 @@
-import type { FatimaLoadFunction, UnsafeEnvironmentVariables } from "../types";
+import type {
+	FatimaBuiltInLoadFunction,
+	UnsafeEnvironmentVariables,
+} from "../types";
 import type { AnyType } from "../utils/types";
 
 export type DotenvConfigOptionsMock = {
@@ -12,7 +15,10 @@ export interface DotenvMock {
 }
 
 const load =
-	(dotenv: DotenvMock, config?: DotenvConfigOptionsMock): FatimaLoadFunction =>
+	(
+		dotenv: DotenvMock,
+		config?: DotenvConfigOptionsMock,
+	): FatimaBuiltInLoadFunction =>
 	async () => {
 		const env = (dotenv.config(config).parsed ??
 			{}) as UnsafeEnvironmentVariables;

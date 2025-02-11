@@ -1,6 +1,9 @@
 import { spawn } from "node:child_process";
 import { promises as fs } from "node:fs";
-import type { FatimaLoadFunction, UnsafeEnvironmentVariables } from "../types";
+import type {
+	FatimaBuiltInLoadFunction,
+	UnsafeEnvironmentVariables,
+} from "../types";
 import { logger } from "../utils/logger";
 
 export type VercelParseFunction = (
@@ -17,7 +20,10 @@ export interface VercelLoadConfig {
 }
 
 const load =
-	(parse: VercelParseFunction, config?: VercelLoadConfig): FatimaLoadFunction =>
+	(
+		parse: VercelParseFunction,
+		config?: VercelLoadConfig,
+	): FatimaBuiltInLoadFunction =>
 	async () => {
 		try {
 			await new Promise<void>((resolve, reject) => {

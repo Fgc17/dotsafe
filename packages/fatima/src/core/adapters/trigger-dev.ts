@@ -1,4 +1,7 @@
-import type { FatimaLoadFunction, UnsafeEnvironmentVariables } from "../types";
+import type {
+	FatimaBuiltInLoadFunction,
+	UnsafeEnvironmentVariables,
+} from "../types";
 import { resolve } from "node:path";
 import { spawn } from "node:child_process";
 import { lifecycle } from "../lifecycle";
@@ -27,7 +30,7 @@ const load =
 			accessToken: string;
 			environment?: string;
 		},
-	): FatimaLoadFunction =>
+	): FatimaBuiltInLoadFunction =>
 	async () => {
 		const auth = {
 			...config,

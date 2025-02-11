@@ -1,5 +1,8 @@
 import { lifecycle } from "../lifecycle";
-import type { FatimaLoadFunction, UnsafeEnvironmentVariables } from "../types";
+import type {
+	FatimaBuiltInLoadFunction,
+	UnsafeEnvironmentVariables,
+} from "../types";
 
 export interface HerokuLoadOptions {
 	app_id_or_name: string;
@@ -7,7 +10,7 @@ export interface HerokuLoadOptions {
 }
 
 const load =
-	(config: HerokuLoadOptions): FatimaLoadFunction =>
+	(config: HerokuLoadOptions): FatimaBuiltInLoadFunction =>
 	async () => {
 		const auth = {
 			bearer_token: config.bearer_token ?? process.env.HEROKU_API_TOKEN,
