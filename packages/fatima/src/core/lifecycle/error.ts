@@ -1,3 +1,4 @@
+import type { FatimaParsedValidationErrors } from "../types";
 import { logger } from "../utils/logger";
 
 const missingEnvironmentVariable = (env: string): never => {
@@ -37,10 +38,28 @@ const environmentMixing = (initial: string, final: string) => {
 	process.exit(1);
 };
 
+const invalidEnvironmentVariables = (
+	parsedErrors: FatimaParsedValidationErrors,
+	exit = true,
+) => {
+	logger.error(
+		"Validation failed, here's the error list:" +
+			"\n\n" +
+			Object.entries(parsedErrors)
+				?.map(([key, messages]) => `❌ ${key}\n  • ${messages.join("\n  • ")}`)
+				.join("\n"),
+	);
+
+	if (exit) {
+		process.exit(1);
+	}
+};
+
 export const error = {
 	missingConfig,
 	missingEnvironmentConfig,
 	missingEnvironmentVariable,
 	undefinedEnvironmentFunctionReturn,
 	environmentMixing,
+	invalidEnvironmentVariables,
 };
