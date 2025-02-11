@@ -18,15 +18,19 @@ export type FatimaLoadObject<Environments extends FatimaEnvironment> = {
 	[env in Environments]?: FatimaLoaderChain;
 };
 
+export type FatimaValidatorError = {
+	key: string;
+	message: string;
+};
+
+export type FatimaParsedValidationErrors = Record<string, string[]>;
+
 export type FatimaValidator = (
 	env: UnsafeEnvironmentVariables,
 	context: FatimaContext,
 ) => Promisable<{
 	isValid: boolean;
-	errors?: Array<{
-		key: string;
-		message: string;
-	}>;
+	errors?: FatimaValidatorError[];
 }>;
 
 export type FatimaEnvironmentFunction = (
