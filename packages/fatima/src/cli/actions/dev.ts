@@ -10,6 +10,8 @@ import { createInjectableEnv } from "../utils/env-patch";
 import fs from "node:fs";
 import http from "node:http";
 import { fatimaEnv } from "src/core/utils/fatima-env";
+import { parseValidationErrors } from "../utils/parse-errors";
+import { lifecycle } from "src/core/lifecycle";
 
 type ActionOptions = {
 	config: string;
@@ -67,6 +69,32 @@ export const devAction = async (options: ActionOptions, args: string[]) => {
 		child.send({ type: "update-env", env });
 	};
 
+	const reloadEnvironments = async () => {
+		const { env, envCount } = await loadEnv(config);
+
+		const injectableEnv = createInjectableEnv(env);
+
+		updateChildEnv(child, injectableEnv);
+
+		logger.success(`Reloaded ${envCount} environment variables`);
+
+		if (!options.lite) {
+			createClient(config, env);
+		}
+
+		if (config.validate) {
+			const { errors } = await config.validate(env, {
+				configPath: config.file.path,
+			});
+
+			if (errors?.length) {
+				const parsedErrors = parseValidationErrors(errors);
+
+				lifecycle.error.invalidEnvironmentVariables(parsedErrors, false);
+			}
+		}
+	};
+
 	const watcher = fs.watch(
 		envFilesDir,
 		debounce(async (_, filename: string | null) => {
@@ -78,17 +106,7 @@ export const devAction = async (options: ActionOptions, args: string[]) => {
 			)
 				return;
 
-			const { env, envCount } = await loadEnv(config);
-
-			if (!options.lite) {
-				createClient(config, env);
-			}
-
-			const injectableEnv = createInjectableEnv(env);
-
-			updateChildEnv(child, injectableEnv);
-
-			logger.success(`Reloaded ${envCount} environment variables`);
+			await reloadEnvironments();
 		}, 100),
 	);
 
@@ -108,17 +126,7 @@ export const devAction = async (options: ActionOptions, args: string[]) => {
 
 			req.on("end", async () => {
 				try {
-					const { env, envCount } = await loadEnv(config);
-
-					if (!options.lite) {
-						createClient(config, env);
-					}
-
-					const injectableEnv = createInjectableEnv(env);
-
-					updateChildEnv(child, injectableEnv);
-
-					logger.success(`Reloaded ${envCount} environment variables`);
+					await reloadEnvironments();
 
 					res.writeHead(200, { "Content-Type": "application/json" });
 					res.end(JSON.stringify({ status: "success" }));
