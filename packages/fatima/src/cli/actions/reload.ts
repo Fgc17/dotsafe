@@ -8,7 +8,18 @@ export const reloadAction = async (options: { config?: string }) => {
 
 	await fetch(`http://localhost:${port}/fatima`, {
 		method: "POST",
-	});
+	})
+		.then((res) => {
+			if (res.status !== 200) {
+				throw "err";
+			}
 
-	logger.success("Successfully reloaded environment variables");
+			logger.success("Successfully reloaded environment variables");
+		})
+		.catch(() => {
+			logger.error(
+				`Failed to reload environment variables, did you run 'fatima dev'?`,
+			);
+			process.exit(1);
+		});
 };
