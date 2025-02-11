@@ -1,6 +1,8 @@
 import { transpileConfig } from "../utils/transpile-config";
 import { logger } from "../../core/utils/logger";
 import { loadEnv } from "../utils/load-env";
+import { parseValidationErrors } from "../utils/parse-errors";
+import { lifecycle } from "src/core/lifecycle";
 
 export const validateAction = async (options: { config?: string }) => {
 	const config = await transpileConfig(options?.config);
@@ -21,32 +23,9 @@ export const validateAction = async (options: { config?: string }) => {
 	});
 
 	if (!isValid && errors) {
-		const groupedErrors = errors.reduce(
-			(acc, error) => {
-				const key = error.key;
+		const parsedErrors = parseValidationErrors(errors);
 
-				if (!acc[key]) {
-					acc[key] = [];
-				}
-
-				acc[key].push(error.message);
-
-				return acc;
-			},
-			{} as Record<string, string[]>,
-		);
-
-		logger.error(
-			"Validation failed, here's the error list:" +
-				"\n\n" +
-				Object.entries(groupedErrors)
-					?.map(
-						([key, messages]) => `❌ ${key}\n  • ${messages.join("\n  • ")}`,
-					)
-					.join("\n"),
-		);
-
-		process.exit(1);
+		return lifecycle.error.invalidEnvironmentVariables(parsedErrors);
 	}
 
 	logger.success("Successfully validated environment variables");
