@@ -88,11 +88,12 @@ export const plugin = {
 	rules: {
 		"@fatima/no-process-env": "error",
 	},
-};
+} as const;
 
-export const noEnvRule = (...files: string[]) => ({
-	files,
-	rules: {
-		"@fatima/no-env": "error",
-	},
-});
+export const noEnvRule = (...files: string[]) =>
+	({
+		files,
+		rules: {
+			"@fatima/no-env": "error",
+		},
+	}) as const;
