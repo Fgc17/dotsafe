@@ -4,10 +4,6 @@ export type UnsafeEnvironmentVariables = Record<string, string>;
 
 export type FatimaEnvironment = string;
 
-export type FatimaContext = {
-	configPath: string;
-};
-
 export type FatimaBuiltInLoadFunction =
 	() => Promisable<UnsafeEnvironmentVariables>;
 
@@ -32,10 +28,7 @@ export type FatimaValidatorError = {
 
 export type FatimaParsedValidationErrors = Record<string, string[]>;
 
-export type FatimaValidator = (
-	env: UnsafeEnvironmentVariables,
-	context: FatimaContext,
-) => Promisable<{
+export type FatimaValidator = (env: UnsafeEnvironmentVariables) => Promisable<{
 	isValid: boolean;
 	errors?: FatimaValidatorError[];
 }>;
