@@ -7,9 +7,15 @@ const join = (message: string[]) => {
 };
 
 const block = (message: string) => {
-	let block = message + "\n";
+	const isFirstLog = process.env.FATIMA_LOGS === "1";
 
-	if (!process.env.npm_package_version) {
+	let block = message;
+
+	if (isFirstLog) {
+		block = "\r" + block;
+	}
+
+	if (!isFirstLog || !process.env.npm_package_version) {
 		block = "\n" + block;
 	}
 
@@ -32,6 +38,9 @@ const logger: Record<LogTheme, (...messages: string[]) => void> = Object.keys(
 		acc[level as LogTheme] = (...messages: string[]) => {
 			const [open, close] = colors[level as LogTheme];
 			const message = join(messages);
+			process.env.FATIMA_LOGS = (
+				Number(process.env.FATIMA_LOGS ?? "0") + 1
+			).toString();
 			console.log(`\u001B[${open}m ${block(message)} \u001B[${close}m`);
 		};
 		return acc;

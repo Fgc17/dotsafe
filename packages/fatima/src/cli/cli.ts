@@ -12,7 +12,12 @@ initializeEnv();
 program
 	.name("fatima")
 	.description("typesafe environment variables for the js ecosystem")
-	.version("0.0.0");
+	.version("0.0.0")
+	.hook("postAction", () => {
+		if (!process.env.npm_package_version) {
+			console.log("");
+		}
+	});
 
 program
 	.command("generate")
