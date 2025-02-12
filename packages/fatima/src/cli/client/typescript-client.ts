@@ -2,8 +2,7 @@ import type { FatimaClientOptions } from "src/core/types";
 import { txt } from "src/core/utils/txt";
 
 type ClientStrings = {
-	envKeys: string;
-	envClass: string;
+	envObject: string;
 	createEnvArg: string;
 	createPublicEnvArg?: string;
 	publicPrefix?: string;
@@ -19,21 +18,19 @@ const client = (strings: ClientStrings) => [
 	"} from 'fatima/env';",
 	"",
 
-	strings.envKeys
-		? `export type EnvKeys = ${strings.envKeys};`
-		: "export type EnvKeys = ''",
-	"",
-
-	"export type EnvRecord<V = string> = FatimaEnvRecord<EnvKeys, V>;",
-	"",
-
-	"export interface EnvClass {",
-	`  ${strings.envClass}`,
+	"export interface EnvObject {",
+	`  ${strings.envObject}`,
 	"}",
 	"",
 
-	"type PrimitiveEnvType = FatimaPrimitiveEnvType<EnvKeys>;",
-	"export type EnvType<T extends PrimitiveEnvType> = FatimaEnvType<EnvKeys, T>;",
+	"export type EnvKeys = keyof EnvObject;",
+	"",
+
+	"export type EnvRecord<V = string> = FatimaEnvRecord<EnvObject, V>;",
+	"",
+
+	"type PrimitiveEnvType = FatimaPrimitiveEnvType<EnvObject>;",
+	"export type EnvType<T extends PrimitiveEnvType> = FatimaEnvType<EnvObject, T>;",
 	"",
 
 	`type Env = ServerEnvRecord<EnvKeys, ${strings.publicPrefix}>`,
@@ -75,9 +72,7 @@ export function getTypescriptClient(
 
 	const createEnvArg = `{ isServer: ${options.isServer ? options.isServer.toString() : undefined} }`;
 
-	const envKeys = '\n  | "' + envs.sort().join('" \n  | "') + '"';
-
-	const envClass = envs.map((key) => `"${key}": string;`).join("\n  ");
+	const envObject = envs.map((key) => `"${key}": string;`).join("\n  ");
 
 	const publicPrefix = options.publicPrefix
 		? `"${options.publicPrefix}"`
@@ -86,8 +81,7 @@ export function getTypescriptClient(
 	return client({
 		createEnvArg,
 		createPublicEnvArg,
-		envKeys,
-		envClass,
+		envObject,
 		publicPrefix,
 	}).join("\n");
 }
