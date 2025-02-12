@@ -29,18 +29,7 @@ program
 	});
 
 program
-	.command("validate")
-	.option("-c, --config <config>", "Config file path")
-	.action(validateAction);
-
-program
-	.command("reload")
-	.option("-c, --config <config>", "Config file path")
-	.action(reloadAction);
-
-program
 	.command("dev")
-	.option("-c, --config <config>", "Config file path")
 	.option("-l, --lite", "Lite mode, won't generate client")
 	.argument("<command...>", "The command to execute after --")
 	.action(async (args, options) => {
@@ -51,13 +40,16 @@ program
 
 program
 	.command("run")
-	.option("-c, --config <config>", "Config file path")
 	.argument("<command...>", "The command to execute after --")
 	.action(async (args, options) => {
 		await validateAction(options);
 
 		await runAction(options, args);
 	});
+
+program.command("validate").action(validateAction);
+
+program.command("reload").action(reloadAction);
 
 program.command("init").action(initAction);
 
