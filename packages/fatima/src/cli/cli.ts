@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { program } from "commander";
 import { generateAction } from "./actions/generate";
 import { devAction } from "./actions/dev";
