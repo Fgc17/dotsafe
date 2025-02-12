@@ -5,6 +5,8 @@ import type {
 	UnsafeEnvironmentVariables,
 } from "../types";
 import { logger } from "../utils/logger";
+import { createInjectableEnv } from "src/cli/utils/env-patch";
+import { lifecycle } from "../lifecycle";
 
 export type VercelParseFunction = (
 	envFileContent: string,
@@ -12,11 +14,30 @@ export type VercelParseFunction = (
 
 export interface VercelLoadConfig {
 	/**
+	 * The Vercel token from your Vercel account settings.
+	 * @link https://vercel.com/account/settings
+	 */
+	vercelToken?: string;
+	/**
+	 * The Vercel project ID.
+	 *
+	 * Use the following URL with your own values to get the project ID:
+	 * @link https://vercel.com/your-team-name/your-project-name/settings#project-id
+	 */
+	vercelProjectId?: string;
+	/**
+	 * The Vercel organization ID.
+	 *
+	 * Use the following URL with your own values to get the org ID:
+	 * @link https://vercel.com/teams/your-team-name/settings#team-id
+	 */
+	vercelOrgId?: string;
+	/**
 	 * The environment to pull the variables from.
 	 *
 	 * @default "development"
 	 */
-	projectEnv?: string;
+	vercelEnvironment?: string;
 }
 
 const load =
@@ -26,13 +47,44 @@ const load =
 	): FatimaBuiltInLoadFunction =>
 	async () => {
 		try {
+			const auth = {
+				VERCEL_ORG_ID:
+					config?.vercelOrgId ?? (process.env.VERCEL_ORG_ID as string),
+				VERCEL_PROJECT_ID:
+					config?.vercelProjectId ?? (process.env.VERCEL_PROJECT_ID as string),
+				VERCEL_TOKEN:
+					config?.vercelToken ?? (process.env.VERCEL_TOKEN as string),
+				VERCEL_PROJECT_ENV: config?.vercelEnvironment ?? "development",
+			} as const satisfies Record<string, string>;
+
+			if (!auth.VERCEL_ORG_ID) {
+				return lifecycle.error.missingConfig("VERCEL_ORG_ID");
+			}
+
+			if (!auth.VERCEL_PROJECT_ID) {
+				return lifecycle.error.missingConfig("VERCEL_PROJECT_ID");
+			}
+
+			if (!auth.VERCEL_TOKEN) {
+				return lifecycle.error.missingConfig("VERCEL_TOKEN");
+			}
+
+			const injectableEnv = createInjectableEnv(auth);
+
 			await new Promise<void>((resolve, reject) => {
-				const child = spawn("vercel", [
-					"env",
-					"pull",
-					".tmp.vercel.env",
-					`--environment=${config?.projectEnv ?? "development"}`,
-				]);
+				const child = spawn(
+					"vercel",
+					[
+						"env",
+						"pull",
+						".tmp.vercel.env",
+						`--token=${auth.VERCEL_TOKEN}`,
+						`--environment=${auth.VERCEL_PROJECT_ENV}`,
+					],
+					{
+						env: injectableEnv,
+					},
+				);
 
 				child.on("error", (e) => {
 					reject(e);
@@ -56,11 +108,10 @@ const load =
 			return envVariables;
 		} catch (error) {
 			logger.error(
-				"'vercel pull env' didn't work, here are some possible reasons:\n",
-				"1. You didn't install the Vercel CLI: `npm i -g vercel`",
-				"2. You are not logged: `vercel login`",
-				"3. You didn't link your codebase to a Vercel project: `vercel link`",
-				"4. You somehow do not have the `development` environment, in this case you can use `adapters.vercel.load({ environment })`",
+				"Fatima could not load secrets from Vercel, here are some possible reasons:\n",
+				"1. You didn't install the Vercel CLI: 'npm i -g vercel'",
+				"2. You didn't set, or passed the wrong VERCEl_TOKEN, VERCEL_PROJECT_ID, or VERCEL_ORG_ID.",
+				`3. You don't have the '${config?.vercelEnvironment ?? "development"}' environment in your project.`,
 			);
 			process.exit(1);
 		}
