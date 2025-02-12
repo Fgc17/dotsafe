@@ -1,12 +1,8 @@
 import { logger } from "src/core/utils/logger";
-import { transpileConfig } from "../utils/transpile-config";
+import { createAction, type ActionContext } from "../utils/create-action";
 
-export const reloadAction = async (options: { config?: string }) => {
-	const config = await transpileConfig(options.config);
-
-	const port = config.hook?.port;
-
-	await fetch(`http://localhost:${port}/fatima`, {
+export const reloadService = async ({ config }: ActionContext) => {
+	await fetch(`http://localhost:${config.hook?.port}/fatima`, {
 		method: "POST",
 	})
 		.then((res) => {
@@ -23,3 +19,5 @@ export const reloadAction = async (options: { config?: string }) => {
 			process.exit(1);
 		});
 };
+
+export const reloadAction = createAction(reloadService);

@@ -1,12 +1,14 @@
-import { transpileConfig } from "../utils/transpile-config";
-import { loadEnv } from "../utils/load-env";
 import { logger } from "../../core/utils/logger";
+import { createAction, type ActionContext } from "../utils/create-action";
 import { createClient } from "../utils/create-client";
+import { validateService } from "./validate";
 
-export const generateAction = async (options: { config?: string }) => {
-	const config = await transpileConfig(options?.config);
+export const generateService = async (ctx: ActionContext) => {
+	const { env, config, envCount } = ctx;
 
-	const { env, envCount } = await loadEnv(config);
+	if (config.validate) {
+		await validateService(ctx);
+	}
 
 	createClient(config, env);
 
@@ -14,3 +16,5 @@ export const generateAction = async (options: { config?: string }) => {
 		`Successfully generated env.ts with ${envCount} environment variables`,
 	);
 };
+
+export const generateAction = createAction(generateService);

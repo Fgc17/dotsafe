@@ -9,48 +9,46 @@ import { reloadAction } from "./actions/reload";
 
 initializeEnv();
 
+const configOption = "-c, --config <config>, --config=<config>";
+
+const configOptionDescription = "Config file path";
+
 program
 	.name("fatima")
-	.description("typesafe environment variables for the js ecosystem")
-	.version("0.0.0")
-	.hook("postAction", () => {
-		if (!process.env.npm_package_version) {
-			console.log("");
-		}
-	});
+	.version("0.0.8")
+	.description("typesafe environment variables for the js ecosystem");
 
 program
 	.command("generate")
-	.option("-c, --config <config>", "Config file path")
-	.action(async (options) => {
-		await validateAction(options);
-
-		await generateAction(options);
-	});
+	.option(configOption, configOptionDescription)
+	.action(generateAction);
 
 program
 	.command("dev")
+	.option(configOption, configOptionDescription)
 	.option("-l, --lite", "Lite mode, won't generate client")
 	.argument("<command...>", "The command to execute after --")
-	.action(async (args, options) => {
-		await validateAction(options);
-
-		await devAction(options, args);
-	});
+	.action(devAction);
 
 program
 	.command("run")
+	.option(configOption, configOptionDescription)
 	.argument("<command...>", "The command to execute after --")
-	.action(async (args, options) => {
-		await validateAction(options);
+	.action(runAction);
 
-		await runAction(options, args);
-	});
+program
+	.command("validate")
+	.option(configOption, configOptionDescription)
+	.action(validateAction);
 
-program.command("validate").action(validateAction);
+program
+	.command("reload")
+	.option(configOption, configOptionDescription)
+	.action(reloadAction);
 
-program.command("reload").action(reloadAction);
-
-program.command("init").action(initAction);
+program
+	.command("init")
+	.option(configOption, configOptionDescription)
+	.action(initAction);
 
 program.parse();

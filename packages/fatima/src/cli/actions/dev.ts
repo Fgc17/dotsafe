@@ -1,23 +1,14 @@
-import { type ChildProcess, spawn } from "node:child_process";
+import { spawn } from "node:child_process";
 import { logger } from "../../core/utils/logger";
-import { transpileConfig } from "../utils/transpile-config";
-import { loadEnv } from "../utils/load-env";
 import type { UnsafeEnvironmentVariables } from "src/core/types";
 import { debounce } from "../utils/debounce";
 import { createClient } from "../utils/create-client";
 import { createInjectableEnv } from "../utils/env-patch";
-
 import fs from "node:fs";
 import http from "node:http";
-import { fatimaEnv } from "src/core/utils/fatima-env";
-import { parseValidationErrors } from "../utils/parse-errors";
-import { lifecycle } from "src/core/lifecycle";
-
-type ActionOptions = {
-	config: string;
-	generate: boolean;
-	lite: boolean;
-};
+import { fatimaStore } from "src/core/utils/store";
+import { reloadEnv } from "../utils/reload-env";
+import { createAction, type ActionContext } from "../utils/create-action";
 
 const environmentBlacklist = [
 	"production",
@@ -30,10 +21,14 @@ const environmentBlacklist = [
 	"preprod",
 ];
 
-export const devAction = async (options: ActionOptions, args: string[]) => {
-	const config = await transpileConfig(options.config);
-
-	const environment = fatimaEnv.get();
+export const devService = async ({
+	config,
+	options,
+	env,
+	envCount,
+	args,
+}: ActionContext) => {
+	const environment = fatimaStore.get("fatimaEnvironment");
 
 	if (environmentBlacklist.includes(environment)) {
 		logger.error(
@@ -41,8 +36,6 @@ export const devAction = async (options: ActionOptions, args: string[]) => {
 		);
 		process.exit(1);
 	}
-
-	const { env, envCount } = await loadEnv(config);
 
 	if (!options.lite) {
 		createClient(config, env);
@@ -62,39 +55,6 @@ export const devAction = async (options: ActionOptions, args: string[]) => {
 
 	const envFilesDir = config.file.folderPath;
 
-	const updateChildEnv = (
-		child: ChildProcess,
-		env: UnsafeEnvironmentVariables,
-	) => {
-		child.send({ type: "update-env", env });
-	};
-
-	const reloadEnvironments = async () => {
-		const { env, envCount } = await loadEnv(config);
-
-		const injectableEnv = createInjectableEnv(env);
-
-		updateChildEnv(child, injectableEnv);
-
-		logger.success(`Reloaded ${envCount} environment variables`);
-
-		if (!options.lite) {
-			createClient(config, env);
-		}
-
-		if (config.validate) {
-			const { errors } = await config.validate(env, {
-				configPath: config.file.path,
-			});
-
-			if (errors?.length) {
-				const parsedErrors = parseValidationErrors(errors);
-
-				lifecycle.error.invalidEnvironmentVariables(parsedErrors, false);
-			}
-		}
-	};
-
 	const watcher = fs.watch(
 		envFilesDir,
 		debounce(async (_, filename: string | null) => {
@@ -106,7 +66,11 @@ export const devAction = async (options: ActionOptions, args: string[]) => {
 			)
 				return;
 
-			await reloadEnvironments();
+			await reloadEnv({
+				config,
+				options,
+				process: child,
+			});
 		}, 100),
 	);
 
@@ -126,7 +90,11 @@ export const devAction = async (options: ActionOptions, args: string[]) => {
 
 			req.on("end", async () => {
 				try {
-					await reloadEnvironments();
+					await reloadEnv({
+						process: child,
+						config,
+						options,
+					});
 
 					res.writeHead(200, { "Content-Type": "application/json" });
 					res.end(JSON.stringify({ status: "success" }));
@@ -186,3 +154,5 @@ export const devAction = async (options: ActionOptions, args: string[]) => {
 		}
 	});
 };
+
+export const devAction = createAction(devService);

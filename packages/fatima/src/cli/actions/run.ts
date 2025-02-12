@@ -1,19 +1,8 @@
 import { spawn } from "node:child_process";
-import { logger } from "../../core/utils/logger";
-import { transpileConfig } from "../utils/transpile-config";
-import { loadEnv } from "../utils/load-env";
 import { createInjectableEnv } from "../utils/env-patch";
+import { createAction, type ActionContext } from "../utils/create-action";
 
-export const runAction = async (
-	options: { config: string; generate: boolean },
-	args: string[],
-) => {
-	const config = await transpileConfig(options.config);
-
-	const { env, envCount } = await loadEnv(config);
-
-	logger.success(`Loaded ${envCount} environment variables`);
-
+export const runService = async ({ env, args }: ActionContext) => {
 	const cmd = args.shift();
 
 	const injectableEnv = createInjectableEnv(env);
@@ -36,3 +25,5 @@ export const runAction = async (
 		}
 	});
 };
+
+export const runAction = createAction(runService);

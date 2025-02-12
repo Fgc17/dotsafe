@@ -1,16 +1,12 @@
-import { transpileConfig } from "../utils/transpile-config";
 import { logger } from "../../core/utils/logger";
-import { loadEnv } from "../utils/load-env";
+import { createAction, type ActionContext } from "../utils/create-action";
 import { parseValidationErrors } from "../utils/parse-errors";
 import { lifecycle } from "src/core/lifecycle";
 
-export const validateAction = async (options: { config?: string }) => {
-	const config = await transpileConfig(options?.config);
-
-	const { env } = await loadEnv(config);
-
-	const validate = config.validate;
-
+export const validateService = async ({
+	env,
+	config: { validate },
+}: ActionContext) => {
 	if (!validate) {
 		logger.error(
 			"Validate command was called but no validator was provided in the config.",
@@ -18,9 +14,7 @@ export const validateAction = async (options: { config?: string }) => {
 		process.exit(1);
 	}
 
-	const { isValid, errors } = await validate(env, {
-		configPath: config.file.path,
-	});
+	const { isValid, errors } = await validate(env);
 
 	if (!isValid && errors) {
 		const parsedErrors = parseValidationErrors(errors);
@@ -30,3 +24,5 @@ export const validateAction = async (options: { config?: string }) => {
 
 	logger.success("Successfully validated environment variables");
 };
+
+export const validateAction = createAction(validateService);
