@@ -1,3 +1,4 @@
+import { lifecycle } from "../lifecycle";
 import type { FatimaValidator, UnsafeEnvironmentVariables } from "../types";
 import type { AnyType } from "../utils/types";
 
@@ -23,24 +24,28 @@ export const classValidator = (
 	},
 ): FatimaValidator => {
 	return async (env: UnsafeEnvironmentVariables) => {
-		const instance = helpers.plainToInstance(constraint, env);
+		try {
+			const instance = helpers.plainToInstance(constraint, env);
 
-		const classValidatorErrors = await helpers.validate(instance);
+			const classValidatorErrors = await helpers.validate(instance);
 
-		const isValid = classValidatorErrors.length === 0;
+			const isValid = classValidatorErrors.length === 0;
 
-		const errors = isValid
-			? undefined
-			: classValidatorErrors.flatMap((error) =>
-					Object.values(error.constraints ?? {}).map((value) => ({
-						key: error.property,
-						message: value,
-					})),
-				);
+			const errors = isValid
+				? undefined
+				: classValidatorErrors.flatMap((error) =>
+						Object.values(error.constraints ?? {}).map((value) => ({
+							key: error.property,
+							message: value,
+						})),
+					);
 
-		return {
-			isValid,
-			errors,
-		};
+			return {
+				isValid,
+				errors,
+			};
+		} catch {
+			return lifecycle.error.missingBabelTransformClassProperties();
+		}
 	};
 };
