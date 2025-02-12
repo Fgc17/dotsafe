@@ -5,11 +5,11 @@ import type {
 import type { FatimaConfig } from "../../core/config";
 import { logger } from "../../core/utils/logger";
 import { lifecycle } from "src/core/lifecycle";
-import { fatimaEnv } from "src/core/utils/fatima-env";
+import { fatimaStore } from "src/core/utils/store";
 
 export async function loadEnv(config: FatimaConfig) {
 	try {
-		const initialNodeEnv = fatimaEnv.get();
+		const initialNodeEnv = fatimaStore.get("fatimaEnvironment");
 
 		if (!initialNodeEnv || initialNodeEnv === "") {
 			return lifecycle.error.undefinedEnvironmentFunctionReturn();

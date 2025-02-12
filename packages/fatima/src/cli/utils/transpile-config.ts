@@ -3,7 +3,7 @@ import type { FatimaConfig } from "src/core/config";
 import { logger } from "../../core/utils/logger";
 import pluginTransformClassProperties from "@babel/plugin-transform-class-properties";
 import { resolveConfigPath } from "./resolve-config-path";
-import { fatimaEnv } from "src/core/utils/fatima-env";
+import { fatimaStore } from "src/core/utils/store";
 import type { UnsafeEnvironmentVariables } from "src/core/types";
 
 export async function transpileConfig(
@@ -42,7 +42,8 @@ export async function transpileConfig(
 
 		process.env = originalEnv;
 
-		fatimaEnv.set(
+		fatimaStore.set(
+			"fatimaEnvironment",
 			config.environment(process.env as UnsafeEnvironmentVariables),
 		);
 
@@ -52,6 +53,8 @@ export async function transpileConfig(
 			);
 			process.exit(1);
 		}
+
+		fatimaStore.set("fatimaConfigPath", path);
 
 		return config;
 	} catch (error) {
