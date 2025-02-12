@@ -21,7 +21,7 @@ yarn global add vercel
 
 </Tabs>
 
-## Authenticating your Vercel CLI
+## Authenticating
 
 First, log in:
 
@@ -35,6 +35,12 @@ Then, link your project:
 vercel link
 ```
 
+### Token Authenticating
+
+Fatima also supports token-based authentication, which can be useful for people running containers.
+
+Just grab your `VERCEL_TOKEN`, `VERCEL_ORG_ID`, and `VERCEL_PROJECT_ID` from your Vercel account and set them as environment variables, or pass down as loader options.
+
 ## Importing the loader
 
 ```ts title="env.config.ts"
@@ -43,7 +49,11 @@ import { parse } from "dotenv";
 
 export default config({
   load: {
-    development: [adapters.vercel.load(parse)],
+    development: [
+      adapters.vercel.load(parse, {
+        // Check out here with intellisense
+      }),
+    ],
   },
 });
 ```

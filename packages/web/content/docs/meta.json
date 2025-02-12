@@ -4,6 +4,7 @@
 		"getting-started",
 		"security",
 		"client-secrets",
+		"frameworks",
 		"environment-reloading",
 		"adapters",
 		"validators"

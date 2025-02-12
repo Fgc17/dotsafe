@@ -14,7 +14,9 @@ Fatima will require you to explicitly define a `environment` function in your `e
 
 ```ts title="env.config.ts"
 export default config({
-  environment: ({ processEnv }) => processEnv.NODE_ENV,
+  // This can be useful to avoid using process.env directly,
+  // which can cause issues with the ESLint no-process-env rule.
+  environment: (processEnv) => processEnv.NODE_ENV,
 });
 ```
 
