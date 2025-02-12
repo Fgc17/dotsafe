@@ -33,10 +33,10 @@ const load =
 	): FatimaBuiltInLoadFunction =>
 	async () => {
 		const auth = {
-			...config,
 			projectId: process.env.TRIGGER_PROJECT_ID,
 			accessToken: process.env.TRIGGER_ACCESS_TOKEN,
 			environment: "dev",
+			...config,
 		};
 
 		if (!auth.projectId) {
@@ -90,7 +90,7 @@ export const extension = (configPath?: string): TriggerDevExtensionMock => ({
 
 					const cmdPath = resolve(
 						process.cwd(),
-						"node_modules/fatima/dist/cmd.cjs",
+						"node_modules/fatima/dist/cli/cli.cjs",
 					);
 
 					await new Promise<void>((resolve, reject) => {
