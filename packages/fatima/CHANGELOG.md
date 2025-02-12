@@ -1,5 +1,11 @@
 # fatima
 
+## 0.0.9
+
+### Patch Changes
+
+- full lite mode support, performance improvements.
+
 ## 0.0.8
 
 ### Patch Changes
