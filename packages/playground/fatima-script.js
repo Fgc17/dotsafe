@@ -10,7 +10,7 @@ if (!command || toolArgIndex === -1 || toolArgIndex + 1 >= args.length) {
 }
 
 const tool = args[toolArgIndex + 1];
-const fullCommand = `fatima ${command} --config ./src/${tool}/env.config.js`;
+const fullCommand = `fatima ${command} --config ./src/${tool}/env.config.ts`;
 
 try {
 	execSync(fullCommand, { stdio: "inherit" });

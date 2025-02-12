@@ -1,13 +1,13 @@
 import "reflect-metadata";
 import dotenv from "dotenv";
 import { config, adapters, validators } from "fatima";
-import { IsEmail, IsTimeZone, validate } from "class-validator";
+import { IsString, IsTimeZone, validate } from "class-validator";
 import { plainToInstance } from "class-transformer";
 
-import type { EnvClass } from "./env";
+import type { EnvObject } from "./env";
 
-class Constraint implements Partial<EnvClass> {
-	@IsEmail()
+class Constraint implements Partial<EnvObject> {
+	@IsString()
 	NODE_ENV: string;
 
 	@IsTimeZone()

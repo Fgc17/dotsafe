@@ -1,19 +1,26 @@
-import { createEnv, type ServerEnvRecord } from "fatima/env";
+import {
+  createEnv,
+  type ServerEnvRecord,
+  type EnvType as FatimaEnvType,
+  type EnvRecord as FatimaEnvRecord,
+  type PrimitiveEnvType as FatimaPrimitiveEnvType,
+} from 'fatima/env';
 
-export type EnvKeys = "NEXT_PUBLIC_API_URL" | "NODE_ENV" | "TZ";
-
-export type EnvRecord<V = string> = Record<EnvKeys, V>;
-
-export interface EnvClass {
-	NEXT_PUBLIC_API_URL: string;
-	NODE_ENV: string;
-	TZ: string;
+export interface EnvObject {
+  "NODE_ENV": string;
+  "TZ": string;
+  "NEXT_PUBLIC_API_URL": string;
+  "TEST": string;
 }
 
-export type EnvType<
-	Type extends { [key in EnvKeys]?: unknown } = { [key in EnvKeys]?: string },
-> = Type;
+export type EnvKeys = keyof EnvObject;
 
-type Env = ServerEnvRecord<EnvKeys, "NEST_PUBLIC">;
+export type EnvRecord<V = string> = FatimaEnvRecord<EnvObject, V>;
+
+type PrimitiveEnvType = FatimaPrimitiveEnvType<EnvObject>;
+export type EnvType<T extends PrimitiveEnvType> = FatimaEnvType<EnvObject, T>;
+
+type Env = ServerEnvRecord<EnvKeys, "NEST_PUBLIC">
 
 export const env = createEnv({ isServer: undefined }) as Env;
+
