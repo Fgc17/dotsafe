@@ -10,18 +10,17 @@ interface CreatePublicEnvOptions {
 	publicVariables: UnsafeEnvironmentVariables;
 }
 
-export type EnvRecord<
-	EnvKeys extends string = string,
-	EnvValues = AnyType,
-> = Record<EnvKeys, EnvValues>;
+export type EnvRecord<EnvObject, EnvValues = AnyType> = {
+	[K in keyof EnvObject as K extends string ? K : never]: EnvValues;
+};
 
-export type PrimitiveEnvType<EnvKeys extends string = string> = {
-	[key in EnvKeys]?: AnyType;
+export type PrimitiveEnvType<EnvObject> = {
+	[K in keyof EnvObject as K extends string ? K : never]?: AnyType;
 };
 
 export type EnvType<
-	EnvKeys extends string = string,
-	Type extends PrimitiveEnvType<EnvKeys> = PrimitiveEnvType<EnvKeys>,
+	EnvObject,
+	Type extends PrimitiveEnvType<EnvObject> = PrimitiveEnvType<EnvObject>,
 > = Type;
 
 export type ServerEnvRecord<Keys extends string, Prefix extends string> = {
