@@ -1,5 +1,11 @@
 # fatima
 
+## 0.0.10
+
+### Patch Changes
+
+- remove transform decorators plugin dep
+
 ## 0.0.9
 
 ### Patch Changes
