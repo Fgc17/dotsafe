@@ -1,5 +1,5 @@
 import { spawn } from "node:child_process";
-import { promises as fs } from "node:fs";
+import { existsSync, promises as fs } from "node:fs";
 import type {
 	FatimaBuiltInLoadFunction,
 	UnsafeEnvironmentVariables,
@@ -47,6 +47,8 @@ const load =
 	): FatimaBuiltInLoadFunction =>
 	async () => {
 		try {
+			const isProjectLinked = existsSync("./.vercel");
+
 			const auth = {
 				VERCEL_ORG_ID:
 					config?.vercelOrgId ?? (process.env.VERCEL_ORG_ID as string),
@@ -57,34 +59,35 @@ const load =
 				VERCEL_PROJECT_ENV: config?.vercelEnvironment ?? "development",
 			} as const satisfies Record<string, string>;
 
-			if (!auth.VERCEL_ORG_ID) {
-				return lifecycle.error.missingConfig("VERCEL_ORG_ID");
-			}
-
-			if (!auth.VERCEL_PROJECT_ID) {
-				return lifecycle.error.missingConfig("VERCEL_PROJECT_ID");
-			}
-
-			if (!auth.VERCEL_TOKEN) {
-				return lifecycle.error.missingConfig("VERCEL_TOKEN");
-			}
-
 			const injectableEnv = createInjectableEnv(auth);
 
+			const args = [
+				"env",
+				"pull",
+				".tmp.vercel.env",
+				`--environment=${auth.VERCEL_PROJECT_ENV}`,
+			];
+
+			if (!isProjectLinked) {
+				if (!auth.VERCEL_ORG_ID) {
+					return lifecycle.error.missingConfig("VERCEL_ORG_ID");
+				}
+
+				if (!auth.VERCEL_PROJECT_ID) {
+					return lifecycle.error.missingConfig("VERCEL_PROJECT_ID");
+				}
+
+				if (!auth.VERCEL_TOKEN) {
+					return lifecycle.error.missingConfig("VERCEL_TOKEN");
+				}
+
+				args.push(`--token=${auth.VERCEL_TOKEN}`);
+			}
+
 			await new Promise<void>((resolve, reject) => {
-				const child = spawn(
-					"vercel",
-					[
-						"env",
-						"pull",
-						".tmp.vercel.env",
-						`--token=${auth.VERCEL_TOKEN}`,
-						`--environment=${auth.VERCEL_PROJECT_ENV}`,
-					],
-					{
-						env: injectableEnv,
-					},
-				);
+				const child = spawn("vercel", args, {
+					env: injectableEnv,
+				});
 
 				child.on("error", (e) => {
 					reject(e);
@@ -110,7 +113,14 @@ const load =
 			logger.error(
 				"Fatima could not load secrets from Vercel, here are some possible reasons:\n",
 				"1. You didn't install the Vercel CLI: 'npm i -g vercel'",
-				"2. You didn't set, or passed the wrong VERCEl_TOKEN, VERCEL_PROJECT_ID, or VERCEL_ORG_ID.",
+				"",
+				"2. You didn't authenticate correctly:",
+				"  - Authenticate by CLI: run 'vercel login' and then 'vercel link'",
+				"  - * you can delete the .vercel folder and try again",
+				"",
+				"  - Authenticate by TOKEN: VERCEL_TOKEN, VERCEL_PROJECT_ID, and VERCEL_ORG_ID",
+				"  - * you can auth by token via .env or passing down the options to the loader",
+				"",
 				`3. You don't have the '${config?.vercelEnvironment ?? "development"}' environment in your project.`,
 			);
 			process.exit(1);
