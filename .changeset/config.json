@@ -8,5 +8,5 @@
 	"updateInternalDependencies": "patch",
 	"fixed": [],
 	"linked": [],
-	"ignore": ["@fatima/playground", "@fatima/web"]
+	"ignore": ["@fatimajs/playground", "@fatimajs/web"]
 }
