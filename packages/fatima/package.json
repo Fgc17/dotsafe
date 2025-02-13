@@ -10,16 +10,8 @@
 		"type": "git",
 		"url": "git+https://github.com/Fgc17/fatima.git"
 	},
-	"files": [
-		"dist"
-	],
-	"keywords": [
-		"env",
-		"typesafe",
-		"typescript",
-		"environment",
-		"variable"
-	],
+	"files": ["dist"],
+	"keywords": ["env", "typesafe", "typescript", "environment", "variable"],
 	"type": "module",
 	"main": "./dist/core/core.cjs",
 	"types": "./dist/core/core.d.cts",
@@ -29,12 +21,8 @@
 	},
 	"typesVersions": {
 		"*": {
-			".": [
-				"./dist/core/core.d.cts"
-			],
-			"env": [
-				"./dist/env/env.d.cts"
-			]
+			".": ["./dist/core/core.d.cts"],
+			"env": ["./dist/env/env.d.cts"]
 		}
 	},
 	"bin": {
@@ -52,7 +40,6 @@
 		"typescript": "5.6.3"
 	},
 	"dependencies": {
-		"@inquirer/prompts": "^7.2.4",
 		"commander": "13.0.0",
 		"jiti": "2.4.2"
 	}

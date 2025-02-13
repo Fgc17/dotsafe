@@ -5,7 +5,6 @@ import { generateAction } from "./actions/generate";
 import { devAction } from "./actions/dev";
 import { validateAction } from "./actions/validate";
 import { runAction } from "./actions/run";
-import { initAction } from "./actions/init";
 import { initializeEnv } from "./utils/env-patch";
 import { reloadAction } from "./actions/reload";
 
@@ -47,10 +46,5 @@ program
 	.command("reload")
 	.option(configOption, configOptionDescription)
 	.action(reloadAction);
-
-program
-	.command("init")
-	.option(configOption, configOptionDescription)
-	.action(initAction);
 
 program.parse();
