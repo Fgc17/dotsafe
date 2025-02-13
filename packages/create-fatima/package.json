@@ -1,0 +1,30 @@
+{
+	"name": "create-fatima",
+	"private": true,
+	"version": "0.0.0",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Fgc17/fatima.git"
+	},
+	"files": ["dist"],
+	"type": "module",
+	"bin": {
+		"fatima": "./dist/cli/cli.cjs"
+	},
+	"scripts": {
+		"typecheck": "tsc --noEmit",
+		"build": "rm -rf dist && tsc && pnpm tsup",
+		"dev": "pnpm run build --watch",
+		"release": "pnpm publish --no-git-checks",
+		"create-fatima": "node ./dist/bin/bin.cjs"
+	},
+	"devDependencies": {
+		"@types/node": "^22.9.1",
+		"tsup": "^8.3.5",
+		"typescript": "5.6.3"
+	},
+	"dependencies": {
+		"@inquirer/prompts": "^7.2.4"
+	}
+}
