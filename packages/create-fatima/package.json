@@ -3,7 +3,7 @@
 	"publishConfig": {
 		"access": "public"
 	},
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
@@ -20,20 +20,19 @@
 		"typecheck": "tsc --noEmit",
 		"build": "rm -rf dist && tsc && pnpm tsup",
 		"dev": "pnpm run build --watch",
-		"release": "pnpm publish --no-git-checks",
-		"init-fatima": "tsx ./src/bin/bin.ts"
+		"release": "pnpm publish --no-git-checks"
 	},
 	"devDependencies": {
 		"@types/node": "^22.9.1",
+		"esbuild-plugin-copy": "^2.1.1",
 		"tsup": "^8.3.5",
 		"tsx": "4.19.2",
-		"typescript": "5.6.3",
-		"esbuild-plugin-copy": "^2.1.1",
-		"fatima": "workspace:*"
+		"typescript": "5.6.3"
 	},
 	"dependencies": {
 		"@inquirer/prompts": "^7.2.4",
 		"chalk": "^4",
+		"comment-json": "^4.2.5",
 		"log-symbols": "^3",
 		"prettier": "3.5.1"
 	}
