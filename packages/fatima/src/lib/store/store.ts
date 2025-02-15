@@ -8,6 +8,7 @@ type FatimaStore = {
 	fatimaTransformedConfigPath: string;
 	fatimaInstrumentationPort: string;
 	fatimaLiteMode: string | undefined;
+	fatimaStoreMarker: string;
 };
 
 export const fatimaStore = {
@@ -17,12 +18,17 @@ export const fatimaStore = {
 	set(key: keyof FatimaStore, value?: string) {
 		process.env[key] = value?.toLocaleLowerCase();
 	},
+	exists() {
+		return process.env.fatimaStoreMarker === "true";
+	},
 };
 
 export const initializeStore = (
 	config: FatimaConfig,
 	options: Record<string, string>,
 ) => {
+	fatimaStore.set("fatimaStoreMarker", "true");
+
 	fatimaStore.set(
 		"fatimaEnvironment",
 		config.environment(process.env as UnsafeEnvironmentVariables),
