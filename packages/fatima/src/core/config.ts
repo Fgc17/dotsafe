@@ -3,20 +3,18 @@ import type {
 	FatimaClientOptions,
 	FatimaEnvironment,
 	FatimaEnvironmentFunction,
-	FatimaHookOptions,
 	FatimaLoadObject,
+	FatimaPortOptions,
 	FatimaValidator,
 } from "./types";
-import { getCallerLocation } from "./utils/get-caller-location";
+import { getCallerLocation } from "src/lib/utils/get-caller-location";
 import { lifecycle } from "./lifecycle";
 
 export type FatimaOptions<
 	Environments extends FatimaEnvironment = FatimaEnvironment,
 > = {
 	/**
-	 * Anything you return here will turn into the environment variables
-	 *
-	 * Check docs for more information on built-in loaders
+	 * Anything you return here will become your environment variables
 	 */
 	load: FatimaLoadObject<Environments>;
 	/**
@@ -32,9 +30,9 @@ export type FatimaOptions<
 	 */
 	validate?: FatimaValidator;
 	/**
-	 * Config for remote environment variable reloading
+	 * Port options
 	 */
-	hook?: FatimaHookOptions;
+	ports?: FatimaPortOptions;
 };
 
 export type FatimaConfig = ReturnType<typeof config>;
@@ -42,32 +40,49 @@ export type FatimaConfig = ReturnType<typeof config>;
 export function config<Environments extends FatimaEnvironment>({
 	load,
 	environment,
-	client,
-	hook,
 	validate,
+	client,
+	ports,
 }: FatimaOptions<Environments>) {
+	if (!environment) {
+		return lifecycle.error.missingEnvironmentConfig();
+	}
+
 	const { filePath: configFilePath, folderPath: configFolderPath } =
 		getCallerLocation();
 
 	const configExtension = path.extname(configFilePath);
 
-	if (!environment) {
-		lifecycle.error.missingEnvironmentConfig();
+	const defaultPortOptions: FatimaPortOptions = {
+		instrumentation: 15781,
+	};
 
-		process.exit(1);
-	}
-
-	return {
-		client,
-		load,
+	return markConfig({
 		validate,
 		environment,
+		client,
+		load,
+		ports: {
+			...defaultPortOptions,
+			...ports,
+		},
 		file: {
 			extension: configExtension,
 			path: configFilePath,
 			folderPath: configFolderPath,
 		},
-		hook,
-		__fatimaconfig: true,
-	};
+	});
 }
+
+export const markConfig = <T>(config: T) => {
+	return {
+		...config,
+		fatimaConfigMarker: true,
+	};
+};
+
+export const isFatimaConfig = (
+	config: FatimaConfig,
+): config is FatimaConfig => {
+	return config.fatimaConfigMarker ?? false;
+};
