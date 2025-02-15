@@ -5,7 +5,7 @@ import { generateAction } from "./actions/generate";
 import { devAction } from "./actions/dev";
 import { validateAction } from "./actions/validate";
 import { runAction } from "./actions/run";
-import { initializeEnv } from "./utils/env-patch";
+import { initializeEnv } from "src/lib/env/patch-env";
 import { reloadAction } from "./actions/reload";
 
 initializeEnv();
