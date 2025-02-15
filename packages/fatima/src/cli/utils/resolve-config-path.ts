@@ -1,9 +1,23 @@
-import { resolve } from "node:path";
-import { existsSync } from "node:fs";
-import { parse } from "node:path";
+import { resolve, parse } from "node:path";
+import { existsSync, readdirSync, statSync } from "node:fs";
 import { logger } from "src/lib/logger/logger";
 
-export function resolveConfigPath(configPath?: string) {
+const searchBlacklist = [
+	"node_modules",
+	".git",
+	"dist",
+	"out",
+	"build",
+	".next",
+	".nuxt",
+	".cache",
+	".tmp",
+	".temp",
+	".vscode",
+	"logs",
+];
+
+export function resolveConfigPath(configPath?: string): string {
 	const baseDir = process.cwd();
 	const extensions = [".ts", ".mts", ".cts", ".js", ".mjs", ".cjs"];
 
@@ -12,7 +26,6 @@ export function resolveConfigPath(configPath?: string) {
 
 		if (!extensions.includes(parsed.ext)) {
 			logger.error(`Invalid given config file extension: ${parsed.ext}`);
-
 			process.exit(1);
 		}
 
@@ -20,7 +33,6 @@ export function resolveConfigPath(configPath?: string) {
 
 		if (!existsSync(fullPath)) {
 			logger.error(`Config file doesn't exist: ${fullPath}`);
-
 			process.exit(1);
 		}
 
@@ -29,23 +41,39 @@ export function resolveConfigPath(configPath?: string) {
 
 	const baseName = "env.config";
 
-	const foundPaths = extensions
-		.map((ext) => resolve(baseDir, baseName + ext))
-		.filter((path) => existsSync(path));
+	function searchConfig(dir: string): string | null {
+		const foundPaths: string[] = [];
 
-	if (foundPaths.length === 0) {
-		logger.error(`No config file found on ${baseDir}`);
+		for (const file of readdirSync(dir)) {
+			const fullPath = resolve(dir, file);
 
-		process.exit(1);
+			if (
+				searchBlacklist.some((blacklisted) => fullPath.includes(blacklisted))
+			) {
+				continue;
+			}
+
+			if (extensions.some((ext) => file === baseName + ext)) {
+				foundPaths.push(fullPath);
+			}
+
+			if (statSync(fullPath).isDirectory()) {
+				const nestedConfig = searchConfig(fullPath);
+				if (nestedConfig) foundPaths.push(nestedConfig);
+			}
+		}
+
+		return foundPaths[0] || null;
 	}
 
-	if (foundPaths.length > 1) {
+	const configPathFound = searchConfig(baseDir);
+
+	if (!configPathFound) {
 		logger.error(
-			`Multiple config files found at ${baseDir}, please use only one.`,
+			"No 'env.config.{js|ts|etc}' file found in the current directory or its subdirectories.",
 		);
-
 		process.exit(1);
 	}
 
-	return foundPaths[0];
+	return configPathFound;
 }
