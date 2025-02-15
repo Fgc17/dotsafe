@@ -1,4 +1,6 @@
 import type { UnsafeEnvironmentVariables } from "src/core/types";
+import { logger } from "src/lib/logger/logger";
+import { fatimaStore } from "src/lib/store/store";
 import type { AnyType } from "src/lib/types";
 
 interface CreateEnvOptions {
@@ -43,29 +45,31 @@ export const createEnv = (options: CreateEnvOptions) => {
 	};
 
 	const handleUndefined = (key: string) => {
-		if (!process.env.TS_ENV) {
-			console.log(
-				"\x1b[41m",
-				`🔒 [dotsafe] Environment variable ${key} not found.`,
-				"If you are expecting dotsafe to inject your private envs, check the process start script, it should look like: `dotsafe run -g -- 'your-command'`.",
-				"\x1b[0m",
+		if (!fatimaStore.exists()) {
+			throw logger.error(
+				`Environment variable ${key} not found.`,
+				"If you are expecting fatima to inject your private envs, check the process start script, it should look like this:",
+				`fatima run -g -- 'your-command'`,
 			);
 		}
-
-		throw new Error(`🔒 [dotsafe] Environment variable ${key} not found.`);
 	};
 
 	const handleForbiddenAccess = (key: string) => {
+		const error = [
+			"Here are some possible fixes:",
+			"\n 1. Add the public prefix to your variable if you want to expose it to the client.",
+			"\n 2. Check if your public prefix is correct by assigning 'env.publicPrefix' to your fatima configuration.",
+		];
+
+		logger.error(...error);
+
 		throw new Error(
-			[
-				`🔒 [dotsafe] Environment variable ${key} not allowed on the client, here are some possible fixes:`,
-				"\n 1. Add the public prefix to your variable if you want to expose it to the client.",
-				`\n 2. Check if your public prefix is correct by assigning 'env.publicPrefix' to your dotsafe configuration.`,
-			].join("\n"),
+			`🔒 [fatima] Environment variable ${key} not allowed on the client.` +
+				error.join("\n"),
 		);
 	};
 
-	const dotsafeEnv = new Proxy(process.env, {
+	const fatimaEnv = new Proxy(process.env, {
 		get(target, key: string) {
 			if (isAccessForbidden()) {
 				handleForbiddenAccess(key);
@@ -79,7 +83,7 @@ export const createEnv = (options: CreateEnvOptions) => {
 		},
 	});
 
-	return dotsafeEnv as UnsafeEnvironmentVariables;
+	return fatimaEnv as UnsafeEnvironmentVariables;
 };
 
 export const createPublicEnv = (options: CreatePublicEnvOptions) => {
@@ -90,10 +94,10 @@ export const createPublicEnv = (options: CreatePublicEnvOptions) => {
 	};
 
 	const handleUndefined = (key: string) => {
-		throw new Error(`🔒 [dotsafe] Environment variable ${key} not found.`);
+		throw new Error(`🔒 [fatima] Environment variable ${key} not found.`);
 	};
 
-	const dotsafePublicEnv = new Proxy(options.publicVariables, {
+	const fatimaPublicEnv = new Proxy(options.publicVariables, {
 		get(target, key: string) {
 			if (isUndefined(key)) {
 				handleUndefined(key);
@@ -103,5 +107,5 @@ export const createPublicEnv = (options: CreatePublicEnvOptions) => {
 		},
 	});
 
-	return dotsafePublicEnv as UnsafeEnvironmentVariables;
+	return fatimaPublicEnv as UnsafeEnvironmentVariables;
 };
