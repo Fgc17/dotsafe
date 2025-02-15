@@ -1,11 +1,8 @@
 import { createJiti, type Jiti, type JitiOptions } from "jiti";
-import { logger } from "../../core/utils/logger";
+import { logger } from "src/lib/logger/logger";
 import { resolveConfigPath } from "./resolve-config-path";
-import { fatimaStore } from "src/core/utils/store";
 import { createRequire } from "node:module";
-import type { UnsafeEnvironmentVariables } from "src/core/types";
-import type { FatimaConfig } from "src/core/config";
-import type { AnyType } from "src/core/utils/types";
+import { isFatimaConfig, type FatimaConfig } from "src/core/config";
 
 const require = createRequire(import.meta.url);
 
@@ -59,19 +56,12 @@ export async function transpileConfig(
 
 		process.env = originalEnv;
 
-		fatimaStore.set(
-			"fatimaEnvironment",
-			config.environment(process.env as UnsafeEnvironmentVariables),
-		);
-
-		if (!config.__fatimaconfig) {
+		if (!isFatimaConfig(config)) {
 			logger.error(
 				"Config file must be created with the fatima config function.",
 			);
 			process.exit(1);
 		}
-
-		fatimaStore.set("fatimaConfigPath", path);
 
 		return config;
 	} catch (error) {
