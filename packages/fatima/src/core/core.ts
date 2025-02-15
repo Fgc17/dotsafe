@@ -2,6 +2,7 @@ import { config } from "./config";
 import { adapters } from "./adapters";
 import { validators } from "./validators";
 import { linter } from "./linter";
+import { instrumentation } from "./instrumentation";
 export * from "./types";
 
-export { config, validators, adapters, linter };
+export { config, instrumentation, validators, adapters, linter };
