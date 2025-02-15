@@ -1,5 +1,11 @@
 # fatima
 
+## 0.0.12
+
+### Patch Changes
+
+- add type abstraction and fix type errors
+
 ## 0.0.11
 
 ### Patch Changes
