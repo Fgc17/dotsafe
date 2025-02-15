@@ -3,9 +3,9 @@ import type {
 	UnsafeEnvironmentVariables,
 } from "src/core/types";
 import type { FatimaConfig } from "../../core/config";
-import { logger } from "../../core/utils/logger";
+import { logger } from "../logger/logger";
 import { lifecycle } from "src/core/lifecycle";
-import { fatimaStore } from "src/core/utils/store";
+import { fatimaStore } from "src/lib/store/store";
 
 export async function loadEnv(config: FatimaConfig) {
 	try {

@@ -2,8 +2,8 @@ import { writeFileSync } from "node:fs";
 import path from "node:path";
 import type { FatimaConfig } from "src/core/config";
 import type { UnsafeEnvironmentVariables } from "src/core/types";
-import { getTypescriptClient } from "../client/typescript-client";
-import { getJavascriptClient } from "../client/javascript-client";
+import { getTypescriptClient } from "./typescript-client";
+import { getJavascriptClient } from "./javascript-client";
 
 export function createClient(
 	config: FatimaConfig,

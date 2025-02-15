@@ -1,5 +1,5 @@
 import type { FatimaClientOptions } from "src/core/types";
-import { txt } from "src/core/utils/txt";
+import { txt } from "src/lib/utils/txt";
 
 type ClientStrings = {
 	envObject: string;

@@ -1,4 +1,4 @@
-import type { AnyType } from "./types";
+import type { AnyType } from "../../lib/types";
 
 declare const Bun: AnyType;
 declare const Deno: AnyType;

@@ -1,9 +1,9 @@
-import { fatimaStore } from "./store";
+import { fatimaStore } from "../store/store";
 
 const join = (message: string[]) => {
 	const env = fatimaStore.get("fatimaEnvironment") ?? "EnvironmentNotFound";
 
-	return `🔒 [fatima] (${env}) ` + message.join("\n ");
+	return `🔒 [fatima] (${env}) ` + message.join("\n");
 };
 
 const block = (message: string) => {
