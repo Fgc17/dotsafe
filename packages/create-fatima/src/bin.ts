@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { askValidator } from "./prompts/validator";
 import { askLanguage } from "./prompts/lang";
 import { askAdapter } from "./prompts/adapter";
