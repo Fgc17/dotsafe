@@ -1,14 +1,11 @@
 import { spawn } from "node:child_process";
-import { logger } from "../../core/utils/logger";
-import type { UnsafeEnvironmentVariables } from "src/core/types";
-import { debounce } from "../utils/debounce";
-import { createClient } from "../utils/create-client";
-import { createInjectableEnv } from "../utils/env-patch";
-import fs from "node:fs";
-import http from "node:http";
-import { fatimaStore } from "src/core/utils/store";
-import { reloadEnv } from "../utils/reload-env";
+import { logger } from "src/lib/logger/logger";
+import { createClient } from "src/lib/client/generate-client";
+import { createInjectableEnv, updateChildEnv } from "src/lib/env/patch-env";
+import { fatimaStore } from "src/lib/store/store";
 import { createAction, type ActionContext } from "../utils/create-action";
+import { listenLocalEnv } from "src/lib/listeners/local-env";
+import { listenRemoteEnv } from "src/lib/listeners/remote-env";
 
 const environmentBlacklist = [
 	"production",
@@ -23,12 +20,11 @@ const environmentBlacklist = [
 
 export const devService = async ({
 	config,
-	options,
 	env,
 	envCount,
 	args,
 }: ActionContext) => {
-	const environment = fatimaStore.get("fatimaEnvironment");
+	const environment = fatimaStore.get("fatimaEnvironment") as string;
 
 	if (environmentBlacklist.includes(environment)) {
 		logger.error(
@@ -37,7 +33,7 @@ export const devService = async ({
 		process.exit(1);
 	}
 
-	if (!options.lite) {
+	if (!fatimaStore.get("fatimaLiteMode")) {
 		createClient(config, env);
 	}
 
@@ -47,109 +43,28 @@ export const devService = async ({
 
 	const cmd = args.shift();
 
-	const child = spawn(cmd as string, [...args], {
+	const child = spawn(cmd as string, args, {
 		env: injectableEnv,
-		shell: true,
+		shell: false,
 		stdio: ["inherit", "inherit", "inherit", "ipc"],
 	});
 
-	const envFilesDir = config.file.folderPath;
+	const localEnvListener = listenLocalEnv(config, updateChildEnv);
 
-	const watcher = fs.watch(
-		envFilesDir,
-		debounce(async (_, filename: string | null) => {
-			if (
-				!filename ||
-				!filename.endsWith(".env") ||
-				filename.startsWith(".tmp") ||
-				filename === ".example.env"
-			)
-				return;
-
-			await reloadEnv({
-				config,
-				options,
-				process: child,
-			});
-		}, 100),
-	);
-
-	if (config.hook?.port) {
-		const server = http.createServer((req, res) => {
-			if (req.url !== "/fatima") {
-				res.writeHead(404, { "Content-Type": "application/json" });
-				res.end(JSON.stringify({ status: "not found" }));
-				return;
-			}
-
-			let body = "";
-
-			req.on("data", (chunk) => {
-				body += chunk;
-			});
-
-			req.on("end", async () => {
-				try {
-					await reloadEnv({
-						process: child,
-						config,
-						options,
-					});
-
-					res.writeHead(200, { "Content-Type": "application/json" });
-					res.end(JSON.stringify({ status: "success" }));
-				} catch (error) {
-					logger.error("Error processing webhook:", error.message);
-
-					res.writeHead(400, { "Content-Type": "application/json" });
-
-					res.end(JSON.stringify({ status: "error", message: error.message }));
-				}
-			});
-
-			req.on("error", (err) => {
-				logger.error("Request error:", err.message);
-
-				res.writeHead(500, { "Content-Type": "application/json" });
-				res.end(
-					JSON.stringify({
-						status: "error",
-						message: "Internal Server Error",
-					}),
-				);
-			});
-		});
-
-		const PORT = config.hook.port;
-
-		server.listen(PORT, () => {
-			logger.success(
-				`Development webhook is listening on port ${PORT} for POST /fatima requests.`,
-			);
-		});
-	}
-
-	child.on(
-		"message",
-		(message: { type: string; env: UnsafeEnvironmentVariables }) => {
-			if (message.type === "update-env") {
-				const injectableEnv = createInjectableEnv(message.env);
-
-				Object.assign(process.env, injectableEnv);
-			}
-		},
-	);
+	const removeEnvListener = listenRemoteEnv(config, updateChildEnv);
 
 	child.on("error", (error) => {
 		console.error(`Error: ${error.message}`);
-		watcher.close();
+		localEnvListener.close();
+		removeEnvListener?.close();
 		process.exit(1);
 	});
 
 	child.on("close", (code) => {
 		if (code !== 0) {
 			console.error(`Command exited with code ${code}`);
-			watcher.close();
+			localEnvListener.close();
+			removeEnvListener?.close();
 			process.exit(code);
 		}
 	});
