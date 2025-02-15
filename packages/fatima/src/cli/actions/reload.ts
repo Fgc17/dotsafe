@@ -2,7 +2,7 @@ import { logger } from "src/lib/logger/logger";
 import { createAction, type ActionContext } from "../utils/create-action";
 
 export const reloadService = async ({ config }: ActionContext) => {
-	await fetch(`http://localhost:${config.hook?.port}/fatima`, {
+	await fetch(`http://localhost:${config.ports?.reload}/fatima`, {
 		method: "POST",
 	})
 		.then((res) => {
