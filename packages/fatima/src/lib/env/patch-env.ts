@@ -1,5 +1,6 @@
 import type { UnsafeEnvironmentVariables } from "src/core/types";
 import { fatimaStore } from "../store/store";
+import { debug } from "../logger/debugger";
 import net from "node:net";
 
 export function createInjectableEnv(env?: UnsafeEnvironmentVariables) {
@@ -27,9 +28,11 @@ export function updateChildEnv(env: UnsafeEnvironmentVariables) {
 	if (!instrumentationPort) return;
 
 	try {
-		const client = net.createConnection({
-			port: Number(instrumentationPort),
-		});
+		const client = net
+			.createConnection({
+				port: Number(instrumentationPort),
+			})
+			.on("error", debug.error);
 
 		client.write(
 			JSON.stringify({
