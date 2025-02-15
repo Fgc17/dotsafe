@@ -4,16 +4,17 @@ import {
 	appendFileSync,
 	writeFileSync,
 } from "node:fs";
-import path, { join } from "node:path";
+import path from "node:path";
 import type { AnyType } from "../lib/types";
+import { parse, stringify, assign } from "comment-json";
 
-function getGitignorePath() {
+function getConfigPath(filename: string): string | null {
 	let currentDir = process.cwd();
 
 	while (currentDir !== path.parse(currentDir).root) {
-		const gitignorePath = path.join(currentDir, ".gitignore");
-		if (existsSync(gitignorePath)) {
-			return gitignorePath;
+		const configPath = path.join(currentDir, filename);
+		if (existsSync(configPath)) {
+			return configPath;
 		}
 		currentDir = path.dirname(currentDir);
 	}
@@ -24,34 +25,42 @@ function getGitignorePath() {
 export function tweakUserConfig(
 	fileName: string,
 	modifier: (config: AnyType) => AnyType,
-) {
+): AnyType {
+	const filePath = getConfigPath(fileName);
+
+	if (!filePath) return;
+
 	if (fileName === ".gitignore") {
-		const gitignorePath = getGitignorePath();
-
-		if (!gitignorePath) return;
-
-		const currentContent = readFileSync(gitignorePath, "utf8");
-
+		const currentContent = readFileSync(filePath, "utf8");
 		const newContent = modifier(currentContent);
 
 		if (newContent !== currentContent) {
-			appendFileSync(gitignorePath, `\n${newContent}`);
+			appendFileSync(filePath, `\n${newContent}`);
 		}
 
 		return;
 	}
 
-	const filePath = join(process.cwd(), fileName);
-
-	let config = {};
-
-	if (existsSync(filePath)) {
-		config = JSON.parse(readFileSync(filePath, "utf8"));
+	if (!existsSync(filePath)) {
+		const initialConfig = modifier({});
+		writeFileSync(filePath, stringify(initialConfig, null, 2));
+		return;
 	}
 
-	const updatedConfig = modifier(config);
+	try {
+		const fileContent = readFileSync(filePath, "utf8");
 
-	writeFileSync(filePath, JSON.stringify(updatedConfig, null, 2));
+		const config = parse(fileContent, null, false);
 
-	return updatedConfig;
+		const changed = assign(config, modifier(config));
+
+		const newContent = stringify(changed, null, 2);
+
+		writeFileSync(filePath, newContent);
+
+		return config;
+	} catch (e) {
+		console.error(`Error reading ${fileName}:`, e);
+		return;
+	}
 }

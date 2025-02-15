@@ -1,15 +1,14 @@
 import { tweakUserConfig } from "src/utils/tweak-user-config";
 import type { Language } from "./types";
+import { assign } from "comment-json";
 
 const tweakTypescript = () => {
 	tweakUserConfig("tsconfig.json", (config) => {
-		config.compilerOptions = {
-			...config.compilerOptions,
-			paths: {
-				...config.compilerOptions?.paths,
+		config.compilerOptions = assign(config.compilerOptions, {
+			paths: assign(config.compilerOptions?.paths, {
 				env: ["./env.ts"],
-			},
-		};
+			}),
+		});
 		return config;
 	});
 
@@ -21,13 +20,11 @@ const tweakTypescript = () => {
 
 const tweakJavascript = () => {
 	tweakUserConfig("jsconfig.json", (config) => {
-		config.compilerOptions = {
-			...config.compilerOptions,
-			paths: {
-				...config.compilerOptions?.paths,
+		config.compilerOptions = assign(config.compilerOptions, {
+			paths: assign(config.compilerOptions?.paths, {
 				"#env": ["./env.js"],
-			},
-		};
+			}),
+		});
 		return config;
 	});
 
