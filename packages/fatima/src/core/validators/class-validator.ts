@@ -32,7 +32,7 @@ export const classValidator = (
 			const isValid = classValidatorErrors.length === 0;
 
 			const errors = isValid
-				? undefined
+				? []
 				: classValidatorErrors.flatMap((error) =>
 						Object.values(error.constraints ?? {}).map((value) => ({
 							key: error.property,

@@ -19,10 +19,11 @@ export const zod = (constraint: ZodSchemaMock): FatimaValidator => {
 
 		const isValid = result.success;
 
-		const errors = result.error?.errors.map((error) => ({
-			key: error.path.join("."),
-			message: error.message,
-		}));
+		const errors =
+			result.error?.errors.map((error) => ({
+				key: error.path.join("."),
+				message: error.message,
+			})) ?? [];
 
 		return {
 			isValid,
