@@ -47,7 +47,7 @@ yarn add typia
 
 ```ts title="env.config.ts"
 import { config, validators } from "fatima";
-import { z, ZodType } from "zod";
+import typia, { tags } from "typia";
 import { EnvRecord } from "env";
 
 type Constraint = EnvType<{

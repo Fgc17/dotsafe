@@ -53,9 +53,9 @@ import { IsEmail, IsTimeZone, validate } from "class-validator";
 import { plainToInstance } from "class-transformer";
 
 import { config, validators } from "fatima";
-import { EnvClass } from "env";
+import { EnvObject } from "env";
 
-class Constraint implements Partial<EnvClass> {
+class Constraint implements Partial<EnvObject> {
   @IsEmail()
   NODE_ENV: string;
 
