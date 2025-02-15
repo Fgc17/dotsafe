@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "#jsdoc-env": [
+        "./src/jsdoc/env.js"
+      ],
+      "#env": [
+        "./env.js"
+      ]
+    }
+  }
+}

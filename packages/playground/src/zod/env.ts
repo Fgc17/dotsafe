@@ -6,23 +6,19 @@ import {
   type PrimitiveEnvType as FatimaPrimitiveEnvType,
 } from 'fatima/env';
 
-export type EnvKeys = 
-  | "NEXT_PUBLIC_API_URL" 
-  | "NODE_ENV" 
-  | "TEST" 
-  | "TZ";
-
-export type EnvRecord<V = string> = FatimaEnvRecord<EnvKeys, V>;
-
-export interface EnvClass {
-  "NEXT_PUBLIC_API_URL": string;
+export interface EnvObject {
   "NODE_ENV": string;
-  "TEST": string;
   "TZ": string;
+  "NEXT_PUBLIC_API_URL": string;
+  "TEST": string;
 }
 
-type PrimitiveEnvType = FatimaPrimitiveEnvType<EnvKeys>;
-export type EnvType<T extends PrimitiveEnvType> = FatimaEnvType<EnvKeys, T>;
+export type EnvKeys = keyof EnvObject;
+
+export type EnvRecord<V = string> = FatimaEnvRecord<EnvObject, V>;
+
+type PrimitiveEnvType = FatimaPrimitiveEnvType<EnvObject>;
+export type EnvType<T extends PrimitiveEnvType> = FatimaEnvType<EnvObject, T>;
 
 type Env = ServerEnvRecord<EnvKeys, "NEXT_PUBLIC_">
 
