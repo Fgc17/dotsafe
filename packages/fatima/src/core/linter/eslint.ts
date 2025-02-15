@@ -1,4 +1,4 @@
-import type { AnyType } from "../utils/types";
+import type { AnyType } from "src/lib/types";
 
 const noEnvRuleObject = {
 	meta: {

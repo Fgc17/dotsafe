@@ -1,7 +1,7 @@
 import { resolve } from "node:path";
 import { existsSync } from "node:fs";
 import { parse } from "node:path";
-import { logger } from "src/core/utils/logger";
+import { logger } from "src/lib/logger/logger";
 
 export function resolveConfigPath(configPath?: string) {
 	const baseDir = process.cwd();

@@ -1,6 +1,6 @@
-import { logger } from "../../core/utils/logger";
+import { logger } from "src/lib/logger/logger";
+import { parseValidationErrors } from "src/lib/utils/parse-validation";
 import { createAction, type ActionContext } from "../utils/create-action";
-import { parseValidationErrors } from "../utils/parse-errors";
 import { lifecycle } from "src/core/lifecycle";
 
 export const validateService = async ({

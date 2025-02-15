@@ -4,8 +4,8 @@ import type {
 	FatimaBuiltInLoadFunction,
 	UnsafeEnvironmentVariables,
 } from "../types";
-import { logger } from "../utils/logger";
-import { createInjectableEnv } from "src/cli/utils/env-patch";
+import { logger } from "src/lib/logger/logger";
+import { createInjectableEnv } from "src/lib/env/patch-env";
 import { lifecycle } from "../lifecycle";
 
 export type VercelParseFunction = (

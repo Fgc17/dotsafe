@@ -1,11 +1,11 @@
 import type { FatimaValidator, UnsafeEnvironmentVariables } from "../types";
-import type { AnyType } from "../utils/types";
+import type { AnyType } from "src/lib/types";
 import { transpileConfig } from "src/cli/utils/transpile-config";
-import { InternalFatimaTempFolderName } from "../utils/tmp";
+import { InternalFatimaTempFolderName } from "src/lib/tmp";
 import { spawn } from "node:child_process";
 import fs from "node:fs/promises";
 import path from "node:path";
-import { fatimaStore } from "../utils/store";
+import { fatimaStore } from "src/lib/store/store";
 
 export type TypiaFunction = (env: UnsafeEnvironmentVariables) => {
 	success: boolean;

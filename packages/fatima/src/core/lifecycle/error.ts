@@ -1,5 +1,5 @@
 import type { FatimaParsedValidationErrors } from "../types";
-import { logger } from "../utils/logger";
+import { logger } from "src/lib/logger/logger";
 
 const missingEnvironmentVariable = (env: string): never => {
 	logger.error(`Missing environment variable: ${env}`);
@@ -77,6 +77,38 @@ const missingBabelTransformClassProperties = () => {
 	process.exit(1);
 };
 
+const missingWatchPort = () => {
+	logger.error(
+		"You need to set 'config.reload.watch' to use the watch feature.",
+	);
+
+	console.log("");
+
+	process.exit(1);
+};
+
+export const reloadingPortAlreadyInUse = (port: number) => {
+	logger.error(
+		`Couldn't run the env reloading server, port ${port} is already in use.`,
+		`Please specify a different one under 'config.ports.instrumentation' or kill the current process.`,
+	);
+
+	console.log("");
+
+	process.exit(1);
+};
+
+export const instrumentationPortAlreadyInUse = (port: number) => {
+	logger.error(
+		`Couldn't run 'instrumentation.watch()', port ${port} is already in use. `,
+		`Please specify a different one under 'config.ports.instrumentation' or kill the current process.`,
+	);
+
+	console.log("");
+
+	process.exit(1);
+};
+
 export const error = {
 	missingConfig,
 	missingEnvironmentConfig,
@@ -85,4 +117,5 @@ export const error = {
 	environmentMixing,
 	invalidEnvironmentVariables,
 	missingBabelTransformClassProperties,
+	missingWatchPort,
 };

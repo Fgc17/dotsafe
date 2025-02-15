@@ -1,5 +1,5 @@
 import type { UnsafeEnvironmentVariables } from "src/core/types";
-import type { AnyType } from "src/core/utils/types";
+import type { AnyType } from "src/lib/types";
 
 interface CreateEnvOptions {
 	isServer?: () => boolean;

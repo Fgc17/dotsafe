@@ -3,7 +3,7 @@ import type {
 	FatimaBuiltInLoadFunction,
 	UnsafeEnvironmentVariables,
 } from "../types";
-import type { AnyType, GenericClass } from "../utils/types";
+import type { AnyType, GenericClass } from "src/lib/types";
 
 type InfisicalClientMock = GenericClass<{
 	auth: () => {

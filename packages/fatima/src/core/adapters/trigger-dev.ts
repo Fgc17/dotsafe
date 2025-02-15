@@ -5,7 +5,7 @@ import type {
 import { resolve } from "node:path";
 import { spawn } from "node:child_process";
 import { lifecycle } from "../lifecycle";
-import { getRuntime } from "../utils/get-runtime";
+import { getRuntime } from "src/lib/utils/get-runtime";
 
 type TriggerDevClientMock = {
 	envvars: {

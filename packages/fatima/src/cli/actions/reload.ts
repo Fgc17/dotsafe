@@ -1,4 +1,4 @@
-import { logger } from "src/core/utils/logger";
+import { logger } from "src/lib/logger/logger";
 import { createAction, type ActionContext } from "../utils/create-action";
 
 export const reloadService = async ({ config }: ActionContext) => {
