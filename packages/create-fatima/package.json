@@ -3,13 +3,15 @@
 	"publishConfig": {
 		"access": "public"
 	},
-	"version": "0.0.0",
+	"version": "0.0.1",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/Fgc17/fatima.git"
 	},
-	"files": ["dist"],
+	"files": [
+		"dist"
+	],
 	"type": "module",
 	"bin": {
 		"create-fatima": "./dist/bin.cjs"
