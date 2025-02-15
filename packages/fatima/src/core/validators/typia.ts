@@ -34,10 +34,11 @@ export const typia = (fn: TypiaFunction): FatimaValidator => {
 
 			const isValid = result.success;
 
-			const errors = result.errors?.map((error) => ({
-				key: error.path.replace("$input.", ""),
-				message: error.expected,
-			}));
+			const errors =
+				result.errors?.map((error) => ({
+					key: error.path.replace("$input.", ""),
+					message: error.expected,
+				})) ?? [];
 
 			return {
 				isValid,
