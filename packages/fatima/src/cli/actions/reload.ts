@@ -2,6 +2,15 @@ import { logger } from "src/lib/logger/logger";
 import { createAction, type ActionContext } from "../utils/create-action";
 
 export const reloadService = async ({ config }: ActionContext) => {
+	const port = config.ports?.reload;
+
+	if (!port) {
+		logger.error(
+			"Failed to reload environment variables, missing port, please set 'ports.reload' in your fatima config.",
+		);
+		process.exit(1);
+	}
+
 	await fetch(`http://localhost:${config.ports?.reload}/fatima`, {
 		method: "POST",
 	})
