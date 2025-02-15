@@ -1,6 +1,6 @@
-import { logger } from "../../core/utils/logger";
+import { logger } from "src/lib/logger/logger";
 import { createAction, type ActionContext } from "../utils/create-action";
-import { createClient } from "../utils/create-client";
+import { createClient } from "src/lib/client/generate-client";
 import { validateService } from "./validate";
 
 export const generateService = async (ctx: ActionContext) => {
