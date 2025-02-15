@@ -1,0 +1,15 @@
+```js
+const { validators } = require("fatima");
+const { z } = require("zod");
+
+/**
+ * @type {import('#env').Constraint}
+ */
+const constraint = {
+  NODE_ENV: z.enum(["development"]),
+};
+
+module.exports = config({
+  validate: validators.zod(z.object(constraint)),
+});
+```

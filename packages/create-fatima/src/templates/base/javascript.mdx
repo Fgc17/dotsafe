@@ -1,0 +1,7 @@
+```ts
+const { config } = require("fatima");
+
+module.exports = config({
+  environment: (processEnv) => processEnv.NODE_ENV ?? "development",
+});
+```
