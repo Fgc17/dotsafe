@@ -1,9 +1,0 @@
-{
-	"private": true,
-	"imports": {
-		"#env": "./env.js"
-	},
-	"dependencies": {
-		"log-symbols": "^7.0.0"
-	}
-}
