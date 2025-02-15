@@ -7,8 +7,9 @@ type FatimaStore = {
 	fatimaLogs: string;
 	fatimaTransformedConfigPath: string;
 	fatimaInstrumentationPort: string;
-	fatimaLiteMode: string | undefined;
 	fatimaStoreMarker: string;
+	fatimaLiteMode: string | undefined;
+	fatimaDebug: string | undefined;
 };
 
 export const fatimaStore = {
@@ -42,4 +43,6 @@ export const initializeStore = (
 	);
 
 	fatimaStore.set("fatimaLiteMode", options.lite);
+
+	fatimaStore.set("fatimaDebug", options.debug);
 };
