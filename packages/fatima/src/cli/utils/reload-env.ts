@@ -1,28 +1,17 @@
 import { lifecycle } from "src/core/lifecycle";
-import { logger } from "src/core/utils/logger";
-import { createClient } from "./create-client";
-import { createInjectableEnv } from "./env-patch";
-import { loadEnv } from "./load-env";
-import { parseValidationErrors } from "./parse-errors";
+import { logger } from "src/lib/logger/logger";
+import { loadEnv } from "src/lib/env/load-env";
+import { createClient } from "src/lib/client/generate-client";
+import { parseValidationErrors } from "src/lib/utils/parse-validation";
+import { fatimaStore } from "src/lib/store/store";
 import type { FatimaConfig } from "src/core/config";
-import type { ChildProcess } from "node:child_process";
 
-export const reloadEnv = async ({
-	process,
-	config,
-	options,
-}: {
-	process: ChildProcess;
-	config: FatimaConfig;
-	options: Record<string, string>;
-}) => {
+export const reloadEnv = async (config: FatimaConfig) => {
 	const { env, envCount } = await loadEnv(config);
-
-	process.send({ type: "update-env", env });
 
 	logger.success(`Reloaded ${envCount} environment variables`);
 
-	if (!options.lite) {
+	if (!fatimaStore.get("fatimaLiteMode")) {
 		createClient(config, env);
 	}
 
@@ -35,4 +24,6 @@ export const reloadEnv = async ({
 			lifecycle.error.invalidEnvironmentVariables(parsedErrors, false);
 		}
 	}
+
+	return { env, envCount };
 };
