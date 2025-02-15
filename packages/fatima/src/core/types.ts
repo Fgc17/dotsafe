@@ -26,12 +26,16 @@ export type FatimaValidatorError = {
 	message: string;
 };
 
-export type FatimaParsedValidationErrors = Record<string, string[]>;
-
-export type FatimaValidator = (env: UnsafeEnvironmentVariables) => Promisable<{
+export type FatimaValidationResult = {
 	isValid: boolean;
-	errors?: FatimaValidatorError[];
-}>;
+	errors: FatimaValidatorError[];
+};
+
+export type FatimaValidator = (
+	env: UnsafeEnvironmentVariables,
+) => Promisable<FatimaValidationResult>;
+
+export type FatimaParsedValidationErrors = Record<string, string[]>;
 
 export type FatimaEnvironmentFunction = (
 	processEnv: UnsafeEnvironmentVariables,
