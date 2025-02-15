@@ -1,8 +1,10 @@
-import type { AnyType, Promisable } from "src/core/utils/types";
+import type { AnyType, Promisable } from "src/lib/types";
 import { transpileConfig } from "./transpile-config";
-import { loadEnv } from "./load-env";
+import { loadEnv } from "src/lib/env/load-env";
 import type { FatimaConfig } from "src/core/config";
 import type { UnsafeEnvironmentVariables } from "src/core/types";
+import { initializeEnv } from "src/lib/env/patch-env";
+import { initializeStore } from "src/lib/store/store";
 
 export interface ActionContext {
 	config: FatimaConfig;
@@ -25,6 +27,8 @@ export const createAction = (
 		const configPath = options.config;
 
 		const config = await transpileConfig(configPath);
+
+		initializeStore(config, options);
 
 		const { env, envCount } = await loadEnv(config);
 
