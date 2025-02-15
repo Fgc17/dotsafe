@@ -8,7 +8,7 @@
 			"outputs": [".next/**", "!.next/cache/**", "dist"]
 		},
 		"release": {
-			"dependsOn": ["fatima#build"]
+			"dependsOn": ["fatima#build", "create-fatima#build"]
 		},
 		"typecheck": {
 			"dependsOn": ["^check-types"]
