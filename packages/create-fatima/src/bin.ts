@@ -8,6 +8,7 @@ import { createConfigFile } from "src/lib/create-config-file";
 import type { Adapter, Language, Validator } from "src/lib/types";
 import { applyUserConfigTweaks } from "./lib/tweaks";
 import { logger } from "./utils/logger";
+
 const form = async () => {
 	await askMonorepo();
 
