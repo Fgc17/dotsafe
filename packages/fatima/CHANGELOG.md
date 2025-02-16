@@ -1,5 +1,11 @@
 # fatima
 
+## 0.0.16
+
+### Patch Changes
+
+- disable removeNodeProtocol
+
 ## 0.0.15
 
 ### Patch Changes
