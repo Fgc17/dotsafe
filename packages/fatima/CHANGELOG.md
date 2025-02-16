@@ -1,5 +1,17 @@
 # fatima
 
+## 0.0.14
+
+### Patch Changes
+
+- improve logging and make instrumentation safer
+
+## 0.0.13
+
+### Patch Changes
+
+- add complete environment reloading support
+
 ## 0.0.12
 
 ### Patch Changes

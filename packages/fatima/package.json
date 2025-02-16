@@ -4,7 +4,7 @@
 	"publishConfig": {
 		"access": "public"
 	},
-	"version": "0.0.12",
+	"version": "0.0.14",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
@@ -42,9 +42,9 @@
 	},
 	"scripts": {
 		"typecheck": "tsc --noEmit",
-		"build": "rm -rf dist && tsc && pnpm tsup",
+		"build": "rm -rf dist && pnpm tsup",
 		"dev": "pnpm run build --watch",
-		"release": "pnpm publish --no-git-checks"
+		"release": "pnpm typecheck && pnpm publish --no-git-checks"
 	},
 	"devDependencies": {
 		"@types/node": "^22.9.1",
