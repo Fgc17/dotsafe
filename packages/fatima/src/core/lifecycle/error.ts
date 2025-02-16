@@ -87,7 +87,7 @@ const missingWatchPort = () => {
 	process.exit(1);
 };
 
-export const reloadingPortAlreadyInUse = (port: number) => {
+const reloadingPortAlreadyInUse = (port: number) => {
 	logger.error(
 		`Couldn't run the env reloading server, port ${port} is already in use.`,
 		`Please specify a different one under 'config.ports.instrumentation' or kill the current process.`,
@@ -98,7 +98,7 @@ export const reloadingPortAlreadyInUse = (port: number) => {
 	process.exit(1);
 };
 
-export const instrumentationPortAlreadyInUse = (port: number) => {
+const instrumentationPortAlreadyInUse = (port: number) => {
 	logger.error(
 		`Couldn't run 'instrumentation.watch()', port ${port} is already in use. `,
 		`Please specify a different one under 'config.ports.instrumentation' or kill the current process.`,

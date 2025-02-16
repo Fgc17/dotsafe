@@ -1,7 +1,7 @@
 import net from "node:net";
 import { populateEnv } from "../env/patch-env";
-import { instrumentationPortAlreadyInUse } from "src/core/lifecycle/error";
 import { logger } from "../logger/logger";
+import { lifecycle } from "src/core/lifecycle";
 
 export function listenParentEnv(port: number) {
 	const tcpServer = net.createServer((socket) => {
@@ -20,7 +20,7 @@ export function listenParentEnv(port: number) {
 
 	tcpServer.on("error", (error) => {
 		if ((error as NodeJS.ErrnoException).code === "EADDRINUSE") {
-			instrumentationPortAlreadyInUse(port);
+			lifecycle.error.instrumentationPortAlreadyInUse(port);
 		}
 	});
 }

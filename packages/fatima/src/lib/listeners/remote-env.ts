@@ -4,7 +4,7 @@ import type { UnsafeEnvironmentVariables } from "src/core/types";
 import { logger } from "../logger/logger";
 import type { Promisable } from "../types";
 import http from "node:http";
-import { reloadingPortAlreadyInUse } from "src/core/lifecycle/error";
+import { lifecycle } from "src/core/lifecycle";
 
 export function listenRemoteEnv(
 	config: FatimaConfig,
@@ -36,7 +36,7 @@ export function listenRemoteEnv(
 
 	server.on("error", (error) => {
 		if ((error as NodeJS.ErrnoException).code === "EADDRINUSE") {
-			reloadingPortAlreadyInUse(port);
+			lifecycle.error.reloadingPortAlreadyInUse(port);
 		}
 	});
 
