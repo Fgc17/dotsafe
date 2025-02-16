@@ -1,5 +1,11 @@
 # fatima
 
+## 0.0.15
+
+### Patch Changes
+
+- improve instrumentation compatibility
+
 ## 0.0.14
 
 ### Patch Changes
