@@ -1,3 +1,4 @@
+import { lifecycle } from "src/core/lifecycle";
 import type { UnsafeEnvironmentVariables } from "src/core/types";
 import { logger } from "src/lib/logger/logger";
 import { fatimaStore } from "src/lib/store/store";
@@ -38,20 +39,14 @@ export const createEnv = (options: CreateEnvOptions) => {
 
 	const isAccessForbidden = () => !isServer();
 
-	const isUndefined = (key: string) => {
-		if (!process.env[key]) {
-			return true;
-		}
-	};
+	const isUndefined = (key: string) => !process.env[key];
 
 	const handleUndefined = (key: string) => {
 		if (!fatimaStore.exists()) {
-			throw logger.error(
-				`Environment variable ${key} not found.`,
-				"If you are expecting fatima to inject your private envs, check the process start script, it should look like this:",
-				`fatima run -g -- 'your-command'`,
-			);
+			return lifecycle.error.undefinedEnvironmentAndStore(key);
 		}
+
+		return lifecycle.error.undefinedEnvironment(key);
 	};
 
 	const handleForbiddenAccess = (key: string) => {
