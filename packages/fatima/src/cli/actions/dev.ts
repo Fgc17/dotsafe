@@ -24,6 +24,8 @@ export const devService = async ({
 	envCount,
 	args,
 }: ActionContext) => {
+	fatimaStore.set("fatimaDevMode", "true");
+
 	const environment = fatimaStore.get("fatimaEnvironment") as string;
 
 	if (environmentBlacklist.includes(environment)) {

@@ -8,9 +8,10 @@ type FatimaStore = {
 	fatimaTransformedConfigPath: string;
 	fatimaInstrumentationPort: string;
 	fatimaStoreMarker: string;
+	fatimaEnvNames: string;
 	fatimaLiteMode: string | undefined;
 	fatimaDebug: string | undefined;
-	fatimaEnvNames: string;
+	fatimaDevMode: string | undefined;
 };
 
 export const fatimaStore = {
