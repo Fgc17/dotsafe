@@ -54,6 +54,8 @@ export async function loadEnv(config: FatimaConfig) {
 			return lifecycle.error.environmentMixing(initialNodeEnv, finalEnv);
 		}
 
+		fatimaStore.set("fatimaEnvNames", Object.keys(env).join("#"));
+
 		return {
 			env,
 			envCount: Object.keys(env).length,

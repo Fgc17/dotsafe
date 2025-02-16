@@ -10,6 +10,7 @@ type FatimaStore = {
 	fatimaStoreMarker: string;
 	fatimaLiteMode: string | undefined;
 	fatimaDebug: string | undefined;
+	fatimaEnvNames: string;
 };
 
 export const fatimaStore = {
@@ -17,7 +18,7 @@ export const fatimaStore = {
 		return process.env[key] as FatimaStore[K];
 	},
 	set(key: keyof FatimaStore, value?: string) {
-		process.env[key] = value?.toLocaleLowerCase();
+		process.env[key] = value?.toLowerCase().trim();
 	},
 	exists() {
 		return process.env.fatimaStoreMarker === "true";
@@ -28,6 +29,8 @@ export const initializeStore = (
 	config: FatimaConfig,
 	options: Record<string, string>,
 ) => {
+	fatimaStore.set("fatimaEnvNames", "");
+
 	fatimaStore.set("fatimaStoreMarker", "true");
 
 	fatimaStore.set(
