@@ -1,9 +1,10 @@
-import net from "node:net";
 import { populateEnv } from "../env/patch-env";
 import { logger } from "../logger/logger";
 import { lifecycle } from "src/core/lifecycle";
 
-export function listenParentEnv(port: number) {
+export async function listenParentEnv(port: number) {
+	const net = await import("node:net");
+
 	const tcpServer = net.createServer((socket) => {
 		socket.on("data", (data) => {
 			try {
