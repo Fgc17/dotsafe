@@ -53,12 +53,12 @@ export const devService = async ({
 
 	const localEnvListener = listenLocalEnv(config, updateChildEnv);
 
-	const removeEnvListener = listenRemoteEnv(config, updateChildEnv);
+	const remoteEnvListener = listenRemoteEnv(config, updateChildEnv);
 
 	child.on("error", (error) => {
 		console.error(`Error: ${error.message}`);
 		localEnvListener.close();
-		removeEnvListener?.close();
+		remoteEnvListener?.close();
 		process.exit(1);
 	});
 
@@ -66,7 +66,7 @@ export const devService = async ({
 		if (code !== 0) {
 			console.error(`Command exited with code ${code}`);
 			localEnvListener.close();
-			removeEnvListener?.close();
+			remoteEnvListener?.close();
 			process.exit(code);
 		}
 	});
