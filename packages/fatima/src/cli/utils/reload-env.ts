@@ -13,8 +13,8 @@ export const reloadEnv = async (config: FatimaConfig) => {
 
 	const currentEnvNames = Object.keys(env).map((k) => k.toLowerCase());
 
-	const didPreviousEnvNamesChange = previousEnvNames.some(
-		(name) => !currentEnvNames.includes(name),
+	const didPreviousEnvNamesChange = currentEnvNames.some(
+		(name) => !previousEnvNames.includes(name),
 	);
 
 	const isClientGenerationEnabled = !fatimaStore.get("fatimaLiteMode");
