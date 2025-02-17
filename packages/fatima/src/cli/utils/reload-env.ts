@@ -5,21 +5,20 @@ import { parseValidationErrors } from "src/lib/utils/parse-validation";
 import { fatimaStore } from "src/lib/store/store";
 import { logger } from "src/lib/logger/logger";
 import type { FatimaConfig } from "src/core/config";
+import { compareArrays } from "src/lib/utils/compareArrays";
 
 export const reloadEnv = async (config: FatimaConfig) => {
+	const isClientGenerationEnabled = !fatimaStore.get("fatimaLiteMode");
+
 	const previousEnvNames = fatimaStore.get("fatimaEnvNames").split("#");
 
 	const { env, envCount } = await loadEnv(config);
 
 	const currentEnvNames = Object.keys(env).map((k) => k.toLowerCase());
 
-	const didPreviousEnvNamesChange = currentEnvNames.some(
-		(name) => !previousEnvNames.includes(name),
-	);
+	const didChangeEnv = !compareArrays(previousEnvNames, currentEnvNames);
 
-	const isClientGenerationEnabled = !fatimaStore.get("fatimaLiteMode");
-
-	if (isClientGenerationEnabled && didPreviousEnvNamesChange) {
+	if (isClientGenerationEnabled && didChangeEnv) {
 		createClient(config, env);
 		logger.success(`Updated types with ${envCount} environment variables`);
 	}
