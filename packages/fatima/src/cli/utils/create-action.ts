@@ -3,7 +3,6 @@ import { transpileConfig } from "./transpile-config";
 import { loadEnv } from "src/lib/env/load-env";
 import type { FatimaConfig } from "src/core/config";
 import type { UnsafeEnvironmentVariables } from "src/core/types";
-import { initializeEnv } from "src/lib/env/patch-env";
 import { initializeStore } from "src/lib/store/store";
 
 export interface ActionContext {
